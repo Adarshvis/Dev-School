@@ -220,33 +220,45 @@ export default async function CMSHomePage() {
                         className="img-fluid" 
                         alt={instructor.name} 
                       />
+                      {((instructor.rating && instructor.rating > 0) || (instructor.courseCount && instructor.courseCount > 0)) && (
                       <div className="overlay-content">
+                        {instructor.rating && instructor.rating > 0 && (
                         <div className="rating-stars">
                           {[...Array(5)].map((_, i) => (
                             <i key={i} className={`bi bi-star${i < Math.floor(instructor.rating || 0) ? '-fill' : ''}`}></i>
                           ))}
                           <span>{instructor.rating || 0}</span>
                         </div>
+                        )}
+                        {instructor.courseCount && instructor.courseCount > 0 && (
                         <div className="course-count">
                           <i className="bi bi-play-circle"></i>
                           <span>{instructor.courseCount || 0} Courses</span>
                         </div>
+                        )}
                       </div>
+                      )}
                     </div>
                     <div className="instructor-info">
                       <h5>{instructor.name}</h5>
-                      <p className="specialty">{instructor.specialty}</p>
-                      <p className="description">{instructor.description}</p>
+                      {instructor.specialty && <p className="specialty">{instructor.specialty}</p>}
+                      {instructor.description && <p className="description">{instructor.description}</p>}
+                      {((instructor.studentCount && instructor.studentCount > 0) || (instructor.rating && instructor.rating > 0)) && (
                       <div className="stats-grid">
+                        {instructor.studentCount && instructor.studentCount > 0 && (
                         <div className="stat">
                           <span className="number">{Math.floor((instructor.studentCount || 0) / 1000)}k</span>
                           <span className="label">Students</span>
                         </div>
+                        )}
+                        {instructor.rating && instructor.rating > 0 && (
                         <div className="stat">
                           <span className="number">{instructor.rating || 0}</span>
                           <span className="label">Rating</span>
                         </div>
+                        )}
                       </div>
+                      )}
                       <div className="action-buttons">
                         <Link href="#" className="btn-view">View Profile</Link>
                         <div className="social-links">

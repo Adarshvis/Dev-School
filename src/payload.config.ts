@@ -1,6 +1,6 @@
 // storage-adapter-import-placeholder
 import { mongooseAdapter } from '@payloadcms/db-mongodb'
-import { lexicalEditor } from '@payloadcms/richtext-lexical'
+import { lexicalEditor, FixedToolbarFeature, InlineToolbarFeature, HeadingFeature, BoldFeature, ItalicFeature, UnderlineFeature, StrikethroughFeature, SubscriptFeature, SuperscriptFeature, AlignFeature, IndentFeature, UnorderedListFeature, OrderedListFeature, ChecklistFeature, LinkFeature, BlockquoteFeature, HorizontalRuleFeature, InlineCodeFeature } from '@payloadcms/richtext-lexical'
 import { buildConfig } from 'payload'
 import sharp from 'sharp'
 
@@ -43,7 +43,13 @@ export default buildConfig({
     ContactPage,
   ],
   globals: [Settings, Navigation, EnrollPage],
-  editor: lexicalEditor(),
+  editor: lexicalEditor({
+    features: ({ defaultFeatures }) => [
+      ...defaultFeatures,
+      FixedToolbarFeature(),
+      InlineToolbarFeature(),
+    ],
+  }),
   secret: process.env.PAYLOAD_SECRET || '',
   typescript: {
     outputFile: './payload-types.ts',
@@ -88,6 +94,7 @@ export default buildConfig({
         socialFeed: true,
         customCode: true,
         map: true,
+        people: true,
       },
     }),
   ],

@@ -53,20 +53,22 @@ export function HeroSectionRenderer({ hero }: { hero: any }) {
   }
 
   if (layoutType === 'slider-fullwidth' && hero.fullWidthSlider) {
+    // Use configured max height or default to 85vh
+    const maxSliderHeight = hero.fullWidthSlider.height || '85vh'
+    
     return (
       <div id="fullWidthHeroCarousel" 
         className="carousel slide" 
         data-bs-ride="carousel" 
         data-bs-interval={hero.fullWidthSlider.interval ? hero.fullWidthSlider.interval * 1000 : 5000} 
         style={{ 
-          width: '100%',
-          maxWidth: '100%',
-          height: '100vh',
+          width: '100vw',
+          maxWidth: '100vw',
           margin: '0 calc(-50vw + 50%)',
           marginTop: 0,
           marginBottom: 0,
           padding: 0,
-          overflow: 'hidden'
+          position: 'relative'
         }}>
         <div className="carousel-indicators">
           {hero.fullWidthSlider.slides?.map((_: any, index: number) => (
@@ -81,12 +83,12 @@ export function HeroSectionRenderer({ hero }: { hero: any }) {
             ></button>
           ))}
         </div>
-        <div className="carousel-inner" style={{ height: '100%' }}>
+        <div className="carousel-inner">
           {hero.fullWidthSlider.slides?.map((slide: any, index: number) => (
-            <div key={index} className={`carousel-item ${index === 0 ? 'active' : ''}`} style={{ height: '100%' }}>
+            <div key={index} className={`carousel-item ${index === 0 ? 'active' : ''}`}>
               {/* TEXT */}
               {slide.mediaType === 'text' && slide.textContent && (
-                <div className="d-flex align-items-center justify-content-center" style={{ height: '100%', background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }}>
+                <div className="d-flex align-items-center justify-content-center" style={{ height: maxSliderHeight, background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }}>
                   <div className="text-center text-white px-4">
                     {slide.textContent.title && <h1 className="display-3 mb-4">{slide.textContent.title}</h1>}
                     {slide.textContent.description && <p className="lead">{slide.textContent.description}</p>}
@@ -99,7 +101,7 @@ export function HeroSectionRenderer({ hero }: { hero: any }) {
                 <img
                   src={typeof slide.imageFile === 'object' ? slide.imageFile.url : slide.imageFile}
                   alt={slide.imageAlt || slide.alt || `Slide ${index + 1}`}
-                  style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                  style={{ width: '100%', maxHeight: maxSliderHeight, objectFit: 'cover', objectPosition: 'center', display: 'block' }}
                 />
               )}
               
@@ -112,13 +114,13 @@ export function HeroSectionRenderer({ hero }: { hero: any }) {
                   controls={slide.videoControls !== false}
                   muted
                   loop
-                  style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                  style={{ width: '100%', maxHeight: maxSliderHeight, objectFit: 'cover', objectPosition: 'center', display: 'block' }}
                 />
               )}
               
               {/* AUDIO */}
               {slide.mediaType === 'audio' && slide.audioFile && (
-                <div className="d-flex align-items-center justify-content-center" style={{ height: '100%', background: '#f8f9fa' }}>
+                <div className="d-flex align-items-center justify-content-center" style={{ height: maxSliderHeight, background: '#f8f9fa' }}>
                   <audio
                     src={typeof slide.audioFile === 'object' ? slide.audioFile.url : slide.audioFile}
                     controls
@@ -130,7 +132,7 @@ export function HeroSectionRenderer({ hero }: { hero: any }) {
               
               {/* DOCUMENT */}
               {slide.mediaType === 'document' && slide.documentFile && (
-                <div className="d-flex align-items-center justify-content-center" style={{ height: '100%', background: '#ffffff' }}>
+                <div className="d-flex align-items-center justify-content-center" style={{ height: maxSliderHeight, background: '#ffffff' }}>
                   {slide.documentDisplayMode === 'embed' ? (
                     <iframe
                       src={typeof slide.documentFile === 'object' ? slide.documentFile.url : slide.documentFile}
@@ -151,13 +153,13 @@ export function HeroSectionRenderer({ hero }: { hero: any }) {
                 <img
                   src={typeof slide.animationFile === 'object' ? slide.animationFile.url : slide.animationFile}
                   alt={slide.alt || 'Animation'}
-                  style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                  style={{ width: '100%', maxHeight: maxSliderHeight, objectFit: 'cover', objectPosition: 'center', display: 'block' }}
                 />
               )}
               
               {/* 3D */}
               {slide.mediaType === '3d' && slide.model3DFile && (
-                <div className="d-flex align-items-center justify-content-center" style={{ height: '100%', background: '#1a1a1a' }}>
+                <div className="d-flex align-items-center justify-content-center" style={{ height: maxSliderHeight, background: '#1a1a1a' }}>
                   <div className="text-center text-white">
                     <i className="bi bi-box" style={{ fontSize: '5rem' }}></i>
                     <p className="mt-3">3D Model Viewer</p>
@@ -168,28 +170,46 @@ export function HeroSectionRenderer({ hero }: { hero: any }) {
               
               {/* EMBED */}
               {slide.mediaType === 'embed' && slide.embedUrl && (
-                <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <div className="ratio ratio-16x9" style={{ width: '90%' }}>
-                    {slide.embedType === 'youtube' && (
-                      <iframe
-                        src={`https://www.youtube.com/embed/${extractYouTubeId(slide.embedUrl)}?autoplay=${slide.embedAutoplay ? 1 : 0}&mute=1`}
-                        title={slide.alt || 'YouTube video'}
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                        allowFullScreen
-                      ></iframe>
-                    )}
-                    {slide.embedType === 'vimeo' && (
-                      <iframe
-                        src={`https://player.vimeo.com/video/${extractVimeoId(slide.embedUrl)}?autoplay=${slide.embedAutoplay ? 1 : 0}`}
-                        title={slide.alt || 'Vimeo video'}
-                        allow="autoplay; fullscreen; picture-in-picture"
-                        allowFullScreen
-                      ></iframe>
-                    )}
-                    {slide.embedType === 'iframe' && (
-                      <div dangerouslySetInnerHTML={{ __html: slide.embedUrl }} />
-                    )}
-                  </div>
+                <div style={{ 
+                  width: '100%', 
+                  height: maxSliderHeight, 
+                  display: 'flex', 
+                  alignItems: 'center', 
+                  justifyContent: 'center',
+                  background: '#000'
+                }}>
+                  {slide.embedType === 'youtube' && (
+                    <iframe
+                      src={`https://www.youtube.com/embed/${extractYouTubeId(slide.embedUrl)}?autoplay=${slide.embedAutoplay ? 1 : 0}&mute=1&rel=0&modestbranding=1`}
+                      title={slide.alt || 'YouTube video'}
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                      allowFullScreen
+                      style={{ 
+                        width: '100%', 
+                        height: '100%', 
+                        border: 'none'
+                      }}
+                    ></iframe>
+                  )}
+                  {slide.embedType === 'vimeo' && (
+                    <iframe
+                      src={`https://player.vimeo.com/video/${extractVimeoId(slide.embedUrl)}?autoplay=${slide.embedAutoplay ? 1 : 0}`}
+                      title={slide.alt || 'Vimeo video'}
+                      allow="autoplay; fullscreen; picture-in-picture"
+                      allowFullScreen
+                      style={{ 
+                        width: '100%', 
+                        height: '100%', 
+                        border: 'none'
+                      }}
+                    ></iframe>
+                  )}
+                  {slide.embedType === 'iframe' && (
+                    <div 
+                      dangerouslySetInnerHTML={{ __html: slide.embedUrl }} 
+                      style={{ width: '100%', height: '100%' }}
+                    />
+                  )}
                 </div>
               )}
               
@@ -197,7 +217,7 @@ export function HeroSectionRenderer({ hero }: { hero: any }) {
               {slide.mediaType === 'data' && slide.dataEmbedUrl && (
                 <iframe
                   src={slide.dataEmbedUrl}
-                  style={{ width: '100%', height: '100%', border: 'none' }}
+                  style={{ width: '100%', height: maxSliderHeight, border: 'none' }}
                   title={slide.alt || 'Data visualization'}
                 />
               )}
@@ -206,7 +226,7 @@ export function HeroSectionRenderer({ hero }: { hero: any }) {
               {slide.mediaType === 'maps' && slide.mapEmbedUrl && (
                 <iframe
                   src={convertToGoogleMapsEmbed(slide.mapEmbedUrl)}
-                  style={{ width: '100%', height: '100%', border: 'none' }}
+                  style={{ width: '100%', height: maxSliderHeight, border: 'none' }}
                   title={slide.alt || 'Map'}
                   allowFullScreen={slide.mapInteractive !== false}
                 />

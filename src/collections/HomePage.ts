@@ -283,6 +283,33 @@ export const HomePage: CollectionConfig = {
           },
           fields: [
             {
+              name: 'height',
+              type: 'select',
+              label: 'Slider Height',
+              defaultValue: '70vh',
+              options: [
+                { label: 'Compact (50vh)', value: '50vh' },
+                { label: 'Medium (60vh)', value: '60vh' },
+                { label: 'Standard (70vh)', value: '70vh' },
+                { label: 'Large (80vh)', value: '80vh' },
+                { label: 'Extra Large (85vh)', value: '85vh' },
+                { label: 'Very Large (90vh)', value: '90vh' },
+                { label: 'Full Screen (100vh)', value: '100vh' },
+              ],
+              admin: {
+                description: 'Height of the slider section',
+              },
+            },
+            {
+              name: 'interval',
+              type: 'number',
+              label: 'Slide Interval (seconds)',
+              defaultValue: 5,
+              admin: {
+                description: 'Time between automatic slide transitions',
+              },
+            },
+            {
               name: 'slides',
               type: 'array',
               label: 'Slider Items',
@@ -552,18 +579,6 @@ export const HomePage: CollectionConfig = {
                   label: 'Alt Text / Description',
                 },
               ],
-            },
-            {
-              name: 'autoplay',
-              type: 'checkbox',
-              defaultValue: true,
-              label: 'Auto-play Slider',
-            },
-            {
-              name: 'interval',
-              type: 'number',
-              defaultValue: 5,
-              label: 'Slide Interval (seconds)',
             },
           ],
         },

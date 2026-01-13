@@ -28,12 +28,12 @@ export const InstructorsPage: CollectionConfig = {
     {
       name: 'sectionName',
       type: 'text',
-      required: true,
+      required: false,
     },
     {
       name: 'sectionType',
       type: 'select',
-      required: true,
+      required: false,
       options: [
         { label: 'Page Title', value: 'page-title' },
         { label: 'Instructors Grid', value: 'instructors-grid' },
@@ -42,7 +42,7 @@ export const InstructorsPage: CollectionConfig = {
     {
       name: 'status',
       type: 'select',
-      required: true,
+      required: false,
       defaultValue: 'active',
       options: [
         { label: 'Active', value: 'active' },
@@ -58,12 +58,12 @@ export const InstructorsPage: CollectionConfig = {
         condition: (data) => data.sectionType === 'page-title',
       },
       fields: [
-        { name: 'title', type: 'text', required: true },
+        { name: 'title', type: 'text', required: false },
         {
           name: 'breadcrumbs',
           type: 'array',
           fields: [
-            { name: 'label', type: 'text', required: true },
+            { name: 'label', type: 'text', required: false },
             { name: 'link', type: 'text' },
             { name: 'isActive', type: 'checkbox', defaultValue: false },
           ],
@@ -88,27 +88,27 @@ export const InstructorsPage: CollectionConfig = {
               name: 'image',
               type: 'upload',
               relationTo: 'media',
-              required: true,
+              required: false,
             },
             {
               name: 'name',
               type: 'text',
-              required: true,
+              required: false,
             },
             {
               name: 'specialty',
               type: 'text',
-              required: true,
+              required: false,
             },
             {
               name: 'description',
               type: 'textarea',
-              required: true,
+              required: false,
             },
             {
               name: 'rating',
               type: 'number',
-              required: true,
+              required: false,
               min: 0,
               max: 5,
               admin: {
@@ -118,12 +118,12 @@ export const InstructorsPage: CollectionConfig = {
             {
               name: 'courseCount',
               type: 'number',
-              required: true,
+              required: false,
             },
             {
               name: 'studentCount',
               type: 'text',
-              required: true,
+              required: false,
               admin: {
                 description: 'e.g., "2.1k" or "2100"',
               },
@@ -158,7 +158,7 @@ export const InstructorsPage: CollectionConfig = {
                 {
                   name: 'url',
                   type: 'text',
-                  required: true,
+                  required: false,
                 },
               ],
             },

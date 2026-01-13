@@ -11,6 +11,7 @@ import { countdownBlock } from './blocks/countdownBlock.ts'
 import { socialFeedBlock } from './blocks/socialFeedBlock.ts'
 import { customCodeBlock } from './blocks/customCodeBlock.ts'
 import { mapBlock } from './blocks/mapBlock.ts'
+import { peopleBlock } from './blocks/peopleBlock.ts'
 
 export const blockBuilderField = (
   fieldName: string = 'contentBlocks',
@@ -30,6 +31,7 @@ export const blockBuilderField = (
     socialFeedBlock,
     customCodeBlock,
     mapBlock,
+    peopleBlock,
   ]
 
   // Filter blocks based on enabled options

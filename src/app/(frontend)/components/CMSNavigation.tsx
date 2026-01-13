@@ -2,6 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import { useState, useEffect } from 'react'
 
 interface MenuItem {
   id?: string
@@ -33,10 +34,29 @@ interface NavigationData {
 
 interface CMSNavigationProps {
   navigation: NavigationData | null
+  homePage?: string
 }
 
-export default function CMSNavigation({ navigation }: CMSNavigationProps) {
+export default function CMSNavigation({ navigation, homePage = 'home' }: CMSNavigationProps) {
   const pathname = usePathname()
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+
+  // Close mobile menu when route changes
+  useEffect(() => {
+    setMobileMenuOpen(false)
+  }, [pathname])
+
+  // Toggle mobile menu
+  const toggleMobileMenu = () => {
+    setMobileMenuOpen(!mobileMenuOpen)
+    document.body.classList.toggle('mobile-nav-active', !mobileMenuOpen)
+  }
+
+  // Close mobile menu
+  const closeMobileMenu = () => {
+    setMobileMenuOpen(false)
+    document.body.classList.remove('mobile-nav-active')
+  }
 
   // Get the link URL for a menu item
   const getMenuLink = (item: MenuItem): string => {
@@ -61,13 +81,24 @@ export default function CMSNavigation({ navigation }: CMSNavigationProps) {
       return `/${slug}`
     }
     // Fall back to internal link
-    return item.internalLink || '/'
+    const link = item.internalLink || '/'
+    
+    // If another page is set as landing page and this is the Home link (/),
+    // redirect to /home instead so the original home page is accessible
+    if (link === '/' && homePage !== 'home') {
+      return '/home'
+    }
+    
+    return link
   }
 
   // Check if a menu item is active
   const isActive = (item: MenuItem): boolean => {
     const link = getMenuLink(item)
-    if (link === '/') return pathname === '/'
+    // Handle home link - active on / or /home
+    if (link === '/' || link === '/home') {
+      return pathname === '/' || pathname === '/home'
+    }
     return pathname.startsWith(link)
   }
 
@@ -157,12 +188,51 @@ export default function CMSNavigation({ navigation }: CMSNavigationProps) {
 
   const menuItems = navigation?.menuItems?.length ? navigation.menuItems : fallbackMenu
 
+  // Get CTA button settings
+  const ctaButton = navigation?.ctaButton
+
   return (
-    <nav id="navmenu" className="navmenu">
-      <ul>
-        {menuItems.map((item, index) => renderMenuItem(item, index))}
-      </ul>
-      <i className="mobile-nav-toggle d-xl-none bi bi-list"></i>
-    </nav>
+    <>
+      <nav id="navmenu" className="navmenu">
+        <ul>
+          {menuItems.map((item, index) => renderMenuItem(item, index))}
+          {/* CTA Button inside mobile menu */}
+          {ctaButton?.isVisible !== false && (
+            <li className="d-xl-none mobile-cta-item">
+              <Link 
+                href={ctaButton?.linkType === 'external' ? (ctaButton?.externalUrl || '#') : (ctaButton?.internalLink || '/enroll')}
+                className="mobile-cta-btn"
+                onClick={closeMobileMenu}
+                target={ctaButton?.openInNewTab ? '_blank' : undefined}
+                rel={ctaButton?.openInNewTab ? 'noopener noreferrer' : undefined}
+              >
+                {ctaButton?.text || 'Enroll Now'}
+              </Link>
+            </li>
+          )}
+        </ul>
+        <i 
+          className={`mobile-nav-toggle d-xl-none bi ${mobileMenuOpen ? 'bi-x' : 'bi-list'}`}
+          onClick={toggleMobileMenu}
+          style={{ cursor: 'pointer' }}
+        ></i>
+      </nav>
+      {/* Mobile menu overlay */}
+      {mobileMenuOpen && (
+        <div 
+          className="mobile-nav-overlay" 
+          onClick={closeMobileMenu}
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            width: '100%',
+            height: '100%',
+            background: 'rgba(0,0,0,0.5)',
+            zIndex: 9996
+          }}
+        />
+      )}
+    </>
   )
 }

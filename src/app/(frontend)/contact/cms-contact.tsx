@@ -2,7 +2,7 @@ import * as React from 'react'
 import Link from 'next/link'
 import { getPageContent } from '../../../lib/payload'
 
-export default async function CMSContactPage() {
+export default async function CMSContactPage({ isHomePage = false }: { isHomePage?: boolean } = {}) {
   try {
     const contactPageContent = await getPageContent('contact')
     
@@ -24,20 +24,22 @@ export default async function CMSContactPage() {
     
     return (
       <>
-        {/* Page Title */}
-        <div className="page-title light-background">
-          <div className="container d-lg-flex justify-content-between align-items-center">
-            <h1 className="mb-2 mb-lg-0">
-              {pageTitleSection?.pageTitle?.title || 'Contact'}
-            </h1>
-            <nav className="breadcrumbs">
-              <ol>
-                <li><Link href="/">Home</Link></li>
-                <li className="current">Contact</li>
-              </ol>
-            </nav>
+        {/* Page Title - Hide breadcrumb when used as home page */}
+        {!isHomePage && (
+          <div className="page-title light-background">
+            <div className="container d-lg-flex justify-content-between align-items-center">
+              <h1 className="mb-2 mb-lg-0">
+                {pageTitleSection?.pageTitle?.title || 'Contact'}
+              </h1>
+              <nav className="breadcrumbs">
+                <ol>
+                  <li><Link href="/">Home</Link></li>
+                  <li className="current">Contact</li>
+                </ol>
+              </nav>
+            </div>
           </div>
-        </div>
+        )}
 
         {/* Contact Section */}
         <section id="contact" className="contact section">

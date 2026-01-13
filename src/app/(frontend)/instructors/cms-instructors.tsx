@@ -1,8 +1,9 @@
 import * as React from 'react'
 import Link from 'next/link'
 import { getPageContent } from '../../../lib/payload'
+import { BlockRenderer } from '../components/BlockRenderer'
 
-export default async function CMSInstructorsPage() {
+export default async function CMSInstructorsPage({ isHomePage = false }: { isHomePage?: boolean } = {}) {
   try {
     const instructorsPageContent = await getPageContent('instructors')
     
@@ -23,20 +24,22 @@ export default async function CMSInstructorsPage() {
     
     return (
       <>
-        {/* Page Title */}
-        <div className="page-title light-background">
-          <div className="container d-lg-flex justify-content-between align-items-center">
-            <h1 className="mb-2 mb-lg-0">
-              {pageTitleSection?.pageTitle?.title || 'Instructors'}
-            </h1>
-            <nav className="breadcrumbs">
-              <ol>
-                <li><Link href="/">Home</Link></li>
-                <li className="current">Instructors</li>
-              </ol>
-            </nav>
+        {/* Page Title - Hide breadcrumb when used as home page */}
+        {!isHomePage && (
+          <div className="page-title light-background">
+            <div className="container d-lg-flex justify-content-between align-items-center">
+              <h1 className="mb-2 mb-lg-0">
+                {pageTitleSection?.pageTitle?.title || 'Instructors'}
+              </h1>
+              <nav className="breadcrumbs">
+                <ol>
+                  <li><Link href="/">Home</Link></li>
+                  <li className="current">Instructors</li>
+                </ol>
+              </nav>
+            </div>
           </div>
-        </div>
+        )}
 
         {/* Instructors Section */}
         <section id="instructors" className="instructors section">
@@ -53,7 +56,9 @@ export default async function CMSInstructorsPage() {
                           className="img-fluid" 
                           alt={instructor.name}
                         />
+                        {((instructor.rating && instructor.rating > 0) || (instructor.courseCount && instructor.courseCount > 0)) && (
                         <div className="overlay-content">
+                          {instructor.rating && instructor.rating > 0 && (
                           <div className="rating-stars">
                             {Array.from({ length: Math.floor(instructor.rating || 5) }, (_, i) => (
                               <i key={i} className="bi bi-star-fill"></i>
@@ -64,26 +69,36 @@ export default async function CMSInstructorsPage() {
                             ))}
                             <span>{instructor.rating || 5}</span>
                           </div>
+                          )}
+                          {instructor.courseCount && instructor.courseCount > 0 && (
                           <div className="course-count">
                             <i className="bi bi-play-circle"></i>
                             <span>{instructor.courseCount} Courses</span>
                           </div>
+                          )}
                         </div>
+                        )}
                       </div>
                       <div className="instructor-info">
                         <h5>{instructor.name}</h5>
-                        <p className="specialty">{instructor.specialty}</p>
-                        <p className="description">{instructor.description}</p>
+                        {instructor.specialty && <p className="specialty">{instructor.specialty}</p>}
+                        {instructor.description && <p className="description">{instructor.description}</p>}
+                        {((instructor.studentCount && instructor.studentCount > 0) || (instructor.rating && instructor.rating > 0)) && (
                         <div className="stats-grid">
+                          {instructor.studentCount && instructor.studentCount > 0 && (
                           <div className="stat">
                             <span className="number">{instructor.studentCount}</span>
                             <span className="label">Students</span>
                           </div>
+                          )}
+                          {instructor.rating && instructor.rating > 0 && (
                           <div className="stat">
                             <span className="number">{instructor.rating}</span>
                             <span className="label">Rating</span>
                           </div>
+                          )}
                         </div>
+                        )}
                         <div className="action-buttons">
                           <Link href={instructor.slug ? `/instructor-profile/${instructor.slug}` : '#'} className="btn-view">View Profile</Link>
                           <div className="social-links">
@@ -110,6 +125,13 @@ export default async function CMSInstructorsPage() {
 
           </div>
         </section>
+
+        {/* Render Content Blocks from all sections */}
+        {instructorsPageContent && instructorsPageContent.map((section: any, idx: number) => (
+          section.contentBlocks && section.contentBlocks.length > 0 && (
+            <BlockRenderer key={`blocks-${idx}`} blocks={section.contentBlocks} />
+          )
+        ))}
       </>
     )
   } catch (error) {

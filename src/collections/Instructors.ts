@@ -14,7 +14,7 @@ export const Instructors: CollectionConfig = {
     {
       name: '_status',
       type: 'select',
-      required: true,
+      required: false,
       defaultValue: 'draft',
       options: [
         { label: 'Draft', value: 'draft' },
@@ -28,7 +28,7 @@ export const Instructors: CollectionConfig = {
     {
       name: 'name',
       type: 'text',
-      required: true,
+      required: false,
       admin: {
         description: 'Full name of the instructor',
       },
@@ -58,7 +58,7 @@ export const Instructors: CollectionConfig = {
       name: 'image',
       type: 'upload',
       relationTo: 'media',
-      required: true,
+      required: false,
       admin: {
         description: 'Profile photo of the instructor',
       },
@@ -89,7 +89,7 @@ export const Instructors: CollectionConfig = {
         {
           name: 'credential',
           type: 'text',
-          required: true,
+          required: false,
         },
       ],
     },
@@ -145,7 +145,7 @@ export const Instructors: CollectionConfig = {
         {
           name: 'platform',
           type: 'select',
-          required: true,
+          required: false,
           options: [
             { label: 'LinkedIn', value: 'linkedin' },
             { label: 'Twitter/X', value: 'twitter-x' },
@@ -158,7 +158,7 @@ export const Instructors: CollectionConfig = {
         {
           name: 'url',
           type: 'text',
-          required: true,
+          required: false,
         },
       ],
     },
@@ -170,7 +170,7 @@ export const Instructors: CollectionConfig = {
         {
           name: 'biography',
           type: 'richText',
-          required: true,
+          required: false,
           admin: {
             description: 'Professional biography',
           },
@@ -185,7 +185,7 @@ export const Instructors: CollectionConfig = {
             {
               name: 'skill',
               type: 'text',
-              required: true,
+              required: false,
             },
             {
               name: 'icon',
@@ -223,7 +223,7 @@ export const Instructors: CollectionConfig = {
             {
               name: 'year',
               type: 'text',
-              required: true,
+              required: false,
               admin: {
                 description: 'Year or year range (e.g., "2019" or "2019-2023")',
               },
@@ -231,7 +231,7 @@ export const Instructors: CollectionConfig = {
             {
               name: 'position',
               type: 'text',
-              required: true,
+              required: false,
               admin: {
                 description: 'Job title',
               },
@@ -239,7 +239,7 @@ export const Instructors: CollectionConfig = {
             {
               name: 'institution',
               type: 'text',
-              required: true,
+              required: false,
               admin: {
                 description: 'Company or organization name',
               },
@@ -247,7 +247,7 @@ export const Instructors: CollectionConfig = {
             {
               name: 'description',
               type: 'textarea',
-              required: true,
+              required: false,
             },
           ],
         },
@@ -268,12 +268,12 @@ export const Instructors: CollectionConfig = {
             {
               name: 'studentName',
               type: 'text',
-              required: true,
+              required: false,
             },
             {
               name: 'studentRole',
               type: 'text',
-              required: true,
+              required: false,
               admin: {
                 description: 'Job title and company (e.g., "Data Scientist at Amazon")',
               },
@@ -286,7 +286,7 @@ export const Instructors: CollectionConfig = {
             {
               name: 'rating',
               type: 'number',
-              required: true,
+              required: false,
               min: 1,
               max: 5,
               defaultValue: 5,
@@ -294,7 +294,7 @@ export const Instructors: CollectionConfig = {
             {
               name: 'review',
               type: 'textarea',
-              required: true,
+              required: false,
             },
           ],
         },
@@ -335,17 +335,17 @@ export const Instructors: CollectionConfig = {
             {
               name: 'title',
               type: 'text',
-              required: true,
+              required: false,
             },
             {
               name: 'organization',
               type: 'text',
-              required: true,
+              required: false,
             },
             {
               name: 'year',
               type: 'text',
-              required: true,
+              required: false,
             },
             {
               name: 'icon',

@@ -55,7 +55,7 @@ function formatDate(dateString: string): string {
   })
 }
 
-export default async function CMSNewsPage() {
+export default async function CMSNewsPage({ isHomePage = false }: { isHomePage?: boolean } = {}) {
   const news = await getAllNews()
 
   // Separate featured and regular news
@@ -73,18 +73,20 @@ export default async function CMSNewsPage() {
 
   return (
     <>
-      {/* Page Title */}
-      <div className="page-title light-background">
-        <div className="container d-lg-flex justify-content-between align-items-center">
-          <h1 className="mb-2 mb-lg-0">News</h1>
-          <nav className="breadcrumbs">
-            <ol>
-              <li><Link href="/">Home</Link></li>
-              <li className="current">News</li>
-            </ol>
-          </nav>
+      {/* Page Title - Hide breadcrumb when used as home page */}
+      {!isHomePage && (
+        <div className="page-title light-background">
+          <div className="container d-lg-flex justify-content-between align-items-center">
+            <h1 className="mb-2 mb-lg-0">News</h1>
+            <nav className="breadcrumbs">
+              <ol>
+                <li><Link href="/">Home</Link></li>
+                <li className="current">News</li>
+              </ol>
+            </nav>
+          </div>
         </div>
-      </div>
+      )}
 
       {/* News Hero Section */}
       <section id="news-hero" className="news-hero section">

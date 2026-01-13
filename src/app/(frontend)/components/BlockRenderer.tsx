@@ -42,6 +42,8 @@ export const BlockRenderer: React.FC<BlockRendererProps> = ({ blocks }) => {
             return <CustomCodeBlock key={index} {...block} />
           case 'map':
             return <MapBlock key={index} {...block} />
+          case 'people':
+            return <PeopleBlock key={index} {...block} />
           default:
             console.warn('Unknown block type:', block.blockType)
             return <div className="alert alert-warning m-3">Unknown block type: {block.blockType}</div>
@@ -118,9 +120,10 @@ const VideoBlock: React.FC<any> = ({ videoType, videoUrl, videoFile, title, desc
   return (
     <section className="video-block section">
       <div className={containerClass}>
-        {title && (
-          <div className="section-title text-center" data-aos="fade-up">
-            <h2>{title}</h2>
+        {(title || description) && (
+          <div className="section-title text-center mb-3" data-aos="fade-up">
+            {title && <h2>{title}</h2>}
+            {description && <p>{description}</p>}
           </div>
         )}
         <div className={`video-container ratio ratio-${aspectClass}`} data-aos="fade-up" data-aos-delay="100" style={{ minHeight: '400px' }}>
@@ -141,11 +144,6 @@ const VideoBlock: React.FC<any> = ({ videoType, videoUrl, videoFile, title, desc
             />
           )}
         </div>
-        {description && (
-          <div className="text-center mt-3" data-aos="fade-up" data-aos-delay="200">
-            <p className="text-muted">{description}</p>
-          </div>
-        )}
       </div>
     </section>
   )
@@ -567,6 +565,79 @@ const MapBlock: React.FC<any> = ({ title, address, embedUrl, height }) => {
               allowFullScreen
             />
           )}
+        </div>
+      </div>
+    </section>
+  )
+}
+
+// People Block Component
+const PeopleBlock: React.FC<any> = ({ title, description, layout, showStats, showSocialLinks, people }) => {
+  if (!people || people.length === 0) return null
+  
+  // Get column class based on layout - all use same card size
+  const getColClass = (layoutType?: string) => {
+    // All layouts use the same card size for consistency
+    return 'col-xl-3 col-lg-4 col-md-6'
+  }
+
+  return (
+    <section id="people-block" className="instructors section">
+      <div className="container" data-aos="fade-up" data-aos-delay="100">
+        {(title || description) && (
+          <div className="section-title text-center" data-aos="fade-up">
+            {title && <h2>{title}</h2>}
+            {description && <p>{description}</p>}
+          </div>
+        )}
+        
+        <div className="row gy-4">
+          {people.map((person: any, index: number) => (
+            <div key={person.id || index} className={getColClass(layout)} data-aos="fade-up" data-aos-delay={200 + (index * 50)}>
+              <div className="instructor-card">
+                <div className="instructor-image">
+                  <img 
+                    src={typeof person.image === 'object' && person.image?.url ? person.image.url : '/assets/img/education/teacher-2.webp'} 
+                    className="img-fluid" 
+                    alt={person.name || 'Person'}
+                  />
+                </div>
+                <div className="instructor-info">
+                  <h5>{person.name || 'Unnamed Person'}</h5>
+                  {person.specialty && <p className="specialty">{person.specialty}</p>}
+                  {person.description && <p className="description">{person.description}</p>}
+                  
+                  {showStats && ((person.studentCount && person.studentCount !== '0') || (person.rating && person.rating > 0)) && (
+                  <div className="stats-grid">
+                    {person.studentCount && person.studentCount !== '0' && (
+                    <div className="stat">
+                      <span className="number">{person.studentCount}</span>
+                      <span className="label">Students</span>
+                    </div>
+                    )}
+                    {person.rating && person.rating > 0 && (
+                    <div className="stat">
+                      <span className="number">{person.rating}</span>
+                      <span className="label">Rating</span>
+                    </div>
+                    )}
+                  </div>
+                  )}
+                  
+                  <div className="action-buttons">
+                    <a href={person.profileLink || '#'} className="btn-view">View Profile</a>
+                    <div className="social-links">
+                      {showSocialLinks && person.socialLinks && person.socialLinks.map((social: any, idx: number) => (
+                        <a key={idx} href={social.url} target="_blank" rel="noopener noreferrer">
+                          <i className={`bi bi-${social.platform}`}></i>
+                        </a>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          ))}
         </div>
       </div>
     </section>

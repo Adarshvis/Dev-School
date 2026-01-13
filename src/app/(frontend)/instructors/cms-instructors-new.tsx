@@ -52,9 +52,9 @@ export default async function CMSInstructorsPage() {
                         className="img-fluid" 
                         alt={instructor.name || 'Instructor'}
                       />
-                      {(instructor.rating || instructor.courseCount) && (
+                      {(instructor.rating > 0 || instructor.courseCount > 0) && (
                       <div className="overlay-content">
-                        {instructor.rating && (
+                        {instructor.rating > 0 && (
                         <div className="rating-stars">
                           {Array.from({ length: Math.floor(instructor.rating) }, (_, i) => (
                             <i key={i} className="bi bi-star-fill"></i>
@@ -66,7 +66,7 @@ export default async function CMSInstructorsPage() {
                           <span>{instructor.rating}</span>
                         </div>
                         )}
-                        {instructor.courseCount && (
+                        {instructor.courseCount > 0 && (
                         <div className="course-count">
                           <i className="bi bi-play-circle"></i>
                           <span>{instructor.courseCount} Courses</span>
@@ -81,15 +81,15 @@ export default async function CMSInstructorsPage() {
                       {instructor.credentials && instructor.credentials.length > 0 && (
                         <p className="description">{instructor.credentials.map((c: any) => c.credential).join(' • ')}</p>
                       )}
-                      {(instructor.studentCount || instructor.rating) && (
+                      {(instructor.studentCount > 0 || instructor.rating > 0) && (
                       <div className="stats-grid">
-                        {instructor.studentCount && (
+                        {instructor.studentCount > 0 && (
                         <div className="stat">
                           <span className="number">{instructor.studentCount}</span>
                           <span className="label">Students</span>
                         </div>
                         )}
-                        {instructor.rating && (
+                        {instructor.rating > 0 && (
                         <div className="stat">
                           <span className="number">{instructor.rating}</span>
                           <span className="label">Rating</span>

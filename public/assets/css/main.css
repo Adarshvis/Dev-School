@@ -1670,10 +1670,6 @@ section,
   box-shadow: 0 8px 30px color-mix(in srgb, var(--default-color), transparent 88%);
 }
 
-.featured-instructors .instructor-card:hover .instructor-image .overlay-content {
-  opacity: 1;
-}
-
 .featured-instructors .instructor-card:hover .instructor-image img {
   transform: scale(1.05);
 }
@@ -1704,6 +1700,7 @@ section,
   display: flex;
   justify-content: space-between;
   opacity: 0;
+  pointer-events: none;
   transition: opacity 0.3s ease;
 }
 
@@ -4172,10 +4169,6 @@ section,
   box-shadow: 0 8px 30px color-mix(in srgb, var(--default-color), transparent 88%);
 }
 
-.instructors .instructor-card:hover .instructor-image .overlay-content {
-  opacity: 1;
-}
-
 .instructors .instructor-card:hover .instructor-image img {
   transform: scale(1.05);
 }
@@ -4201,6 +4194,7 @@ section,
   display: flex;
   justify-content: space-between;
   opacity: 0;
+  pointer-events: none;
   transition: opacity 0.3s ease;
 }
 

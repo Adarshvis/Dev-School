@@ -59,6 +59,12 @@ interface PageSection {
       url: string
     }>
   }>
+  peopleGridContent?: {
+    people?: Array<any>
+    layout?: string
+    showStats?: boolean
+    showSocialLinks?: boolean
+  }
   contactFormSettings?: {
     formTitle?: string
     submitButtonText?: string
@@ -106,6 +112,77 @@ const getBgClass = (bg?: string): string => {
   return bgMap[bg || 'white'] || ''
 }
 
+// Helper to get alignment style
+const getAlignmentStyle = (format: string | number | undefined): React.CSSProperties => {
+  if (!format) return {}
+  // Handle string format (Lexical uses strings like 'center', 'right', 'left', 'justify')
+  if (typeof format === 'string') {
+    switch (format) {
+      case 'left': return { textAlign: 'left' }
+      case 'center': return { textAlign: 'center' }
+      case 'right': return { textAlign: 'right' }
+      case 'justify': return { textAlign: 'justify' }
+      case 'start': return { textAlign: 'left' }
+      case 'end': return { textAlign: 'right' }
+      default: return {}
+    }
+  }
+  // Handle number format (legacy)
+  switch (format) {
+    case 1: return { textAlign: 'left' }
+    case 2: return { textAlign: 'center' }
+    case 3: return { textAlign: 'right' }
+    case 4: return { textAlign: 'justify' }
+    default: return {}
+  }
+}
+
+// Helper to parse inline style string to React style object
+const parseStyleString = (styleString: string): React.CSSProperties => {
+  if (!styleString) return {}
+  const styles: Record<string, string> = {}
+  styleString.split(';').forEach(rule => {
+    const [property, value] = rule.split(':').map(s => s.trim())
+    if (property && value) {
+      // Convert CSS property to camelCase for React
+      const camelProperty = property.replace(/-([a-z])/g, (_, letter) => letter.toUpperCase())
+      styles[camelProperty] = value
+    }
+  })
+  return styles as React.CSSProperties
+}
+
+// Helper to render text with formatting
+const renderTextNode = (child: any, childIndex: number): React.ReactNode => {
+  if (child.type === 'text') {
+    let content: React.ReactNode = child.text
+    if (child.format & 1) content = <strong key={`b-${childIndex}`}>{content}</strong>
+    if (child.format & 2) content = <em key={`i-${childIndex}`}>{content}</em>
+    if (child.format & 4) content = <s key={`s-${childIndex}`}>{content}</s>
+    if (child.format & 8) content = <u key={`u-${childIndex}`}>{content}</u>
+    if (child.format & 16) content = <code key={`c-${childIndex}`}>{content}</code>
+    if (child.format & 32) content = <sub key={`sub-${childIndex}`}>{content}</sub>
+    if (child.format & 64) content = <sup key={`sup-${childIndex}`}>{content}</sup>
+    
+    // Apply inline styles (font color, background color, etc.)
+    const inlineStyle = child.style ? parseStyleString(child.style) : {}
+    return <span key={childIndex} style={inlineStyle}>{content}</span>
+  }
+  if (child.type === 'link') {
+    const url = child.fields?.url || child.url || '#'
+    const target = child.fields?.newTab ? '_blank' : undefined
+    return (
+      <a key={childIndex} href={url} target={target} rel={target ? 'noopener noreferrer' : undefined}>
+        {child.children?.map((c: any, i: number) => renderTextNode(c, i))}
+      </a>
+    )
+  }
+  if (child.type === 'linebreak') {
+    return <br key={childIndex} />
+  }
+  return child.text || null
+}
+
 // Render rich text content
 const RichTextRenderer = ({ content }: { content: any }) => {
   if (!content) return null
@@ -115,39 +192,26 @@ const RichTextRenderer = ({ content }: { content: any }) => {
     return (
       <div className="rich-text-content">
         {content.root.children.map((node: any, index: number) => {
+          const alignStyle = getAlignmentStyle(node.format)
+          
           if (node.type === 'paragraph') {
             return (
-              <p key={index}>
-                {node.children?.map((child: any, childIndex: number) => {
-                  if (child.type === 'text') {
-                    let text = child.text
-                    if (child.format & 1) text = <strong key={childIndex}>{text}</strong>
-                    if (child.format & 2) text = <em key={childIndex}>{text}</em>
-                    return text
-                  }
-                  if (child.type === 'link') {
-                    return (
-                      <a key={childIndex} href={child.fields?.url || '#'}>
-                        {child.children?.[0]?.text}
-                      </a>
-                    )
-                  }
-                  return child.text || null
-                })}
+              <p key={index} style={alignStyle}>
+                {node.children?.map((child: any, childIndex: number) => renderTextNode(child, childIndex))}
               </p>
             )
           }
           if (node.type === 'heading') {
             const level = node.tag?.replace('h', '') || '2'
-            const text = node.children?.map((child: any) => child.text).join('')
+            const headingContent = node.children?.map((child: any, childIndex: number) => renderTextNode(child, childIndex))
             switch (level) {
-              case '1': return <h1 key={index}>{text}</h1>
-              case '2': return <h2 key={index}>{text}</h2>
-              case '3': return <h3 key={index}>{text}</h3>
-              case '4': return <h4 key={index}>{text}</h4>
-              case '5': return <h5 key={index}>{text}</h5>
-              case '6': return <h6 key={index}>{text}</h6>
-              default: return <h2 key={index}>{text}</h2>
+              case '1': return <h1 key={index} style={alignStyle}>{headingContent}</h1>
+              case '2': return <h2 key={index} style={alignStyle}>{headingContent}</h2>
+              case '3': return <h3 key={index} style={alignStyle}>{headingContent}</h3>
+              case '4': return <h4 key={index} style={alignStyle}>{headingContent}</h4>
+              case '5': return <h5 key={index} style={alignStyle}>{headingContent}</h5>
+              case '6': return <h6 key={index} style={alignStyle}>{headingContent}</h6>
+              default: return <h2 key={index} style={alignStyle}>{headingContent}</h2>
             }
           }
           if (node.type === 'list') {
@@ -156,10 +220,20 @@ const RichTextRenderer = ({ content }: { content: any }) => {
               <ListTag key={index}>
                 {node.children?.map((item: any, itemIndex: number) => (
                   <li key={itemIndex}>
-                    {item.children?.map((child: any) => child.text).join('')}
+                    {item.children?.map((child: any, childIndex: number) => renderTextNode(child, childIndex))}
                   </li>
                 ))}
               </ListTag>
+            )
+          }
+          if (node.type === 'horizontalrule') {
+            return <hr key={index} />
+          }
+          if (node.type === 'quote') {
+            return (
+              <blockquote key={index} style={alignStyle}>
+                {node.children?.map((child: any, childIndex: number) => renderTextNode(child, childIndex))}
+              </blockquote>
             )
           }
           return null
@@ -207,7 +281,7 @@ const CardsSection = ({ section }: { section: PageSection }) => {
     <section className={`cards-section section ${getBgClass(section.backgroundColor)}`}>
       <div className="container">
         {(section.sectionTitle || section.sectionSubtitle) && (
-          <div className="section-title text-center mb-5">
+          <div className="section-title text-center mb-3">
             {section.sectionTitle && <h2>{section.sectionTitle}</h2>}
             {section.sectionSubtitle && <p>{section.sectionSubtitle}</p>}
           </div>
@@ -245,7 +319,7 @@ const GallerySection = ({ section }: { section: PageSection }) => {
     <section className={`gallery-section section ${getBgClass(section.backgroundColor)}`}>
       <div className="container">
         {(section.sectionTitle || section.sectionSubtitle) && (
-          <div className="section-title text-center mb-5">
+          <div className="section-title text-center mb-3">
             {section.sectionTitle && <h2>{section.sectionTitle}</h2>}
             {section.sectionSubtitle && <p>{section.sectionSubtitle}</p>}
           </div>
@@ -302,7 +376,7 @@ const FAQSection = ({ section }: { section: PageSection }) => {
     <section className={`faq-section section ${getBgClass(section.backgroundColor)}`}>
       <div className="container">
         {(section.sectionTitle || section.sectionSubtitle) && (
-          <div className="section-title text-center mb-5">
+          <div className="section-title text-center mb-3">
             {section.sectionTitle && <h2>{section.sectionTitle}</h2>}
             {section.sectionSubtitle && <p>{section.sectionSubtitle}</p>}
           </div>
@@ -346,7 +420,7 @@ const TestimonialsSection = ({ section }: { section: PageSection }) => {
     <section className={`testimonials-section section ${getBgClass(section.backgroundColor)}`}>
       <div className="container">
         {(section.sectionTitle || section.sectionSubtitle) && (
-          <div className="section-title text-center mb-5">
+          <div className="section-title text-center mb-3">
             {section.sectionTitle && <h2>{section.sectionTitle}</h2>}
             {section.sectionSubtitle && <p>{section.sectionSubtitle}</p>}
           </div>
@@ -390,7 +464,7 @@ const StatsSection = ({ section }: { section: PageSection }) => {
     <section className={`stats-section section ${getBgClass(section.backgroundColor)}`}>
       <div className="container">
         {(section.sectionTitle || section.sectionSubtitle) && (
-          <div className="section-title text-center mb-5">
+          <div className="section-title text-center mb-3">
             {section.sectionTitle && <h2>{section.sectionTitle}</h2>}
             {section.sectionSubtitle && <p>{section.sectionSubtitle}</p>}
           </div>
@@ -418,7 +492,7 @@ const TeamSection = ({ section }: { section: PageSection }) => {
     <section className={`team-section section ${getBgClass(section.backgroundColor)}`}>
       <div className="container">
         {(section.sectionTitle || section.sectionSubtitle) && (
-          <div className="section-title text-center mb-5">
+          <div className="section-title text-center mb-3">
             {section.sectionTitle && <h2>{section.sectionTitle}</h2>}
             {section.sectionSubtitle && <p>{section.sectionSubtitle}</p>}
           </div>
@@ -451,6 +525,108 @@ const TeamSection = ({ section }: { section: PageSection }) => {
   )
 }
 
+const PeopleGridSection = ({ section }: { section: PageSection }) => {
+  const peopleContent = section.peopleGridContent
+  if (!peopleContent?.people?.length) return null
+  
+  // Get column class based on layout
+  const getColClass = (layout?: string) => {
+    switch (layout) {
+      case 'grid-3': return 'col-lg-4 col-md-6'
+      case 'grid-4': return 'col-xl-3 col-lg-4 col-md-6'
+      case 'grid-5': return 'col-xl-5col col-lg-4 col-md-6'
+      case 'grid-6': return 'col-xl-2 col-lg-3 col-md-4 col-sm-6'
+      default: return 'col-xl-3 col-lg-4 col-md-6'
+    }
+  }
+  
+  return (
+    <section id="instructors" className={`instructors section ${getBgClass(section.backgroundColor)}`}>
+      <div className="container" data-aos="fade-up" data-aos-delay="100">
+        {(section.sectionTitle || section.sectionSubtitle) && (
+          <div className="section-title text-center" data-aos="fade-up">
+            {section.sectionTitle && <h2>{section.sectionTitle}</h2>}
+            {section.sectionSubtitle && <p>{section.sectionSubtitle}</p>}
+          </div>
+        )}
+        
+        <div className="row gy-4">
+          {peopleContent.people.map((person: any, index: number) => (
+            <div key={person.id || index} className={getColClass(peopleContent.layout)} data-aos="fade-up" data-aos-delay={200 + (index * 50)}>
+              <div className="instructor-card">
+                <div className="instructor-image">
+                  <img 
+                    src={typeof person.image === 'object' && person.image?.url ? person.image.url : '/assets/img/education/teacher-2.webp'} 
+                    className="img-fluid" 
+                    alt={person.name || 'Person'}
+                  />
+                  {((person.rating && person.rating > 0) || (person.courseCount && person.courseCount > 0)) && (
+                  <div className="overlay-content">
+                    {person.rating && person.rating > 0 && (
+                    <div className="rating-stars">
+                      {Array.from({ length: Math.floor(person.rating) }, (_, i) => (
+                        <i key={i} className="bi bi-star-fill"></i>
+                      ))}
+                      {person.rating % 1 !== 0 && <i className="bi bi-star-half"></i>}
+                      {Math.floor(person.rating) < 5 && Array.from({ length: 5 - Math.ceil(person.rating) }, (_, i) => (
+                        <i key={`empty-${i}`} className="bi bi-star"></i>
+                      ))}
+                      <span>{person.rating}</span>
+                    </div>
+                    )}
+                    {person.courseCount && person.courseCount > 0 && (
+                    <div className="course-count">
+                      <i className="bi bi-play-circle"></i>
+                      <span>{person.courseCount} Courses</span>
+                    </div>
+                    )}
+                  </div>
+                  )}
+                </div>
+                <div className="instructor-info">
+                  <h5>{person.name || 'Unnamed Person'}</h5>
+                  {person.specialty && <p className="specialty">{person.specialty}</p>}
+                  {person.credentials && person.credentials.length > 0 && (
+                    <p className="description">{person.credentials.map((c: any) => c.credential).join(' • ')}</p>
+                  )}
+                  {peopleContent.showStats && (person.studentCount > 0 || person.rating > 0) && (
+                  <div className="stats-grid">
+                    {person.studentCount > 0 && (
+                    <div className="stat">
+                      <span className="number">{person.studentCount}</span>
+                      <span className="label">Students</span>
+                    </div>
+                    )}
+                    {person.rating > 0 && (
+                    <div className="stat">
+                      <span className="number">{person.rating}</span>
+                      <span className="label">Rating</span>
+                    </div>
+                    )}
+                  </div>
+                  )}
+                  <div className="action-buttons">
+                    <Link href={person.slug ? `/instructor-profile/${person.slug}` : '#'} className="btn-view">View Profile</Link>
+                    {peopleContent.showSocialLinks && person.socialLinks && person.socialLinks.length > 0 && (
+                    <div className="social-links">
+                      {person.socialLinks.map((social: any, idx: number) => (
+                        <a key={idx} href={social.url} target="_blank" rel="noopener noreferrer">
+                          <i className={`bi bi-${social.platform}`}></i>
+                        </a>
+                      ))}
+                    </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  )
+}
+
 const ContactFormSection = ({ section }: { section: PageSection }) => {
   const settings = section.contactFormSettings
   
@@ -458,7 +634,7 @@ const ContactFormSection = ({ section }: { section: PageSection }) => {
     <section className={`contact-form-section section ${getBgClass(section.backgroundColor)}`}>
       <div className="container">
         {(section.sectionTitle || section.sectionSubtitle) && (
-          <div className="section-title text-center mb-5">
+          <div className="section-title text-center mb-3">
             {section.sectionTitle && <h2>{section.sectionTitle}</h2>}
             {section.sectionSubtitle && <p>{section.sectionSubtitle}</p>}
           </div>
@@ -546,7 +722,7 @@ const VideoSection = ({ section }: { section: PageSection }) => {
     <section className={`video-section section ${getBgClass(section.backgroundColor)}`}>
       <div className="container">
         {(section.sectionTitle || section.sectionSubtitle) && (
-          <div className="section-title text-center mb-5">
+          <div className="section-title text-center mb-3">
             {section.sectionTitle && <h2>{section.sectionTitle}</h2>}
             {section.sectionSubtitle && <p>{section.sectionSubtitle}</p>}
           </div>
@@ -583,7 +759,7 @@ const renderSection = (section: PageSection, index: number) => {
         <section key={index} className={`rich-text-section section ${getBgClass(section.backgroundColor)}`}>
           <div className="container">
             {(section.sectionTitle || section.sectionSubtitle) && (
-              <div className="section-title text-center mb-5">
+              <div className="section-title text-center mb-3">
                 {section.sectionTitle && <h2>{section.sectionTitle}</h2>}
                 {section.sectionSubtitle && <p>{section.sectionSubtitle}</p>}
               </div>

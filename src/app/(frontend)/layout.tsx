@@ -77,6 +77,32 @@ export default async function RootLayout(props: { children: React.ReactNode }) {
         <style>{`
           body { overflow-x: hidden; }
           .main { overflow-x: hidden; }
+          
+          /* Mobile CTA button in hamburger menu */
+          .mobile-cta-item {
+            padding: 10px 20px !important;
+            margin-top: 10px;
+          }
+          .mobile-cta-btn {
+            display: inline-block;
+            background: var(--accent-color, #04415f);
+            color: #fff !important;
+            padding: 10px 25px;
+            border-radius: 50px;
+            font-weight: 500;
+            text-decoration: none;
+            transition: all 0.3s ease;
+          }
+          .mobile-cta-btn:hover {
+            background: var(--nav-hover-color, #2086b8);
+          }
+          
+          /* Hide desktop CTA on mobile/tablet */
+          @media (max-width: 1199px) {
+            .btn-getstarted {
+              display: none !important;
+            }
+          }
         `}</style>
       </head>
       <body className="index-page">

@@ -60,7 +60,7 @@ export default async function Header() {
           )}
         </Link>
 
-        <CMSNavigation navigation={navigation as any} />
+        <CMSNavigation navigation={navigation as any} homePage={(settings as any)?.homePage || 'home'} />
 
         {ctaButton.isVisible !== false && (
           <Link 

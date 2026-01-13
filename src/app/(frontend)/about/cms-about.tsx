@@ -2,7 +2,7 @@ import * as React from 'react'
 import Link from 'next/link'
 import { getPageContent } from '../../../lib/payload'
 
-export default async function CMSAboutPage() {
+export default async function CMSAboutPage({ isHomePage = false }: { isHomePage?: boolean } = {}) {
   try {
     const aboutPageContent = await getPageContent('about')
     
@@ -27,20 +27,22 @@ export default async function CMSAboutPage() {
     
     return (
       <>
-        {/* Page Title */}
-        <div className="page-title light-background">
-          <div className="container d-lg-flex justify-content-between align-items-center">
-            <h1 className="mb-2 mb-lg-0">
-              {pageTitleSection?.pageTitle?.title || 'About'}
-            </h1>
-            <nav className="breadcrumbs">
-              <ol>
-                <li><Link href="/">Home</Link></li>
-                <li className="current">About</li>
-              </ol>
-            </nav>
+        {/* Page Title - Hide breadcrumb when used as home page */}
+        {!isHomePage && (
+          <div className="page-title light-background">
+            <div className="container d-lg-flex justify-content-between align-items-center">
+              <h1 className="mb-2 mb-lg-0">
+                {pageTitleSection?.pageTitle?.title || 'About'}
+              </h1>
+              <nav className="breadcrumbs">
+                <ol>
+                  <li><Link href="/">Home</Link></li>
+                  <li className="current">About</li>
+                </ol>
+              </nav>
+            </div>
           </div>
-        </div>
+        )}
 
         {/* About Main Section */}
         {aboutMainSection && aboutMainSection.aboutMain && (
