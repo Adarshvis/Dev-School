@@ -32,7 +32,7 @@
   "dependencies": {
     "@eslint/eslintrc": "^3.3.1",
     "@google-cloud/storage": "^7.17.3",
-    "@innovixx/payload-color-picker-field": "^1.1.2",
+    "@innovixx/payload-color-picker-field": "^2.0.4",
     "@payloadcms/db-mongodb": "3.63.0",
     "@payloadcms/next": "3.63.0",
     "@payloadcms/plugin-cloud-storage": "3.63.0",
