@@ -1,16 +1,24 @@
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
+import { getPayload } from 'payload'
+import config from '@payload-config'
 
 async function getResearchDomain(slug: string) {
-  const baseUrl = process.env.NEXT_PUBLIC_SERVER_URL || 'http://localhost:3000'
-  const res = await fetch(`${baseUrl}/api/research-domains?where[slug][equals]=${slug}&where[status][equals]=active`, {
-    next: { revalidate: 60 }
-  })
-  
-  if (!res.ok) return null
-  
-  const data = await res.json()
-  return data.docs && data.docs.length > 0 ? data.docs[0] : null
+  try {
+    const payload = await getPayload({ config })
+    const data = await payload.find({
+      collection: 'research-domains' as 'media',
+      where: {
+        slug: { equals: slug },
+        status: { equals: 'active' },
+      },
+      limit: 1,
+      depth: 2,
+    })
+    return data.docs && data.docs.length > 0 ? data.docs[0] : null
+  } catch (error) {
+    return null
+  }
 }
 
 function renderRichText(content: any): string {

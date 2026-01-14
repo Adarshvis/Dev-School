@@ -1,18 +1,19 @@
 import * as React from 'react'
 import Link from 'next/link'
+import { getPayload } from 'payload'
+import config from '@payload-config'
 
 async function getInstructors() {
   try {
-    const baseUrl = process.env.NEXT_PUBLIC_SERVER_URL || 'http://localhost:3000'
-    const res = await fetch(`${baseUrl}/api/instructors?where[_status][equals]=published&limit=100`, {
-      cache: 'no-store',
+    const payload = await getPayload({ config })
+    const data = await payload.find({
+      collection: 'instructors' as 'media',
+      where: {
+        _status: { equals: 'published' },
+      },
+      limit: 100,
+      depth: 2,
     })
-    
-    if (!res.ok) {
-      return []
-    }
-    
-    const data = await res.json()
     return data?.docs || []
   } catch (error) {
     return []

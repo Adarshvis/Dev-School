@@ -66,9 +66,8 @@ export default function CMSBlogDetailsPage({ slug }: CMSBlogDetailsPageProps) {
   useEffect(() => {
     async function fetchData() {
       try {
-        const baseUrl = process.env.NEXT_PUBLIC_SERVER_URL || 'http://localhost:3000'
-        
-        const res = await fetch(`${baseUrl}/api/blog-posts?where[slug][equals]=${slug}&where[status][equals]=published`)
+        // Use relative URL for client-side fetch
+        const res = await fetch(`/api/blog-posts?where[slug][equals]=${slug}&where[status][equals]=published`)
         
         if (!res.ok) {
           setLoading(false)
@@ -88,7 +87,7 @@ export default function CMSBlogDetailsPage({ slug }: CMSBlogDetailsPageProps) {
         // Fetch related posts
         if (postData.category) {
           const relatedRes = await fetch(
-            `${baseUrl}/api/blog-posts?where[category][equals]=${postData.category}&where[slug][not_equals]=${slug}&where[status][equals]=published&limit=3`
+            `/api/blog-posts?where[category][equals]=${postData.category}&where[slug][not_equals]=${slug}&where[status][equals]=published&limit=3`
           )
           if (relatedRes.ok) {
             const relatedData = await relatedRes.json()

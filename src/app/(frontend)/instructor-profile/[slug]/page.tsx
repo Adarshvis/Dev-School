@@ -26,8 +26,8 @@ export default function InstructorProfilePage({ params }: InstructorProfileProps
 
     async function fetchInstructor() {
       try {
-        const baseUrl = process.env.NEXT_PUBLIC_SERVER_URL || 'http://localhost:3000'
-        const res = await fetch(`${baseUrl}/api/instructors-page?where[slug][equals]=${slug}`)
+        // Use relative URL for client-side fetch
+        const res = await fetch(`/api/instructors-page?where[slug][equals]=${slug}`)
         
         if (!res.ok) {
           setInstructor(null)

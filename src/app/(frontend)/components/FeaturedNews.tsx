@@ -1,5 +1,7 @@
 import React from 'react'
 import Link from 'next/link'
+import { getPayload } from 'payload'
+import config from '@payload-config'
 
 interface NewsArticle {
   id: string
@@ -39,16 +41,17 @@ function formatDate(dateString: string): string {
 // Fetch news data from API
 async function getNewsForHome() {
   try {
-    const baseUrl = process.env.NEXT_PUBLIC_SERVER_URL || 'http://localhost:3000'
-    const response = await fetch(`${baseUrl}/api/news?where[status][equals]=published&limit=5&sort=-publishedDate`, {
-      next: { revalidate: 60 },
+    const payload = await getPayload({ config })
+    const data = await payload.find({
+      collection: 'news' as 'media',
+      where: {
+        status: { equals: 'published' },
+      },
+      limit: 5,
+      sort: '-publishedDate',
+      depth: 2,
     })
     
-    if (!response.ok) {
-      return { featured: null, recent: [] }
-    }
-    
-    const data = await response.json()
     const docs = data.docs || []
     
     // Get 1 featured article (first one)

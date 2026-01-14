@@ -1,5 +1,7 @@
 import React from 'react'
 import Link from 'next/link'
+import { getPayload } from 'payload'
+import config from '@payload-config'
 
 interface NewsArticle {
   id: string
@@ -30,18 +32,19 @@ interface NewsArticle {
 
 async function getAllNews(): Promise<NewsArticle[]> {
   try {
-    const baseUrl = process.env.NEXT_PUBLIC_SERVER_URL || 'http://localhost:3000'
-    const res = await fetch(`${baseUrl}/api/news?where[status][equals]=published&limit=100&sort=-publishedDate`, {
-      cache: 'no-store',
+    const payload = await getPayload({ config })
+    const data = await payload.find({
+      collection: 'news' as 'media',
+      where: {
+        status: { equals: 'published' },
+      },
+      limit: 100,
+      sort: '-publishedDate',
+      depth: 2,
     })
-    
-    if (!res.ok) {
-      return []
-    }
-    
-    const data = await res.json()
-    return data?.docs || []
+    return (data?.docs || []) as unknown as NewsArticle[]
   } catch (error) {
+    console.error('Error fetching news:', error)
     return []
   }
 }

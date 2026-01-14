@@ -30,19 +30,19 @@ interface BlogPost {
 
 async function getRecentPosts(): Promise<BlogPost[]> {
   try {
-    const baseUrl = process.env.NEXT_PUBLIC_SERVER_URL || 'http://localhost:3000';
-    const res = await fetch(`${baseUrl}/api/blog-posts?where[_status][equals]=published&limit=4&sort=-publishedDate`, {
-      cache: 'no-store',
-    });
-    
-    if (!res.ok) {
-      return [];
-    }
-    
-    const data = await res.json();
-    return data?.docs || [];
+    const payload = await getPayload({ config })
+    const data = await payload.find({
+      collection: 'blog-posts' as 'media',
+      where: {
+        _status: { equals: 'published' },
+      },
+      limit: 4,
+      sort: '-publishedDate',
+      depth: 2,
+    })
+    return (data?.docs || []) as unknown as BlogPost[]
   } catch (error) {
-    return [];
+    return []
   }
 }
 

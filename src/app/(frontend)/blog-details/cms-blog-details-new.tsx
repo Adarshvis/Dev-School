@@ -47,9 +47,8 @@ interface BlogDetailsData {
 
 async function getBlogPost(slug: string): Promise<BlogDetailsData | null> {
   try {
-    const baseUrl = process.env.NEXT_PUBLIC_SERVER_URL || 'http://localhost:3000'
-    
-    const res = await fetch(`${baseUrl}/api/blog-posts?where[slug][equals]=${slug}&where[status][equals]=published`, {
+    // Use relative URL for client-side fetch
+    const res = await fetch(`/api/blog-posts?where[slug][equals]=${slug}&where[status][equals]=published`, {
       cache: 'no-store',
     })
     
@@ -69,7 +68,7 @@ async function getBlogPost(slug: string): Promise<BlogDetailsData | null> {
     if (post.category) {
       try {
         const relatedRes = await fetch(
-          `${baseUrl}/api/blog-posts?where[category][equals]=${post.category}&where[slug][not_equals]=${slug}&where[status][equals]=published&limit=3`,
+          `/api/blog-posts?where[category][equals]=${post.category}&where[slug][not_equals]=${slug}&where[status][equals]=published&limit=3`,
           { cache: 'no-store' }
         )
         if (relatedRes.ok) {

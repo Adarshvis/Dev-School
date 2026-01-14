@@ -68,9 +68,8 @@ export default function CMSNewsDetailsPage({ slug }: CMSNewsDetailsPageProps) {
   useEffect(() => {
     async function fetchData() {
       try {
-        const baseUrl = process.env.NEXT_PUBLIC_SERVER_URL || 'http://localhost:3000'
-        
-        const res = await fetch(`${baseUrl}/api/news?where[slug][equals]=${slug}`)
+        // Use relative URL for client-side fetch - works on any domain/port
+        const res = await fetch(`/api/news?where[slug][equals]=${slug}`)
         
         if (!res.ok) {
           setLoading(false)
@@ -90,7 +89,7 @@ export default function CMSNewsDetailsPage({ slug }: CMSNewsDetailsPageProps) {
         // Fetch related news
         if (articleData.category) {
           const relatedRes = await fetch(
-            `${baseUrl}/api/news?where[category][equals]=${articleData.category}&where[slug][not_equals]=${slug}&limit=3`
+            `/api/news?where[category][equals]=${articleData.category}&where[slug][not_equals]=${slug}&limit=3`
           )
           if (relatedRes.ok) {
             const relatedData = await relatedRes.json()
