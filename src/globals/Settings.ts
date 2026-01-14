@@ -8,6 +8,7 @@ export const Settings: GlobalConfig = {
   },
   access: {
     read: () => true,
+    update: ({ req: { user } }) => Boolean(user),
   },
   hooks: {
     beforeChange: [
@@ -147,27 +148,49 @@ export const Settings: GlobalConfig = {
           fields: [
             {
               name: 'socialLinks',
-              type: 'group',
+              type: 'array',
+              label: 'Social Links',
+              labels: {
+                singular: 'Social Link',
+                plural: 'Social Links',
+              },
+              admin: {
+                description: 'Add social media links. They will appear in the footer.',
+              },
               fields: [
                 {
-                  name: 'facebook',
-                  type: 'text',
+                  name: 'platform',
+                  type: 'select',
+                  required: true,
+                  options: [
+                    { label: 'Facebook', value: 'facebook' },
+                    { label: 'Twitter / X', value: 'twitter-x' },
+                    { label: 'Instagram', value: 'instagram' },
+                    { label: 'LinkedIn', value: 'linkedin' },
+                    { label: 'YouTube', value: 'youtube' },
+                    { label: 'TikTok', value: 'tiktok' },
+                    { label: 'GitHub', value: 'github' },
+                    { label: 'WhatsApp', value: 'whatsapp' },
+                    { label: 'Telegram', value: 'telegram' },
+                    { label: 'Pinterest', value: 'pinterest' },
+                    { label: 'Snapchat', value: 'snapchat' },
+                    { label: 'Discord', value: 'discord' },
+                    { label: 'Reddit', value: 'reddit' },
+                    { label: 'Twitch', value: 'twitch' },
+                    { label: 'Dribbble', value: 'dribbble' },
+                    { label: 'Behance', value: 'behance' },
+                  ],
+                  admin: {
+                    description: 'Select the social media platform',
+                  },
                 },
                 {
-                  name: 'twitter',
+                  name: 'url',
                   type: 'text',
-                },
-                {
-                  name: 'instagram',
-                  type: 'text',
-                },
-                {
-                  name: 'linkedin',
-                  type: 'text',
-                },
-                {
-                  name: 'youtube',
-                  type: 'text',
+                  required: true,
+                  admin: {
+                    description: 'Full URL to your profile (e.g., https://facebook.com/yourpage)',
+                  },
                 },
               ],
             },

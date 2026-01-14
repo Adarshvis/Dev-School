@@ -1,12 +1,31 @@
 import { getPayload } from 'payload'
 import config from '@payload-config'
+import { unstable_cache } from 'next/cache'
 
-export async function getSettings() {
-  try {
+// Cache settings for 60 seconds in production
+const getCachedSettings = unstable_cache(
+  async () => {
     const payload = await getPayload({ config })
     const settings = await payload.findGlobal({
       slug: 'settings',
-      depth: 2, // This will populate the logo and favicon relationships
+      depth: 1, // Reduced depth for faster queries
+    })
+    return settings
+  },
+  ['settings'],
+  { revalidate: 60 }
+)
+
+export async function getSettings() {
+  try {
+    // Use cache in production, direct query in development
+    if (process.env.NODE_ENV === 'production') {
+      return await getCachedSettings()
+    }
+    const payload = await getPayload({ config })
+    const settings = await payload.findGlobal({
+      slug: 'settings',
+      depth: 1,
     })
     return settings
   } catch (error) {
@@ -15,12 +34,29 @@ export async function getSettings() {
   }
 }
 
-export async function getNavigation() {
-  try {
+// Cache navigation for 60 seconds in production
+const getCachedNavigation = unstable_cache(
+  async () => {
     const payload = await getPayload({ config })
     const navigation = await payload.findGlobal({
       slug: 'navigation' as 'settings',
-      depth: 2,
+      depth: 1,
+    })
+    return navigation
+  },
+  ['navigation'],
+  { revalidate: 60 }
+)
+
+export async function getNavigation() {
+  try {
+    if (process.env.NODE_ENV === 'production') {
+      return await getCachedNavigation()
+    }
+    const payload = await getPayload({ config })
+    const navigation = await payload.findGlobal({
+      slug: 'navigation' as 'settings',
+      depth: 1,
     })
     return navigation
   } catch (error) {

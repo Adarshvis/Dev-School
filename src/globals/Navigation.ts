@@ -7,6 +7,7 @@ export const Navigation: GlobalConfig = {
   },
   access: {
     read: () => true,
+    update: ({ req: { user } }) => Boolean(user),
   },
   fields: [
     {

@@ -13,41 +13,17 @@ export default async function Footer() {
               <span className="sitename">{(settings?.siteName && typeof settings.siteName === 'string') ? settings.siteName : 'Learner'}</span>
             </Link>
             <p>{(settings?.footerText && typeof settings.footerText === 'string') ? settings.footerText : 'Cras fermentum odio eu feugiat lide par naso tierra. Justo eget nada terra videa magna derita valies darta donna mare fermentum iaculis eu non diam phasellus.'}</p>
-            <div className="social-links d-flex mt-4">
-              {settings?.socialLinks?.twitter && typeof settings.socialLinks.twitter === 'string' && (
-                <a href={settings.socialLinks.twitter} target="_blank" rel="noopener noreferrer">
-                  <i className="bi bi-twitter-x"></i>
-                </a>
-              )}
-              {settings?.socialLinks?.facebook && typeof settings.socialLinks.facebook === 'string' && (
-                <a href={settings.socialLinks.facebook} target="_blank" rel="noopener noreferrer">
-                  <i className="bi bi-facebook"></i>
-                </a>
-              )}
-              {settings?.socialLinks?.instagram && typeof settings.socialLinks.instagram === 'string' && (
-                <a href={settings.socialLinks.instagram} target="_blank" rel="noopener noreferrer">
-                  <i className="bi bi-instagram"></i>
-                </a>
-              )}
-              {settings?.socialLinks?.linkedin && typeof settings.socialLinks.linkedin === 'string' && (
-                <a href={settings.socialLinks.linkedin} target="_blank" rel="noopener noreferrer">
-                  <i className="bi bi-linkedin"></i>
-                </a>
-              )}
-              {settings?.socialLinks?.youtube && typeof settings.socialLinks.youtube === 'string' && (
-                <a href={settings.socialLinks.youtube} target="_blank" rel="noopener noreferrer">
-                  <i className="bi bi-youtube"></i>
-                </a>
-              )}
-              {(!settings?.socialLinks || (!settings.socialLinks.twitter && !settings.socialLinks.facebook && !settings.socialLinks.instagram && !settings.socialLinks.linkedin && !settings.socialLinks.youtube)) && (
-                <>
-                  <a href="#"><i className="bi bi-twitter-x"></i></a>
-                  <a href="#"><i className="bi bi-facebook"></i></a>
-                  <a href="#"><i className="bi bi-instagram"></i></a>
-                  <a href="#"><i className="bi bi-linkedin"></i></a>
-                </>
-              )}
-            </div>
+            {settings?.socialLinks && Array.isArray(settings.socialLinks) && settings.socialLinks.length > 0 && (
+              <div className="social-links d-flex mt-4">
+                {settings.socialLinks.map((social: { platform?: string; url?: string; id?: string }, index: number) => (
+                  social.platform && social.url && (
+                    <a key={social.id || index} href={social.url} target="_blank" rel="noopener noreferrer">
+                      <i className={`bi bi-${social.platform}`}></i>
+                    </a>
+                  )
+                ))}
+              </div>
+            )}
           </div>
 
           {settings?.footerLinks && Array.isArray(settings.footerLinks) && settings.footerLinks.length > 0 ? (
@@ -110,12 +86,16 @@ export default async function Footer() {
                 <p>United States</p>
               </>
             )}
-            <p className="mt-4">
-              <strong>Phone:</strong> <span>{(settings?.contactPhone && typeof settings.contactPhone === 'string') ? settings.contactPhone : '+1 5589 55488 55'}</span>
-            </p>
-            <p>
-              <strong>Email:</strong> <span>{(settings?.contactEmail && typeof settings.contactEmail === 'string') ? settings.contactEmail : 'info@example.com'}</span>
-            </p>
+            {settings?.contactPhone && typeof settings.contactPhone === 'string' && (
+              <p className="mt-4">
+                <strong>Phone:</strong> <span>{settings.contactPhone}</span>
+              </p>
+            )}
+            {settings?.contactEmail && typeof settings.contactEmail === 'string' && (
+              <p className={settings?.contactPhone ? '' : 'mt-4'}>
+                <strong>Email:</strong> <span>{settings.contactEmail}</span>
+              </p>
+            )}
           </div>
         </div>
       </div>
@@ -131,9 +111,6 @@ export default async function Footer() {
             </>
           )}
         </p>
-        <div className="credits">
-          Designed by <a href="https://bootstrapmade.com/">BootstrapMade</a>
-        </div>
       </div>
     </footer>
   )
