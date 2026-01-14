@@ -39,7 +39,7 @@ function formatDate(dateString: string): string {
 }
 
 // Fetch news data from API
-async function getNewsForHome() {
+async function getNewsForHome(): Promise<{ featured: NewsArticle | null; recent: NewsArticle[] }> {
   try {
     const payload = await getPayload({ config })
     const data = await payload.find({
@@ -52,7 +52,7 @@ async function getNewsForHome() {
       depth: 2,
     })
     
-    const docs = data.docs || []
+    const docs = (data.docs || []) as unknown as NewsArticle[]
     
     // Get 1 featured article (first one)
     const featured = docs[0] || null

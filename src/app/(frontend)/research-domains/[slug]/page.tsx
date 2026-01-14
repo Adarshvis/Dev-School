@@ -3,7 +3,15 @@ import Link from 'next/link'
 import { getPayload } from 'payload'
 import config from '@payload-config'
 
-async function getResearchDomain(slug: string) {
+interface ResearchDomainData {
+  title: string
+  slug: string
+  content: any
+  effectiveDate?: string
+  excerpt?: string
+}
+
+async function getResearchDomain(slug: string): Promise<ResearchDomainData | null> {
   try {
     const payload = await getPayload({ config })
     const data = await payload.find({
@@ -15,7 +23,7 @@ async function getResearchDomain(slug: string) {
       limit: 1,
       depth: 2,
     })
-    return data.docs && data.docs.length > 0 ? data.docs[0] : null
+    return data.docs && data.docs.length > 0 ? (data.docs[0] as unknown as ResearchDomainData) : null
   } catch (error) {
     return null
   }

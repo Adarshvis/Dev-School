@@ -3,7 +3,26 @@ import Link from 'next/link'
 import { getPayload } from 'payload'
 import config from '@payload-config'
 
-async function getWorkWithUsItem(slug: string) {
+interface WorkWithUsData {
+  title: string
+  slug: string
+  content: any
+  effectiveDate?: string
+  excerpt?: string
+  category?: string
+  applyButtonText?: string
+  applyButtonLink?: string
+  problemDomains?: Array<{
+    title: string
+    description?: string
+    challenges?: Array<{ challenge: string }>
+    technicalSkills?: Array<{ skill: string }>
+    nonTechnicalSkills?: Array<{ skill: string }>
+    id?: string
+  }>
+}
+
+async function getWorkWithUsItem(slug: string): Promise<WorkWithUsData | null> {
   try {
     const payload = await getPayload({ config })
     const data = await payload.find({
@@ -14,7 +33,7 @@ async function getWorkWithUsItem(slug: string) {
       limit: 1,
       depth: 2,
     })
-    return data.docs && data.docs.length > 0 ? data.docs[0] : null
+    return data.docs && data.docs.length > 0 ? (data.docs[0] as unknown as WorkWithUsData) : null
   } catch (error) {
     return null
   }
