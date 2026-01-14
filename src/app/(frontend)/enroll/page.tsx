@@ -2,12 +2,17 @@ import { redirect } from 'next/navigation'
 import { getPayload } from 'payload'
 import config from '@/payload.config'
 
+interface ApplyNowSettings {
+  redirectUrl?: string
+  openInNewTab?: boolean
+}
+
 export default async function EnrollPage() {
   try {
     const payload = await getPayload({ config })
     const applyNow = await payload.findGlobal({
-      slug: 'apply-now',
-    })
+      slug: 'apply-now' as 'settings',
+    }) as unknown as ApplyNowSettings
 
     if (applyNow?.redirectUrl) {
       redirect(applyNow.redirectUrl)

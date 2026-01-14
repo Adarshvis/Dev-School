@@ -43,8 +43,9 @@ function renderRichText(content: any): string {
   return html
 }
 
-export default async function ResearchDomainDetail({ params }: { params: { slug: string } }) {
-  const domain = await getResearchDomain(params.slug)
+export default async function ResearchDomainDetail({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params
+  const domain = await getResearchDomain(slug)
   
   if (!domain) {
     notFound()
@@ -91,8 +92,9 @@ export default async function ResearchDomainDetail({ params }: { params: { slug:
   )
 }
 
-export async function generateMetadata({ params }: { params: { slug: string } }) {
-  const domain = await getResearchDomain(params.slug)
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params
+  const domain = await getResearchDomain(slug)
   
   if (!domain) {
     return {

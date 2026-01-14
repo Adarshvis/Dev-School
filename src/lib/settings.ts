@@ -93,9 +93,9 @@ export function generateThemeCSS(settings: any) {
     return ''
   }
   
-  const { theme, typography, buttonStyle, layoutSettings } = settings
+  const { theme, typography } = settings
   
-  let cssVars: string[] = []
+  const cssVars: string[] = []
   
   // Only add colors if they differ from defaults (user has customized them)
   // Default values match the template's main.css

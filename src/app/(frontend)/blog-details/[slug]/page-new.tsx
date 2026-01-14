@@ -6,6 +6,7 @@ interface BlogDetailsProps {
   }>
 }
 
-export default function BlogDetailsPage({ params }: BlogDetailsProps) {
-  return <CMSBlogDetailsPage />
+export default async function BlogDetailsPage({ params }: BlogDetailsProps) {
+  const { slug } = await params
+  return <CMSBlogDetailsPage slug={slug} />
 }

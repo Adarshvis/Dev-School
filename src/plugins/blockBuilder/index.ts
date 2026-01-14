@@ -32,6 +32,7 @@ export const blockBuilderPlugin = (options?: {
     socialFeed?: boolean
     customCode?: boolean
     map?: boolean
+    people?: boolean
   }
 }): Plugin => {
   return (incomingConfig: Config): Config => {
