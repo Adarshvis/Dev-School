@@ -1,5 +1,12 @@
 import type { CollectionConfig } from 'payload'
 
+// Type for user with role field
+type UserWithRole = {
+  id: string
+  role?: 'superadmin' | 'admin' | 'editor' | 'author'
+  [key: string]: unknown
+}
+
 export const Publications: CollectionConfig = {
   slug: 'publications',
   labels: {
@@ -8,12 +15,47 @@ export const Publications: CollectionConfig = {
   },
   admin: {
     useAsTitle: 'title',
-    defaultColumns: ['title', 'publisher', 'year', 'type', 'updatedAt'],
+    defaultColumns: ['title', 'publisher', 'year', 'type', 'createdBy', 'updatedAt'],
     group: 'Content Management',
     description: 'Manage lab publications - journal articles, conference papers, book chapters, etc.',
   },
   access: {
     read: () => true,
+    create: ({ req: { user } }) => {
+      // All authenticated users can create
+      return !!user
+    },
+    update: ({ req: { user } }) => {
+      const u = user as UserWithRole | null
+      if (!u) return false
+      // Admins and editors can update all
+      if (['superadmin', 'admin', 'editor'].includes(u.role || '')) return true
+      // Authors can only update their own
+      return {
+        createdBy: { equals: u.id },
+      }
+    },
+    delete: ({ req: { user } }) => {
+      const u = user as UserWithRole | null
+      if (!u) return false
+      // Only admins can delete all
+      if (['superadmin', 'admin'].includes(u.role || '')) return true
+      // Authors can only delete their own
+      return {
+        createdBy: { equals: u.id },
+      }
+    },
+  },
+  hooks: {
+    beforeChange: [
+      // Auto-set createdBy on create
+      async ({ data, req, operation }) => {
+        if (operation === 'create' && req.user) {
+          data.createdBy = req.user.id
+        }
+        return data
+      },
+    ],
   },
   fields: [
     {
@@ -170,6 +212,16 @@ export const Publications: CollectionConfig = {
         { label: 'Draft', value: 'draft' },
         { label: 'Archived', value: 'archived' },
       ],
+    },
+    {
+      name: 'createdBy',
+      type: 'relationship',
+      relationTo: 'users',
+      admin: {
+        readOnly: true,
+        position: 'sidebar',
+        description: 'User who created this publication',
+      },
     },
   ],
 }

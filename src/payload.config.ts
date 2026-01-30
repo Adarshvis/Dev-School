@@ -21,6 +21,7 @@ import { ContactPage } from './collections/ContactPage.ts'
 import { EnrollPage } from './collections/EnrollPage.ts'
 import { Pages } from './collections/Pages.ts'
 import { Publications } from './collections/Publications.ts'
+import { Invitations } from './collections/Invitations.ts'
 import { Settings } from './globals/Settings.ts'
 import { Navigation } from './globals/Navigation.ts'
 import { blockBuilderPlugin } from './plugins/blockBuilder/index.ts'
@@ -47,6 +48,7 @@ export default buildConfig({
     BlogPosts,
     ContactPage,
     Publications,
+    Invitations,
   ],
   globals: [Settings, Navigation, EnrollPage],
   editor: lexicalEditor({

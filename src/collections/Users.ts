@@ -4,7 +4,7 @@ import type { Access } from 'payload'
 // Type for user with role field
 type UserWithRole = {
   id: string
-  role?: 'admin' | 'editor' | 'author'
+  role?: 'superadmin' | 'admin' | 'editor' | 'author'
   [key: string]: unknown
 }
 
@@ -13,7 +13,12 @@ type UserWithRole = {
 const isAdmin: Access = ({ req: { user } }) => {
   const u = user as UserWithRole | null
   // If no role is set, treat as admin (backward compatibility)
-  return !u?.role || u?.role === 'admin'
+  return !u?.role || u?.role === 'admin' || u?.role === 'superadmin'
+}
+
+const isSuperAdmin: Access = ({ req: { user } }) => {
+  const u = user as UserWithRole | null
+  return u?.role === 'superadmin'
 }
 
 const isAdminOrEditor: Access = ({ req: { user } }) => {
@@ -68,6 +73,10 @@ export const Users: CollectionConfig = {
       defaultValue: 'author',
       options: [
         {
+          label: 'Super Admin (Full Access + User Management)',
+          value: 'superadmin',
+        },
+        {
           label: 'Admin (Full Access)',
           value: 'admin',
         },
@@ -93,6 +102,27 @@ export const Users: CollectionConfig = {
           // Allow users to update their own role (for initial admin setup)
           return u?.id === id
         },
+      },
+    },
+    {
+      name: 'allowedCollections',
+      type: 'select',
+      hasMany: true,
+      options: [
+        { label: 'Blog Posts', value: 'blog-posts' },
+        { label: 'Publications', value: 'publications' },
+        { label: 'News', value: 'news' },
+        { label: 'Research Domains', value: 'research-domains' },
+        { label: 'Instructors/People', value: 'instructors' },
+        { label: 'Courses Page', value: 'courses-page' },
+        { label: 'About Page', value: 'about-page' },
+        { label: 'Home Page', value: 'home-page' },
+        { label: 'Contact Page', value: 'contact-page' },
+      ],
+      admin: {
+        description: 'Collections this user can edit (for Authors only)',
+        position: 'sidebar',
+        condition: (data) => data?.role === 'author',
       },
     },
     {
