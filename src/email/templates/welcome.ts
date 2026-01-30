@@ -22,7 +22,7 @@ export function welcomeEmailTemplate(data: WelcomeEmailData): string {
   const content = `
     <!-- Title -->
     <h1 style="margin: 0 0 20px 0; font-size: 24px; font-weight: 700; color: #011e2c; text-align: center;">
-      Welcome to CyPSi Lab! 🎉
+      Welcome to CyPSi Lab!
     </h1>
 
     <!-- Greeting -->
@@ -42,7 +42,7 @@ export function welcomeEmailTemplate(data: WelcomeEmailData): string {
       <tr>
         <td style="padding: 20px; background-color: #f0fdf4; border-radius: 8px; border-left: 4px solid #22c55e;">
           <p style="margin: 0 0 15px 0; font-size: 14px; font-weight: 600; color: #166534;">
-            ✅ Account Details
+            Account Details
           </p>
           <table role="presentation" cellpadding="0" cellspacing="0">
             <tr>
@@ -111,5 +111,5 @@ export function welcomeEmailTemplate(data: WelcomeEmailData): string {
 }
 
 export function welcomeEmailSubject(): string {
-  return `🎉 Welcome to CyPSi Laboratory - Account Created Successfully`
+  return `Welcome to CyPSi Laboratory - Account Created Successfully`
 }

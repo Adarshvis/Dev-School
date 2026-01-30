@@ -24,7 +24,7 @@ export function invitationEmailTemplate(data: InvitationEmailData): string {
   const content = `
     <!-- Title -->
     <h1 style="margin: 0 0 20px 0; font-size: 24px; font-weight: 700; color: #011e2c; text-align: center;">
-      You're Invited! 🎉
+      You're Invited!
     </h1>
 
     <!-- Greeting -->
@@ -81,7 +81,7 @@ export function invitationEmailTemplate(data: InvitationEmailData): string {
       <tr>
         <td align="center" style="padding: 15px; background-color: #fef3c7; border-radius: 8px;">
           <p style="margin: 0; font-size: 14px; color: #92400e;">
-            ⏰ This invitation expires in <strong>${data.expiresIn || '7 days'}</strong>
+            This invitation expires in <strong>${data.expiresIn || '7 days'}</strong>
           </p>
         </td>
       </tr>
@@ -100,5 +100,5 @@ export function invitationEmailTemplate(data: InvitationEmailData): string {
 }
 
 export function invitationEmailSubject(role: string): string {
-  return `🎓 You're invited to join CyPSi Laboratory as ${role === 'author' ? 'an Author' : role === 'editor' ? 'an Editor' : 'an Administrator'}`
+  return `You're invited to join CyPSi Laboratory as ${role === 'author' ? 'an Author' : role === 'editor' ? 'an Editor' : 'an Administrator'}`
 }

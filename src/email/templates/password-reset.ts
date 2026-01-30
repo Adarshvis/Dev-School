@@ -46,7 +46,7 @@ export function passwordResetEmailTemplate(data: PasswordResetEmailData): string
       <tr>
         <td align="center" style="padding: 15px; background-color: #fef3c7; border-radius: 8px;">
           <p style="margin: 0; font-size: 14px; color: #92400e;">
-            ⏰ This link is valid for <strong>${data.expiresIn || '10 minutes'}</strong>. Please do not share it with anyone.
+            This link is valid for <strong>${data.expiresIn || '10 minutes'}</strong>. Please do not share it with anyone.
           </p>
         </td>
       </tr>
@@ -77,5 +77,5 @@ export function passwordResetEmailTemplate(data: PasswordResetEmailData): string
 }
 
 export function passwordResetEmailSubject(): string {
-  return `🔐 Reset Your CyPSi Laboratory Password`
+  return `Reset Your CyPSi Laboratory Password`
 }

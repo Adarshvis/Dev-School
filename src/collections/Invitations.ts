@@ -48,7 +48,7 @@ export const Invitations: CollectionConfig = {
     delete: ({ req: { user } }) => {
       if (!user) return false
       const role = (user as any).role
-      return role === 'superadmin'
+      return role === 'superadmin' || role === 'admin'
     },
   },
   fields: [
