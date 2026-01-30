@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
 import Link from 'next/link'
 
@@ -12,7 +12,25 @@ interface InvitationData {
   expiresAt: string
 }
 
-export default function AcceptInvitePage() {
+// Loading component for Suspense fallback
+function LoadingSpinner() {
+  return (
+    <div className="accept-invite-page">
+      <div className="invite-container">
+        <div className="invite-card">
+          <div className="loading-spinner">
+            <div className="spinner"></div>
+            <p>Loading...</p>
+          </div>
+        </div>
+      </div>
+      <style jsx>{styles}</style>
+    </div>
+  )
+}
+
+// Main component that uses useSearchParams
+function AcceptInviteContent() {
   const searchParams = useSearchParams()
   const router = useRouter()
   const token = searchParams.get('token')
@@ -265,6 +283,15 @@ export default function AcceptInvitePage() {
       </div>
       <style jsx>{styles}</style>
     </div>
+  )
+}
+
+// Wrapper component with Suspense boundary
+export default function AcceptInvitePage() {
+  return (
+    <Suspense fallback={<LoadingSpinner />}>
+      <AcceptInviteContent />
+    </Suspense>
   )
 }
 
