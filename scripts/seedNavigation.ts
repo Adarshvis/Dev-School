@@ -28,9 +28,9 @@ async function seedNavigation() {
         isVisible: true,
       },
       {
-        label: 'Instructors',
+        label: 'People',
         linkType: 'internal',
-        internalLink: '/instructors',
+        internalLink: '/people',
         isVisible: true,
       },
       {

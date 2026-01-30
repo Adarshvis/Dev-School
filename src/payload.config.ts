@@ -10,6 +10,8 @@ import { HomePage } from './collections/HomePage.ts'
 import { AboutPage } from './collections/AboutPage.ts'
 import { CoursesPage } from './collections/CoursesPage.ts'
 import { InstructorsPage } from './collections/InstructorsPage.ts'
+import { PeoplePage } from './collections/PeoplePage.ts'
+import { Instructors } from './collections/Instructors.ts'
 import { News } from './collections/News.ts'
 import { NewsPage } from './collections/NewsPage.ts'
 import { ResearchDomains } from './collections/ResearchDomains.ts'
@@ -18,6 +20,7 @@ import { BlogPosts } from './collections/BlogPosts.ts'
 import { ContactPage } from './collections/ContactPage.ts'
 import { EnrollPage } from './collections/EnrollPage.ts'
 import { Pages } from './collections/Pages.ts'
+import { Publications } from './collections/Publications.ts'
 import { Settings } from './globals/Settings.ts'
 import { Navigation } from './globals/Navigation.ts'
 import { blockBuilderPlugin } from './plugins/blockBuilder/index.ts'
@@ -33,6 +36,8 @@ export default buildConfig({
     Pages,
     HomePage,
     AboutPage,
+    PeoplePage,
+    Instructors,
     CoursesPage,
     InstructorsPage,
     News,
@@ -41,6 +46,7 @@ export default buildConfig({
     WorkWithUs,
     BlogPosts,
     ContactPage,
+    Publications,
   ],
   globals: [Settings, Navigation, EnrollPage],
   editor: lexicalEditor({

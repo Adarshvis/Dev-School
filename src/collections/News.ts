@@ -127,21 +127,21 @@ export const News: CollectionConfig = {
         description: 'Author job title/role (e.g., "News Editor")',
       },
     },
-    // Instructor Relationship Field
+    // Person Relationship Field
     {
       name: 'instructor',
       type: 'relationship',
-      relationTo: 'instructors-page',
+      relationTo: 'instructors' as any,
       admin: {
         condition: (data) => data.authorType === 'instructor',
-        description: 'Select an instructor as the author',
+        description: 'Select a person as the author',
       },
       required: true,
       hooks: {
         beforeValidate: [
           ({ value, data }) => {
             if (data?.authorType === 'instructor' && !value) {
-              throw new Error('Please select an instructor')
+              throw new Error('Please select a person')
             }
             return value
           },

@@ -7,7 +7,7 @@ const collectionTitles: { [key: string]: string } = {
   'home-page': 'Home Page Sections',
   'about-page': 'About Page Sections',
   'courses-page': 'Courses Page Sections',
-  'instructors-page': 'Instructors Page Sections',
+  'people-page': 'People Page Sections',
   'contact-page': 'Contact Page Sections',
   'news-page': 'News Page Sections',
 }

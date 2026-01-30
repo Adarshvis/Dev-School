@@ -44,23 +44,23 @@ async function updateAllItemsToPublished() {
     }
     console.log(`✅ Updated ${blogPosts.docs.length} blog posts to published\n`)
 
-    // Update Instructors
-    console.log('👨‍🏫 Updating Instructors...')
-    const instructors = await payload.find({
-      collection: 'instructors' as any,
+    // Update People
+    console.log('👥 Updating People...')
+    const people = await payload.find({
+      collection: 'people' as any,
       limit: 1000,
     })
     
-    for (const instructor of instructors.docs) {
+    for (const person of people.docs) {
       await payload.update({
-        collection: 'instructors' as any,
-        id: instructor.id,
+        collection: 'people' as any,
+        id: person.id,
         data: {
           _status: 'published',
         } as any,
       })
     }
-    console.log(`✅ Updated ${instructors.docs.length} instructors to published\n`)
+    console.log(`✅ Updated ${people.docs.length} people to published\n`)
 
     // Update WorkWithUs
     console.log('🤝 Updating Work With Us programs...')

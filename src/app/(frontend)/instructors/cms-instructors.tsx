@@ -1,26 +1,32 @@
 import * as React from 'react'
 import Link from 'next/link'
-import { getPageContent } from '../../../lib/payload'
-import { BlockRenderer } from '../components/BlockRenderer'
+import { getPayload } from 'payload'
+import config from '@payload-config'
 
 export default async function CMSInstructorsPage({ isHomePage = false }: { isHomePage?: boolean } = {}) {
   try {
-    const instructorsPageContent = await getPageContent('instructors')
+    const payload = await getPayload({ config })
     
-    if (!instructorsPageContent || instructorsPageContent.length === 0) {
-      return (
-        <div className="container py-5">
-          <div className="text-center">
-            <h2>Our Instructors</h2>
-            <p>Content is being loaded from CMS. Please add content through the admin panel.</p>
-            <Link href="/admin" className="btn btn-primary">Go to Admin Panel</Link>
-          </div>
-        </div>
-      )
-    }
+    // Fetch instructors-page sections
+    const instructorsPageSections = await payload.find({
+      collection: 'instructors-page' as any,
+      where: {
+        status: { equals: 'active' }
+      },
+      sort: 'order',
+    })
 
-    const pageTitleSection = instructorsPageContent.find((section: any) => section.sectionType === 'page-title')
-    const instructorsGridSection = instructorsPageContent.find((section: any) => section.sectionType === 'instructors-grid')
+    const sections = instructorsPageSections.docs || []
+    
+    const pageTitleSection = sections.find((section: any) => section.sectionType === 'page-title')
+    const instructorsGridSection = sections.find((section: any) => section.sectionType === 'instructors-grid')
+    
+    // Get content blocks that have people data
+    const peopleBlocks = instructorsGridSection?.contentBlocks?.filter((block: any) => block.blockType === 'people') || []
+    
+    console.log('Sections found:', sections.length)
+    console.log('People blocks found:', peopleBlocks.length)
+    console.log('Full grid section:', JSON.stringify(instructorsGridSection, null, 2))
     
     return (
       <>
@@ -44,80 +50,68 @@ export default async function CMSInstructorsPage({ isHomePage = false }: { isHom
         {/* Instructors Section */}
         <section id="instructors" className="instructors section">
           <div className="container" data-aos="fade-up" data-aos-delay="100">
-            
-            {instructorsGridSection && instructorsGridSection.instructorsGrid && instructorsGridSection.instructorsGrid.instructors ? (
-              <div className="row gy-4">
-                {instructorsGridSection.instructorsGrid.instructors.map((instructor: any, index: number) => (
-                  <div key={index} className="col-xl-3 col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay={200 + (index * 50)}>
-                    <div className="instructor-card">
-                      <div className="instructor-image">
-                        <img 
-                          src={typeof instructor.image === 'object' ? instructor.image.url : '/assets/img/education/teacher-2.webp'} 
-                          className="img-fluid" 
-                          alt={instructor.name}
-                        />
-                        {((instructor.rating && instructor.rating > 0) || (instructor.courseCount && instructor.courseCount > 0)) && (
-                        <div className="overlay-content">
-                          {instructor.rating && instructor.rating > 0 && (
-                          <div className="rating-stars">
-                            {Array.from({ length: Math.floor(instructor.rating || 5) }, (_, i) => (
-                              <i key={i} className="bi bi-star-fill"></i>
-                            ))}
-                            {(instructor.rating || 5) % 1 !== 0 && <i className="bi bi-star-half"></i>}
-                            {Math.floor(instructor.rating) < 5 && Array.from({ length: 5 - Math.ceil(instructor.rating || 5) }, (_, i) => (
-                              <i key={`empty-${i}`} className="bi bi-star"></i>
-                            ))}
-                            <span>{instructor.rating || 5}</span>
-                          </div>
-                          )}
-                          {instructor.courseCount && instructor.courseCount > 0 && (
-                          <div className="course-count">
-                            <i className="bi bi-play-circle"></i>
-                            <span>{instructor.courseCount} Courses</span>
-                          </div>
-                          )}
-                        </div>
-                        )}
-                      </div>
-                      <div className="instructor-info">
-                        <h5>{instructor.name}</h5>
-                        {instructor.specialty && <p className="specialty">{instructor.specialty}</p>}
-                        {instructor.description && <p className="description">{instructor.description}</p>}
-                        {((instructor.studentCount && instructor.studentCount > 0) || (instructor.rating && instructor.rating > 0)) && (
-                        <div className="stats-grid">
-                          {instructor.studentCount && instructor.studentCount > 0 && (
-                          <div className="stat">
-                            <span className="number">{instructor.studentCount}</span>
-                            <span className="label">Students</span>
-                          </div>
-                          )}
-                          {instructor.rating && instructor.rating > 0 && (
-                          <div className="stat">
-                            <span className="number">{instructor.rating}</span>
-                            <span className="label">Rating</span>
-                          </div>
-                          )}
-                        </div>
-                        )}
-                        <div className="action-buttons">
-                          <Link href={instructor.slug ? `/instructor-profile/${instructor.slug}` : '#'} className="btn-view">View Profile</Link>
-                          <div className="social-links">
-                            {instructor.socialLinks && instructor.socialLinks.map((social: any, idx: number) => (
-                              <a key={idx} href={social.url} target="_blank" rel="noopener noreferrer">
-                                <i className={`bi bi-${social.platform}`}></i>
-                              </a>
-                            ))}
-                          </div>
-                        </div>
-                      </div>
+
+            {peopleBlocks.length > 0 ? (
+              peopleBlocks.map((block: any, blockIndex: number) => (
+                <div key={block.id || blockIndex} className="mb-5">
+                  {block.title && (
+                    <div className="section-title text-center mb-4">
+                      <h2>{block.title}</h2>
                     </div>
+                  )}
+                  
+                  <div className="row gy-4">
+                    {block.people?.map((person: any, index: number) => (
+                      <div 
+                        key={person.id || index} 
+                        className="col-xl-3 col-lg-4 col-md-6"
+                        data-aos="fade-up" 
+                        data-aos-delay={200 + (index * 50)}
+                      >
+                        <div className="instructor-card">
+                          <div className="instructor-image">
+                            {person.image && (
+                              <img 
+                                src={typeof person.image === 'object' ? person.image.url : person.image} 
+                                className="img-fluid" 
+                                alt={person.name}
+                              />
+                            )}
+                          </div>
+                          <div className="instructor-info">
+                            <h5>{person.name}</h5>
+                            {person.specialty && <p className="specialty" style={{ color: '#011e2c' }}>{person.specialty}</p>}
+                            {person.description && <p className="description">{person.description}</p>}
+                            
+                            <div className="action-buttons">
+                              <Link 
+                                href={`/instructors/${person.slug || person.name?.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')}`} 
+                                className="btn-view"
+                                style={{ backgroundColor: '#011e2c', borderColor: '#011e2c' }}
+                              >
+                                View Profile
+                              </Link>
+                              {block.showSocialLinks && person.socialLinks && person.socialLinks.length > 0 && (
+                                <div className="social-links">
+                                  {person.socialLinks.map((social: any, idx: number) => (
+                                    <a key={idx} href={social.url} target="_blank" rel="noopener noreferrer">
+                                      <i className={`bi bi-${social.platform}`}></i>
+                                    </a>
+                                  ))}
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
                   </div>
-                ))}
-              </div>
+                </div>
+              ))
             ) : (
               <div className="row">
                 <div className="col-12 text-center">
-                  <p>No instructors configured yet. Please add instructors in the admin panel.</p>
+                  <p>No instructors found. Please add instructors in the admin panel.</p>
                   <Link href="/admin" className="btn btn-primary">Go to Admin Panel</Link>
                 </div>
               </div>
@@ -125,22 +119,15 @@ export default async function CMSInstructorsPage({ isHomePage = false }: { isHom
 
           </div>
         </section>
-
-        {/* Render Content Blocks from all sections */}
-        {instructorsPageContent && instructorsPageContent.map((section: any, idx: number) => (
-          section.contentBlocks && section.contentBlocks.length > 0 && (
-            <BlockRenderer key={`blocks-${idx}`} blocks={section.contentBlocks} />
-          )
-        ))}
       </>
     )
   } catch (error) {
-    // Return empty sections on error
+    console.error('Error loading instructors page:', error)
     return (
       <div className="container py-5">
         <div className="text-center">
-          <h2>Our Instructors</h2>
-          <p>Content is being loaded. Please check the admin panel.</p>
+          <h2>Instructors</h2>
+          <p>Error loading instructors. Please check the admin panel.</p>
           <Link href="/admin" className="btn btn-primary">Go to Admin Panel</Link>
         </div>
       </div>

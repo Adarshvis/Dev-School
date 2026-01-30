@@ -127,8 +127,241 @@ export const peopleBlock: Block = {
           type: 'text',
           required: false,
           admin: {
-            description: 'Link to full profile page',
+            description: 'External profile link (e.g., university page)',
           },
+        },
+        {
+          name: 'slug',
+          type: 'text',
+          required: false,
+          admin: {
+            description: 'URL slug for internal profile page (auto-generated from name if empty)',
+          },
+        },
+        // === PROFILE PAGE FIELDS (About Tab) ===
+        {
+          name: 'biography',
+          type: 'textarea',
+          required: false,
+          admin: {
+            description: 'Full professional biography for profile page',
+          },
+        },
+        {
+          name: 'researchInterests',
+          type: 'array',
+          required: false,
+          admin: {
+            description: 'Research areas/interests (displayed as tags)',
+          },
+          fields: [
+            {
+              name: 'interest',
+              type: 'text',
+              required: false,
+            },
+          ],
+        },
+        // === PROFILE PAGE FIELDS (Experience Tab) ===
+        {
+          name: 'education',
+          type: 'array',
+          required: false,
+          admin: {
+            description: 'Educational background',
+          },
+          fields: [
+            {
+              name: 'degree',
+              type: 'text',
+              required: false,
+              admin: { description: 'e.g., Ph.D. in Computer Science' },
+            },
+            {
+              name: 'institution',
+              type: 'text',
+              required: false,
+            },
+            {
+              name: 'year',
+              type: 'text',
+              required: false,
+            },
+          ],
+        },
+        {
+          name: 'experience',
+          type: 'array',
+          required: false,
+          admin: {
+            description: 'Work experience',
+          },
+          fields: [
+            {
+              name: 'position',
+              type: 'text',
+              required: false,
+            },
+            {
+              name: 'organization',
+              type: 'text',
+              required: false,
+            },
+            {
+              name: 'duration',
+              type: 'text',
+              required: false,
+              admin: { description: 'e.g., 2018 - Present' },
+            },
+            {
+              name: 'description',
+              type: 'textarea',
+              required: false,
+            },
+          ],
+        },
+        {
+          name: 'awards',
+          type: 'array',
+          required: false,
+          admin: {
+            description: 'Awards and honors',
+          },
+          fields: [
+            {
+              name: 'title',
+              type: 'text',
+              required: false,
+            },
+            {
+              name: 'year',
+              type: 'text',
+              required: false,
+            },
+            {
+              name: 'organization',
+              type: 'text',
+              required: false,
+            },
+          ],
+        },
+        // === PROFILE PAGE FIELDS (Courses Tab) ===
+        {
+          name: 'courses',
+          type: 'array',
+          required: false,
+          admin: {
+            description: 'Courses taught',
+          },
+          fields: [
+            {
+              name: 'courseName',
+              type: 'text',
+              required: false,
+            },
+            {
+              name: 'courseCode',
+              type: 'text',
+              required: false,
+            },
+            {
+              name: 'semester',
+              type: 'text',
+              required: false,
+              admin: { description: 'e.g., Fall 2025' },
+            },
+            {
+              name: 'description',
+              type: 'textarea',
+              required: false,
+            },
+          ],
+        },
+        // === PROFILE PAGE FIELDS (Publications/Reviews Tab) ===
+        {
+          name: 'publications',
+          type: 'array',
+          required: false,
+          admin: {
+            description: 'Research publications',
+          },
+          fields: [
+            {
+              name: 'title',
+              type: 'text',
+              required: false,
+            },
+            {
+              name: 'journal',
+              type: 'text',
+              required: false,
+              admin: { description: 'Journal or conference name' },
+            },
+            {
+              name: 'year',
+              type: 'text',
+              required: false,
+            },
+            {
+              name: 'link',
+              type: 'text',
+              required: false,
+              admin: { description: 'Link to publication' },
+            },
+          ],
+        },
+        // === CONTACT INFO ===
+        {
+          name: 'email',
+          type: 'email',
+          required: false,
+          admin: {
+            description: 'Contact email',
+          },
+        },
+        {
+          name: 'phone',
+          type: 'text',
+          required: false,
+          admin: {
+            description: 'Contact phone number',
+          },
+        },
+        {
+          name: 'office',
+          type: 'text',
+          required: false,
+          admin: {
+            description: 'Office location',
+          },
+        },
+        {
+          name: 'academicLinks',
+          type: 'array',
+          required: false,
+          admin: {
+            description: 'Academic profile links (Google Scholar, ResearchGate, ORCID, etc.)',
+          },
+          fields: [
+            {
+              name: 'platform',
+              type: 'select',
+              options: [
+                { label: 'Google Scholar', value: 'google-scholar' },
+                { label: 'ResearchGate', value: 'researchgate' },
+                { label: 'ORCID', value: 'orcid' },
+                { label: 'Academia.edu', value: 'academia' },
+                { label: 'Scopus', value: 'scopus' },
+                { label: 'Web of Science', value: 'wos' },
+                { label: 'Other', value: 'other' },
+              ],
+            },
+            {
+              name: 'url',
+              type: 'text',
+              required: false,
+            },
+          ],
         },
         {
           name: 'socialLinks',

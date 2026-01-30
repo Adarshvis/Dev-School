@@ -14,7 +14,7 @@ export async function GET() {
     const pageStatus = {
       about: (settings as any).aboutPageActive ?? true,
       courses: (settings as any).coursesPageActive ?? true,
-      instructors: (settings as any).instructorsPageActive ?? true,
+      people: (settings as any).peoplePageActive ?? true,
       news: (settings as any).newsPageActive ?? true,
       blog: (settings as any).blogPageActive ?? true,
       contact: (settings as any).contactPageActive ?? true,
@@ -28,7 +28,7 @@ export async function GET() {
     return NextResponse.json({
       about: true,
       courses: true,
-      instructors: true,
+      people: true,
       news: true,
       blog: true,
       contact: true,

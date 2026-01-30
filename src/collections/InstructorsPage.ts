@@ -28,12 +28,12 @@ export const InstructorsPage: CollectionConfig = {
     {
       name: 'sectionName',
       type: 'text',
-      required: false,
+      required: true,
     },
     {
       name: 'sectionType',
       type: 'select',
-      required: false,
+      required: true,
       options: [
         { label: 'Page Title', value: 'page-title' },
         { label: 'Instructors Grid', value: 'instructors-grid' },
@@ -42,7 +42,7 @@ export const InstructorsPage: CollectionConfig = {
     {
       name: 'status',
       type: 'select',
-      required: false,
+      required: true,
       defaultValue: 'active',
       options: [
         { label: 'Active', value: 'active' },
@@ -58,12 +58,12 @@ export const InstructorsPage: CollectionConfig = {
         condition: (data) => data.sectionType === 'page-title',
       },
       fields: [
-        { name: 'title', type: 'text', required: false },
+        { name: 'title', type: 'text', required: true },
         {
           name: 'breadcrumbs',
           type: 'array',
           fields: [
-            { name: 'label', type: 'text', required: false },
+            { name: 'label', type: 'text', required: true },
             { name: 'link', type: 'text' },
             { name: 'isActive', type: 'checkbox', defaultValue: false },
           ],
@@ -82,43 +82,63 @@ export const InstructorsPage: CollectionConfig = {
         {
           name: 'instructors',
           type: 'array',
-          label: 'Instructor Cards',
+          label: 'Instructors',
+          admin: {
+            description: 'Add instructors to display in this section',
+          },
           fields: [
             {
               name: 'image',
               type: 'upload',
               relationTo: 'media',
               required: false,
+              admin: {
+                description: 'Profile photo',
+              },
             },
             {
               name: 'name',
               type: 'text',
-              required: false,
+              required: true,
+              admin: {
+                description: 'Full name',
+              },
             },
             {
               name: 'specialty',
               type: 'text',
               required: false,
+              admin: {
+                description: 'Role or title (e.g., "Professor", "Research Scholar")',
+              },
             },
             {
               name: 'description',
               type: 'textarea',
               required: false,
+              admin: {
+                description: 'Short bio or credentials',
+              },
             },
             {
               name: 'rating',
               type: 'number',
               required: false,
+              defaultValue: 5,
               min: 0,
               max: 5,
               admin: {
-                step: 0.1,
+                description: 'Rating (0-5)',
               },
             },
             {
               name: 'courseCount',
               type: 'number',
               required: false,
+              defaultValue: 0,
+              admin: {
+                description: 'Number of courses',
+              },
             },
             {
               name: 'studentCount',
@@ -131,34 +151,37 @@ export const InstructorsPage: CollectionConfig = {
             {
               name: 'profileLink',
               type: 'text',
-              defaultValue: '#',
+              required: false,
+              admin: {
+                description: 'Link to profile page',
+              },
             },
             {
               name: 'socialLinks',
               type: 'array',
-              label: 'Social Links',
-              maxRows: 4,
+              admin: {
+                description: 'Social media profiles',
+              },
               fields: [
                 {
                   name: 'platform',
                   type: 'select',
+                  required: false,
                   options: [
                     { label: 'LinkedIn', value: 'linkedin' },
-                    { label: 'Twitter', value: 'twitter' },
+                    { label: 'Twitter/X', value: 'twitter' },
                     { label: 'GitHub', value: 'github' },
                     { label: 'Dribbble', value: 'dribbble' },
                     { label: 'Behance', value: 'behance' },
                     { label: 'Instagram', value: 'instagram' },
                     { label: 'Facebook', value: 'facebook' },
                     { label: 'YouTube', value: 'youtube' },
-                    { label: 'Shield Check', value: 'shield-check' },
-                    { label: 'Cloud', value: 'cloud' },
                   ],
                 },
                 {
                   name: 'url',
                   type: 'text',
-                  required: false,
+                  required: true,
                 },
               ],
             },

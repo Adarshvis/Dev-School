@@ -16,7 +16,7 @@
     "seed:homepage": "cross-env NODE_OPTIONS=--no-deprecation tsx scripts/seedHomePage.ts",
     "seed:about": "cross-env NODE_OPTIONS=--no-deprecation tsx scripts/seedAboutPage.ts",
     "seed:courses": "cross-env NODE_OPTIONS=--no-deprecation tsx scripts/seedCoursesPage.ts",
-    "seed:instructors": "cross-env NODE_OPTIONS=--no-deprecation tsx scripts/seedInstructorsPage.ts",
+    "seed:instructors": "cross-env NODE_OPTIONS=--no-deprecation tsx scripts/seedPeoplePage.ts",
     "seed:news": "cross-env NODE_OPTIONS=--no-deprecation tsx scripts/seedNewsPage.ts",
     "seed:newsarticles": "cross-env NODE_OPTIONS=--no-deprecation tsx scripts/seed-news.ts",
     "seed:blog": "cross-env NODE_OPTIONS=--no-deprecation tsx scripts/seedBlogPage.ts",

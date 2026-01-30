@@ -43,7 +43,7 @@ export const Settings: GlobalConfig = {
                 { label: '(home) Home', value: 'home' },
                 { label: '(about) About', value: 'about' },
                 { label: '(courses) Courses', value: 'courses' },
-                { label: '(instructors) Instructors', value: 'instructors' },
+                { label: '(people) People', value: 'people' },
                 { label: '(news) News', value: 'news' },
                 { label: '(contact) Contact', value: 'contact' },
                 { label: '(enroll) Enroll', value: 'enroll' },
@@ -242,11 +242,11 @@ export const Settings: GlobalConfig = {
               },
             },
             {
-              name: 'instructorsPageActive',
+              name: 'peoplePageActive',
               type: 'checkbox',
               defaultValue: true,
               admin: {
-                description: 'Show/hide Instructors page from website and navigation',
+                description: 'Show/hide People page from website and navigation',
               },
             },
             {

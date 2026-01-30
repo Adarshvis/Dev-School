@@ -30,20 +30,20 @@ export async function getFeaturedCourses() {
   }
 }
 
-export async function getFeaturedInstructors() {
+export async function getFeaturedPeople() {
   try {
     const payload = await getPayloadInstance()
-    const instructors = await payload.find({
-      collection: 'instructors-page',
+    const people = await payload.find({
+      collection: 'people-page',
       where: {
         status: { equals: 'active' }
       },
       limit: 4,
       overrideAccess: true,
     })
-    return instructors.docs
+    return people.docs
   } catch (error) {
-    console.error('Error fetching featured instructors:', error)
+    console.error('Error fetching featured people:', error)
     return []
   }
 }
@@ -82,7 +82,7 @@ export async function getPageContent(pageName: string, section?: string) {
       'home': 'home-page',
       'about': 'about-page', 
       'courses': 'courses-page',
-      'instructors': 'instructors-page',
+      'people': 'people-page',
       'pricing': 'pricing-page',
       'blog': 'blog-page',
       'blog-details': 'blog-details-page',
@@ -226,7 +226,7 @@ export async function getCollection(collectionSlug: string, options?: any) {
       'blog-page': 'blog-page',
       'blog-details-page': 'blog-details-page',
       'courses-page': 'courses-page',
-      'instructors-page': 'instructors-page',
+      'people-page': 'people-page',
       'pricing-page': 'pricing-page',
       'contact-page': 'contact-page',
       'enroll-page': 'enroll-page'

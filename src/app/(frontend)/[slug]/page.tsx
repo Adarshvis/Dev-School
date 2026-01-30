@@ -66,9 +66,9 @@ export default async function DynamicPage({ params }: PageProps) {
   
   // Skip reserved routes that have their own pages
   const reservedRoutes = [
-    'about', 'courses', 'instructors', 'news', 'blog', 'contact', 
+    'about', 'courses', 'people', 'news', 'blog', 'contact', 
     'enroll', 'events', 'research-domains', 'work-with-us',
-    'course-details', 'instructor-profile', 'blog-details', 'pricing',
+    'course-details', 'people-profile', 'blog-details', 'pricing',
     'terms', 'privacy', '404'
   ]
   

@@ -144,14 +144,14 @@ export const BlogPosts: CollectionConfig = {
         description: 'Short bio about the author (optional)',
       },
     },
-    // Instructor Relationship Field
+    // Person Relationship Field
     {
       name: 'instructor',
       type: 'relationship',
-      relationTo: 'instructors-page',
+      relationTo: 'instructors' as any,
       admin: {
         condition: (data) => data.authorType === 'instructor',
-        description: 'Select an instructor as the author',
+        description: 'Select a person as the author',
       },
       required: true,
       hooks: {
