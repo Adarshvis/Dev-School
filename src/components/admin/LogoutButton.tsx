@@ -3,7 +3,7 @@
 import { useAuth } from '@payloadcms/ui'
 import { useRouter } from 'next/navigation'
 
-export const LogoutButton: React.FC = () => {
+export const LogoutButton = (props: Record<string, any>) => {
   const { logOut } = useAuth()
   const router = useRouter()
 

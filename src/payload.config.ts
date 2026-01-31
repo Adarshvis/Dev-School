@@ -32,7 +32,7 @@ export default buildConfig({
   admin: {
     user: Users.slug,
     components: {
-      afterNavLinks: [LogoutButton],
+      afterNavLinks: [LogoutButton as any],
     },
   },
   collections: [
