@@ -22,8 +22,11 @@ export const Publications: CollectionConfig = {
     hidden: ({ user }) => {
       const u = user as UserWithRole | null
       if (!u) return true
-      if (u.role === 'author' && !u.allowedCollections?.includes('publications')) {
-        return true
+      if (u.role === 'author') {
+        const allowed = u.allowedCollections || []
+        if (!allowed.includes('publications')) {
+          return true
+        }
       }
       return false
     },
@@ -49,7 +52,10 @@ export const Publications: CollectionConfig = {
       const u = user as UserWithRole | null
       if (!u) return false
       if (!u.role || ['superadmin', 'admin', 'editor'].includes(u.role)) return true
-      if (u.role === 'author') return u.allowedCollections?.includes('publications') || false
+      if (u.role === 'author') {
+        const allowed = u.allowedCollections || []
+        return allowed.includes('publications')
+      }
       return false
     },
     update: ({ req: { user } }) => {
@@ -58,7 +64,8 @@ export const Publications: CollectionConfig = {
       if (!u.role || ['superadmin', 'admin', 'editor'].includes(u.role)) return true
       // Authors must have collection access and can only update their own (with createdBy)
       if (u.role === 'author') {
-        if (!u.allowedCollections?.includes('publications')) return false
+        const allowed = u.allowedCollections || []
+        if (!allowed.includes('publications')) return false
         return {
           and: [
             { createdBy: { equals: u.id } },
@@ -74,7 +81,8 @@ export const Publications: CollectionConfig = {
       if (!u.role || ['superadmin', 'admin'].includes(u.role)) return true
       // Authors must have collection access and can only delete their own (with createdBy)
       if (u.role === 'author') {
-        if (!u.allowedCollections?.includes('publications')) return false
+        const allowed = u.allowedCollections || []
+        if (!allowed.includes('publications')) return false
         return {
           and: [
             { createdBy: { equals: u.id } },

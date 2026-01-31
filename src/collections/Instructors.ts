@@ -17,7 +17,10 @@ export const Instructors: CollectionConfig = {
     hidden: ({ user }) => {
       const u = user as UserWithRole | null
       if (!u) return true
-      if (u.role === 'author' && !u.allowedCollections?.includes('instructors')) return true
+      if (u.role === 'author') {
+        const allowed = u.allowedCollections || []
+        if (!allowed.includes('instructors')) return true
+      }
       return false
     },
   },
@@ -27,14 +30,20 @@ export const Instructors: CollectionConfig = {
       const u = user as UserWithRole | null
       if (!u) return false
       if (!u.role || ['superadmin', 'admin', 'editor'].includes(u.role)) return true
-      if (u.role === 'author') return u.allowedCollections?.includes('instructors') || false
+      if (u.role === 'author') {
+        const allowed = u.allowedCollections || []
+        return allowed.includes('instructors')
+      }
       return false
     },
     update: ({ req: { user } }) => {
       const u = user as UserWithRole | null
       if (!u) return false
       if (!u.role || ['superadmin', 'admin', 'editor'].includes(u.role)) return true
-      if (u.role === 'author') return u.allowedCollections?.includes('instructors') || false
+      if (u.role === 'author') {
+        const allowed = u.allowedCollections || []
+        return allowed.includes('instructors')
+      }
       return false
     },
     delete: ({ req: { user } }) => {

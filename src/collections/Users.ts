@@ -78,11 +78,11 @@ export const Users: CollectionConfig = {
       // Others can only update their own profile
       return { id: { equals: u.id } }
     },
-    // Only superadmins can delete users
+    // Only superadmins and admins can delete users
     delete: ({ req: { user } }) => {
       const u = user as UserWithRole | null
       if (!u) return false
-      return u.role === 'superadmin'
+      return !u.role || ['superadmin', 'admin'].includes(u.role)
     },
     // All authenticated users can access admin panel (but will see limited collections)
     admin: () => true,

@@ -59,7 +59,8 @@ export const canAccessCollection = (collectionSlug: string): Access => {
     
     // Author - check allowedCollections
     if (u.role === 'author') {
-      return u.allowedCollections?.includes(collectionSlug) || false
+      const allowed = u.allowedCollections || []
+      return allowed.includes(collectionSlug)
     }
     
     return false

@@ -26,10 +26,14 @@ import { Settings } from './globals/Settings.ts'
 import { Navigation } from './globals/Navigation.ts'
 import { blockBuilderPlugin } from './plugins/blockBuilder/index.ts'
 import { sectionReorderPlugin } from './plugins/sectionReorder/index.ts'
+import { LogoutButton } from './components/admin/LogoutButton.tsx'
 
 export default buildConfig({
   admin: {
     user: Users.slug,
+    components: {
+      afterNavLinks: [LogoutButton],
+    },
   },
   collections: [
     Users, 

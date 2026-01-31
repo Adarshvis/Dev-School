@@ -25,7 +25,10 @@ export const ResearchDomains: CollectionConfig = {
     hidden: ({ user }) => {
       const u = user as UserWithRole | null
       if (!u) return true
-      if (u.role === 'author' && !u.allowedCollections?.includes('research-domains')) return true
+      if (u.role === 'author') {
+        const allowed = u.allowedCollections || []
+        if (!allowed.includes('research-domains')) return true
+      }
       return false
     },
   },
@@ -35,14 +38,20 @@ export const ResearchDomains: CollectionConfig = {
       const u = user as UserWithRole | null
       if (!u) return false
       if (!u.role || ['superadmin', 'admin', 'editor'].includes(u.role)) return true
-      if (u.role === 'author') return u.allowedCollections?.includes('research-domains') || false
+      if (u.role === 'author') {
+        const allowed = u.allowedCollections || []
+        return allowed.includes('research-domains')
+      }
       return false
     },
     update: ({ req: { user } }) => {
       const u = user as UserWithRole | null
       if (!u) return false
       if (!u.role || ['superadmin', 'admin', 'editor'].includes(u.role)) return true
-      if (u.role === 'author') return u.allowedCollections?.includes('research-domains') || false
+      if (u.role === 'author') {
+        const allowed = u.allowedCollections || []
+        return allowed.includes('research-domains')
+      }
       return false
     },
     delete: ({ req: { user } }) => {

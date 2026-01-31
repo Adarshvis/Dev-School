@@ -22,8 +22,9 @@ export const HomePage: CollectionConfig = {
     hidden: ({ user }) => {
       const u = user as UserWithRole | null
       if (!u) return true
-      if (u.role === 'author' && !u.allowedCollections?.includes('home-page')) {
-        return true
+      if (u.role === 'author') {
+        const allowed = u.allowedCollections || []
+        if (!allowed.includes('home-page')) return true
       }
       return false
     },
@@ -34,14 +35,20 @@ export const HomePage: CollectionConfig = {
       const u = user as UserWithRole | null
       if (!u) return false
       if (!u.role || ['superadmin', 'admin', 'editor'].includes(u.role)) return true
-      if (u.role === 'author') return u.allowedCollections?.includes('home-page') || false
+      if (u.role === 'author') {
+        const allowed = u.allowedCollections || []
+        return allowed.includes('home-page')
+      }
       return false
     },
     update: ({ req: { user } }) => {
       const u = user as UserWithRole | null
       if (!u) return false
       if (!u.role || ['superadmin', 'admin', 'editor'].includes(u.role)) return true
-      if (u.role === 'author') return u.allowedCollections?.includes('home-page') || false
+      if (u.role === 'author') {
+        const allowed = u.allowedCollections || []
+        return allowed.includes('home-page')
+      }
       return false
     },
     delete: ({ req: { user } }) => {

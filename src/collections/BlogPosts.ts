@@ -19,8 +19,11 @@ export const BlogPosts: CollectionConfig = {
       const u = user as UserWithRole | null
       if (!u) return true
       // Hide from authors who don't have access to this collection
-      if (u.role === 'author' && !u.allowedCollections?.includes('blog-posts')) {
-        return true
+      if (u.role === 'author') {
+        const allowed = u.allowedCollections || []
+        if (!allowed.includes('blog-posts')) {
+          return true
+        }
       }
       return false
     },
@@ -50,7 +53,8 @@ export const BlogPosts: CollectionConfig = {
       if (!u.role || ['superadmin', 'admin', 'editor'].includes(u.role)) return true
       // Authors must have collection access and can only update their own (with createdBy)
       if (u.role === 'author') {
-        if (!u.allowedCollections?.includes('blog-posts')) return false
+        const allowed = u.allowedCollections || []
+        if (!allowed.includes('blog-posts')) return false
         return {
           and: [
             { createdBy: { equals: u.id } },
@@ -67,7 +71,8 @@ export const BlogPosts: CollectionConfig = {
       if (!u.role || ['superadmin', 'admin'].includes(u.role)) return true
       // Authors must have collection access and can only delete their own (with createdBy)
       if (u.role === 'author') {
-        if (!u.allowedCollections?.includes('blog-posts')) return false
+        const allowed = u.allowedCollections || []
+        if (!allowed.includes('blog-posts')) return false
         return {
           and: [
             { createdBy: { equals: u.id } },
