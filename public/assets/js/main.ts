@@ -27,11 +27,11 @@ declare const Swiper: any;
          !selectHeader.classList.contains('fixed-top'))) return;
     
     if (selectBody) {
-      window.scrollY > 100 ? selectBody.classList.add('scrolled') : selectBody.classList.remove('scrolled');
+      window.scrollY > 10 ? selectBody.classList.add('scrolled') : selectBody.classList.remove('scrolled');
     }
   }
 
-  document.addEventListener('scroll', toggleScrolled);
+  document.addEventListener('scroll', toggleScrolled, { passive: true });
   window.addEventListener('load', toggleScrolled);
 
   /**

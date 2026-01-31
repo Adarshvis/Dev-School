@@ -156,7 +156,7 @@ function AcceptInviteContent() {
       <div className="accept-invite-page">
         <div className="invite-container">
           <div className="invite-card error-card">
-            <div className="error-icon">❌</div>
+            <div className="error-icon">X</div>
             <h1>Invitation Error</h1>
             <p className="error-message">{error}</p>
             <Link href="/" className="btn-secondary">
@@ -175,7 +175,7 @@ function AcceptInviteContent() {
       <div className="accept-invite-page">
         <div className="invite-container">
           <div className="invite-card success-card">
-            <div className="success-icon">✅</div>
+            <div className="success-icon-check"></div>
             <h1>Welcome to CyPSi Lab!</h1>
             <p>Your account has been created successfully.</p>
             <p className="redirect-notice">Redirecting to login...</p>
@@ -200,12 +200,13 @@ function AcceptInviteContent() {
               <span className="logo-cypsi">CyPSi</span>
               <span className="logo-lab">Lab</span>
             </div>
-            <p className="tagline">Cyber Physical Systems & Intelligence</p>
+            <p className="tagline">Cyber Physical Systems</p>
+            <p className="university">University of Delhi, South Campus</p>
           </div>
 
           {/* Welcome Message */}
           <div className="welcome-section">
-            <h1>You're Invited! 🎉</h1>
+            <h1>You're Invited!</h1>
             <p>Complete your account setup to join as</p>
             <span className="role-badge">{roleLabels[invitation?.role || 'author']}</span>
           </div>
@@ -298,7 +299,7 @@ export default function AcceptInvitePage() {
 const styles = `
   .accept-invite-page {
     min-height: 100vh;
-    background: linear-gradient(135deg, #011e2c 0%, #022a3d 50%, #033a52 100%);
+    background: #e6edf0;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -344,6 +345,12 @@ const styles = `
     text-transform: uppercase;
     letter-spacing: 2px;
     margin: 0;
+  }
+
+  .university {
+    color: #cbd5e1;
+    font-size: 11px;
+    margin: 5px 0 0 0;
   }
 
   .welcome-section {
@@ -495,6 +502,41 @@ const styles = `
   .success-icon {
     font-size: 64px;
     margin-bottom: 20px;
+  }
+
+  .error-icon {
+    width: 64px;
+    height: 64px;
+    background: #fef2f2;
+    color: #dc2626;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 20px;
+    font-size: 32px;
+    font-weight: 700;
+  }
+
+  .success-icon-check {
+    width: 64px;
+    height: 64px;
+    background: #22c55e;
+    border-radius: 50%;
+    margin: 0 auto 20px;
+    position: relative;
+  }
+
+  .success-icon-check::after {
+    content: '';
+    position: absolute;
+    left: 22px;
+    top: 14px;
+    width: 18px;
+    height: 32px;
+    border: solid white;
+    border-width: 0 4px 4px 0;
+    transform: rotate(45deg);
   }
 
   .error-card h1,

@@ -127,12 +127,13 @@ export default function CMSNavigation({ navigation, homePage = 'home' }: CMSNavi
                       href={child.externalUrl || '#'}
                       target={child.openInNewTab ? '_blank' : undefined}
                       rel={child.openInNewTab ? 'noopener noreferrer' : undefined}
+                      onClick={closeMobileMenu}
                     >
                       {child.icon && <i className={`bi ${child.icon} me-1`}></i>}
                       {child.label}
                     </a>
                   ) : (
-                    <Link href={getMenuLink(child)}>
+                    <Link href={getMenuLink(child)} onClick={closeMobileMenu}>
                       {child.icon && <i className={`bi ${child.icon} me-1`}></i>}
                       {child.label}
                     </Link>
@@ -154,6 +155,7 @@ export default function CMSNavigation({ navigation, homePage = 'home' }: CMSNavi
             target={item.openInNewTab ? '_blank' : undefined}
             rel={item.openInNewTab ? 'noopener noreferrer' : undefined}
             className={item.highlight ? 'highlight' : ''}
+            onClick={closeMobileMenu}
           >
             {item.icon && <i className={`bi ${item.icon} me-1`}></i>}
             {item.label}
@@ -167,6 +169,7 @@ export default function CMSNavigation({ navigation, homePage = 'home' }: CMSNavi
         <Link
           href={link}
           className={`${isActive(item) ? 'active' : ''} ${item.highlight ? 'highlight' : ''}`}
+          onClick={closeMobileMenu}
         >
           {item.icon && <i className={`bi ${item.icon} me-1`}></i>}
           {item.label}

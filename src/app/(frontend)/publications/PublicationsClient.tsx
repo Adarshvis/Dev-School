@@ -44,6 +44,7 @@ export default function PublicationsClient({
   const [searchQuery, setSearchQuery] = useState('')
   const [sortBy, setSortBy] = useState('date')
   const [currentPage, setCurrentPage] = useState(1)
+  const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false)
 
   const itemsPerPage = 20
   const columns = {
@@ -176,10 +177,45 @@ export default function PublicationsClient({
     return option?.label || value
   }
 
+  // Count active filters
+  const activeFilterCount = 
+    (timeFilter !== 'any' ? 1 : 0) + 
+    selectedTypes.length + 
+    selectedAuthors.length + 
+    selectedKeywords.length
+
   return (
     <div className="row">
+      {/* Mobile Filter Toggle Button */}
+      <div className="col-12 d-lg-none mb-3">
+        <button 
+          className="btn w-100 d-flex align-items-center justify-content-between"
+          style={{ 
+            backgroundColor: '#011e2c', 
+            color: '#fff',
+            padding: '12px 16px',
+            borderRadius: '8px'
+          }}
+          onClick={() => setMobileFiltersOpen(!mobileFiltersOpen)}
+        >
+          <span>
+            <i className="bi bi-funnel me-2"></i>
+            Filters
+            {activeFilterCount > 0 && (
+              <span 
+                className="badge ms-2" 
+                style={{ backgroundColor: '#f59e0b', color: '#000' }}
+              >
+                {activeFilterCount}
+              </span>
+            )}
+          </span>
+          <i className={`bi bi-chevron-${mobileFiltersOpen ? 'up' : 'down'}`}></i>
+        </button>
+      </div>
+
       {/* Filters Sidebar */}
-      <div className="col-lg-3">
+      <div className={`col-lg-3 ${mobileFiltersOpen ? '' : 'd-none d-lg-block'}`}>
         <div className="publications-filters" data-aos="fade-right" data-aos-delay="100">
           
           {/* Time Filter */}
@@ -324,9 +360,19 @@ export default function PublicationsClient({
               setSearchQuery('')
               setSortBy('date')
               setCurrentPage(1)
+              setMobileFiltersOpen(false)
             }}
           >
             Clear All Filters
+          </button>
+
+          {/* Apply Filters Button (Mobile Only) */}
+          <button 
+            className="btn btn-sm mt-2 w-100 d-lg-none"
+            style={{ backgroundColor: '#011e2c', color: '#fff', fontWeight: 600 }}
+            onClick={() => setMobileFiltersOpen(false)}
+          >
+            Apply Filters
           </button>
         </div>
       </div>
