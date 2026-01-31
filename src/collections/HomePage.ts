@@ -1,5 +1,13 @@
 import type { CollectionConfig } from 'payload'
 
+// Type for user with role field
+type UserWithRole = {
+  id: string
+  role?: 'superadmin' | 'admin' | 'editor' | 'author'
+  allowedCollections?: string[]
+  [key: string]: unknown
+}
+
 export const HomePage: CollectionConfig = {
   slug: 'home-page',
   labels: {
@@ -11,9 +19,37 @@ export const HomePage: CollectionConfig = {
     defaultColumns: ['sectionName', 'sectionType', 'updatedAt'],
     group: 'Content Management',
     description: 'Manage home page sections. Use the order field to control display order.',
+    hidden: ({ user }) => {
+      const u = user as UserWithRole | null
+      if (!u) return true
+      if (u.role === 'author' && !u.allowedCollections?.includes('home-page')) {
+        return true
+      }
+      return false
+    },
   },
   access: {
     read: () => true,
+    create: ({ req: { user } }) => {
+      const u = user as UserWithRole | null
+      if (!u) return false
+      if (!u.role || ['superadmin', 'admin', 'editor'].includes(u.role)) return true
+      if (u.role === 'author') return u.allowedCollections?.includes('home-page') || false
+      return false
+    },
+    update: ({ req: { user } }) => {
+      const u = user as UserWithRole | null
+      if (!u) return false
+      if (!u.role || ['superadmin', 'admin', 'editor'].includes(u.role)) return true
+      if (u.role === 'author') return u.allowedCollections?.includes('home-page') || false
+      return false
+    },
+    delete: ({ req: { user } }) => {
+      const u = user as UserWithRole | null
+      if (!u) return false
+      if (!u.role || ['superadmin', 'admin'].includes(u.role)) return true
+      return false
+    },
   },
   fields: [
     {

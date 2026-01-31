@@ -36,6 +36,17 @@ function createTransporter() {
       user,
       pass,
     },
+    // Add connection timeout and TLS settings
+    connectionTimeout: 10000, // 10 seconds
+    greetingTimeout: 10000, // 10 seconds
+    socketTimeout: 30000, // 30 seconds
+    tls: {
+      rejectUnauthorized: false, // Accept self-signed certificates
+      minVersion: 'TLSv1.2',
+    },
+    // Add debug logging
+    debug: process.env.NODE_ENV === 'development',
+    logger: process.env.NODE_ENV === 'development',
   })
 }
 

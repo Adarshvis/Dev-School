@@ -1,13 +1,33 @@
 import type { GlobalConfig } from 'payload'
 
+// Type for user with role field
+type UserWithRole = {
+  id: string
+  role?: 'superadmin' | 'admin' | 'editor' | 'author'
+  [key: string]: unknown
+}
+
 export const Navigation: GlobalConfig = {
   slug: 'navigation',
   admin: {
     group: 'Site Configuration',
+    hidden: ({ user }) => {
+      const u = user as UserWithRole | null
+      if (!u) return true
+      // Only show to superadmin, admin, and editor
+      if (u.role === 'author') return true
+      return false
+    },
   },
   access: {
     read: () => true,
-    update: ({ req: { user } }) => Boolean(user),
+    update: ({ req: { user } }) => {
+      const u = user as UserWithRole | null
+      if (!u) return false
+      // Only superadmin, admin, and editor can update navigation
+      if (!u.role || ['superadmin', 'admin', 'editor'].includes(u.role)) return true
+      return false
+    },
   },
   fields: [
     {

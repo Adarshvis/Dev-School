@@ -44,18 +44,47 @@ export const Users: CollectionConfig = {
     useAsTitle: 'email',
     defaultColumns: ['email', 'name', 'role', 'createdAt'],
     group: 'Admin',
+    hidden: ({ user }) => {
+      const u = user as UserWithRole | null
+      if (!u) return true
+      // Hide from authors and editors
+      if (u.role === 'author' || u.role === 'editor') return true
+      return false
+    },
   },
   auth: true,
   access: {
-    // Allow all authenticated users to create (for now)
-    create: () => true,
-    // Allow all authenticated users to read
-    read: () => true,
-    // Allow all authenticated users to update
-    update: () => true,
-    // Allow all authenticated users to delete
-    delete: () => true,
-    // Allow all authenticated users to access admin panel
+    // Only admins can create users (invitations handle author creation)
+    create: ({ req: { user } }) => {
+      const u = user as UserWithRole | null
+      if (!u) return false
+      return !u.role || ['superadmin', 'admin'].includes(u.role)
+    },
+    // Users can read their own data, admins can read all
+    read: ({ req: { user } }) => {
+      const u = user as UserWithRole | null
+      if (!u) return false
+      // Admins can read all users
+      if (!u.role || ['superadmin', 'admin'].includes(u.role)) return true
+      // Others can only read their own profile
+      return { id: { equals: u.id } }
+    },
+    // Users can update their own data, admins can update all
+    update: ({ req: { user } }) => {
+      const u = user as UserWithRole | null
+      if (!u) return false
+      // Admins can update all users
+      if (!u.role || ['superadmin', 'admin'].includes(u.role)) return true
+      // Others can only update their own profile
+      return { id: { equals: u.id } }
+    },
+    // Only superadmins can delete users
+    delete: ({ req: { user } }) => {
+      const u = user as UserWithRole | null
+      if (!u) return false
+      return u.role === 'superadmin'
+    },
+    // All authenticated users can access admin panel (but will see limited collections)
     admin: () => true,
   },
   fields: [

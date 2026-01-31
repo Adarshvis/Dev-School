@@ -280,22 +280,32 @@ export const Invitations: CollectionConfig = {
               html: emailHtml,
             })
 
-            // Update emailSent status
-            await req.payload.update({
-              collection: 'invitations' as any,
-              id: doc.id,
-              data: {
-                emailSent: result.success,
-              } as any,
-            })
-
             if (result.success) {
-              console.log(`Invitation email sent to ${doc.email}`)
+              console.log(`✓ Invitation email sent to ${doc.email}`)
+              // Try to update emailSent status, but don't fail if it doesn't work
+              try {
+                await req.payload.update({
+                  collection: 'invitations' as any,
+                  id: doc.id,
+                  data: {
+                    emailSent: true,
+                  } as any,
+                })
+              } catch (updateError) {
+                console.log('Note: Could not update emailSent status immediately, will be set on next save')
+              }
             } else {
-              console.error(`Failed to send invitation email to ${doc.email}:`, result.error)
+              console.error(`✗ Failed to send invitation email to ${doc.email}:`, result.error)
             }
           } catch (error) {
             console.error('Error sending invitation email:', error)
+            // Log the full error for debugging
+            if (error instanceof Error) {
+              console.error('Error details:', {
+                message: error.message,
+                stack: error.stack,
+              })
+            }
           }
         }
         

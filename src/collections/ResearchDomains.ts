@@ -1,5 +1,13 @@
 import type { CollectionConfig } from 'payload'
 
+// Type for user with role field
+type UserWithRole = {
+  id: string
+  role?: 'superadmin' | 'admin' | 'editor' | 'author'
+  allowedCollections?: string[]
+  [key: string]: unknown
+}
+
 const formatSlug = (val: string): string => {
   return val
     .replace(/[^\w\s-]/g, '') // Remove special characters
@@ -14,9 +22,35 @@ export const ResearchDomains: CollectionConfig = {
     useAsTitle: 'title',
     defaultColumns: ['title', 'slug', 'updatedAt'],
     group: 'Content Management',
+    hidden: ({ user }) => {
+      const u = user as UserWithRole | null
+      if (!u) return true
+      if (u.role === 'author' && !u.allowedCollections?.includes('research-domains')) return true
+      return false
+    },
   },
   access: {
     read: () => true,
+    create: ({ req: { user } }) => {
+      const u = user as UserWithRole | null
+      if (!u) return false
+      if (!u.role || ['superadmin', 'admin', 'editor'].includes(u.role)) return true
+      if (u.role === 'author') return u.allowedCollections?.includes('research-domains') || false
+      return false
+    },
+    update: ({ req: { user } }) => {
+      const u = user as UserWithRole | null
+      if (!u) return false
+      if (!u.role || ['superadmin', 'admin', 'editor'].includes(u.role)) return true
+      if (u.role === 'author') return u.allowedCollections?.includes('research-domains') || false
+      return false
+    },
+    delete: ({ req: { user } }) => {
+      const u = user as UserWithRole | null
+      if (!u) return false
+      if (!u.role || ['superadmin', 'admin'].includes(u.role)) return true
+      return false
+    },
   },
   hooks: {
     beforeValidate: [

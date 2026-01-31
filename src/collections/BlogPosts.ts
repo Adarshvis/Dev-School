@@ -1,9 +1,11 @@
 import type { CollectionConfig } from 'payload'
+import { canAccessCollection } from '../lib/access'
 
 // Type for user with role field
 type UserWithRole = {
   id: string
   role?: 'superadmin' | 'admin' | 'editor' | 'author'
+  allowedCollections?: string[]
   [key: string]: unknown
 }
 
@@ -13,32 +15,67 @@ export const BlogPosts: CollectionConfig = {
     useAsTitle: 'title',
     defaultColumns: ['title', 'author', 'publishedDate', '_status', 'createdBy'],
     group: 'Content Management',
+    hidden: ({ user }) => {
+      const u = user as UserWithRole | null
+      if (!u) return true
+      // Hide from authors who don't have access to this collection
+      if (u.role === 'author' && !u.allowedCollections?.includes('blog-posts')) {
+        return true
+      }
+      return false
+    },
   },
   access: {
-    read: () => true,
-    create: ({ req: { user } }) => {
-      // All authenticated users can create
-      return !!user
+    read: ({ req: { user } }) => {
+      const u = user as UserWithRole | null
+      if (!u) return true // Public can read published posts
+      // Admins and editors can read all
+      if (!u.role || ['superadmin', 'admin', 'editor'].includes(u.role)) return true
+      // Authors can only read their own posts (and only if they have createdBy field)
+      if (u.role === 'author') {
+        return {
+          and: [
+            { createdBy: { equals: u.id } },
+            { createdBy: { exists: true } }, // Must have createdBy field
+          ],
+        }
+      }
+      return true
     },
+    create: canAccessCollection('blog-posts'),
     update: ({ req: { user } }) => {
       const u = user as UserWithRole | null
       if (!u) return false
       // Admins and editors can update all
-      if (['superadmin', 'admin', 'editor'].includes(u.role || '')) return true
-      // Authors can only update their own
-      return {
-        createdBy: { equals: u.id },
+      if (!u.role || ['superadmin', 'admin', 'editor'].includes(u.role)) return true
+      // Authors must have collection access and can only update their own (with createdBy)
+      if (u.role === 'author') {
+        if (!u.allowedCollections?.includes('blog-posts')) return false
+        return {
+          and: [
+            { createdBy: { equals: u.id } },
+            { createdBy: { exists: true } },
+          ],
+        }
       }
+      return false
     },
     delete: ({ req: { user } }) => {
       const u = user as UserWithRole | null
       if (!u) return false
       // Only admins can delete all
-      if (['superadmin', 'admin'].includes(u.role || '')) return true
-      // Authors can only delete their own
-      return {
-        createdBy: { equals: u.id },
+      if (!u.role || ['superadmin', 'admin'].includes(u.role)) return true
+      // Authors must have collection access and can only delete their own (with createdBy)
+      if (u.role === 'author') {
+        if (!u.allowedCollections?.includes('blog-posts')) return false
+        return {
+          and: [
+            { createdBy: { equals: u.id } },
+            { createdBy: { exists: true } },
+          ],
+        }
       }
+      return false
     },
   },
   hooks: {

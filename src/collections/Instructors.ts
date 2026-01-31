@@ -1,14 +1,48 @@
 import type { CollectionConfig } from 'payload'
 
+// Type for user with role field
+type UserWithRole = {
+  id: string
+  role?: 'superadmin' | 'admin' | 'editor' | 'author'
+  allowedCollections?: string[]
+  [key: string]: unknown
+}
+
 export const Instructors: CollectionConfig = {
   slug: 'instructors',
   admin: {
     useAsTitle: 'name',
     defaultColumns: ['name', 'specialty', 'studentCount', 'rating'],
     group: 'Content Management',
+    hidden: ({ user }) => {
+      const u = user as UserWithRole | null
+      if (!u) return true
+      if (u.role === 'author' && !u.allowedCollections?.includes('instructors')) return true
+      return false
+    },
   },
   access: {
     read: () => true,
+    create: ({ req: { user } }) => {
+      const u = user as UserWithRole | null
+      if (!u) return false
+      if (!u.role || ['superadmin', 'admin', 'editor'].includes(u.role)) return true
+      if (u.role === 'author') return u.allowedCollections?.includes('instructors') || false
+      return false
+    },
+    update: ({ req: { user } }) => {
+      const u = user as UserWithRole | null
+      if (!u) return false
+      if (!u.role || ['superadmin', 'admin', 'editor'].includes(u.role)) return true
+      if (u.role === 'author') return u.allowedCollections?.includes('instructors') || false
+      return false
+    },
+    delete: ({ req: { user } }) => {
+      const u = user as UserWithRole | null
+      if (!u) return false
+      if (!u.role || ['superadmin', 'admin'].includes(u.role)) return true
+      return false
+    },
   },
   fields: [
     {

@@ -1,14 +1,34 @@
 import type { GlobalConfig } from 'payload'
 import { colorPickerField } from '@innovixx/payload-color-picker-field'
 
+// Type for user with role field
+type UserWithRole = {
+  id: string
+  role?: 'superadmin' | 'admin' | 'editor' | 'author'
+  [key: string]: unknown
+}
+
 export const Settings: GlobalConfig = {
   slug: 'settings',
   admin: {
     group: 'Site Configuration',
+    hidden: ({ user }) => {
+      const u = user as UserWithRole | null
+      if (!u) return true
+      // Only show to superadmin, admin, and editor
+      if (u.role === 'author') return true
+      return false
+    },
   },
   access: {
     read: () => true,
-    update: ({ req: { user } }) => Boolean(user),
+    update: ({ req: { user } }) => {
+      const u = user as UserWithRole | null
+      if (!u) return false
+      // Only superadmin, admin, and editor can update settings
+      if (!u.role || ['superadmin', 'admin', 'editor'].includes(u.role)) return true
+      return false
+    },
   },
   hooks: {
     beforeChange: [

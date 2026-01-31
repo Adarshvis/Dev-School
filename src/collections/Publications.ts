@@ -4,6 +4,7 @@ import type { CollectionConfig } from 'payload'
 type UserWithRole = {
   id: string
   role?: 'superadmin' | 'admin' | 'editor' | 'author'
+  allowedCollections?: string[]
   [key: string]: unknown
 }
 
@@ -18,32 +19,70 @@ export const Publications: CollectionConfig = {
     defaultColumns: ['title', 'publisher', 'year', 'type', 'createdBy', 'updatedAt'],
     group: 'Content Management',
     description: 'Manage lab publications - journal articles, conference papers, book chapters, etc.',
+    hidden: ({ user }) => {
+      const u = user as UserWithRole | null
+      if (!u) return true
+      if (u.role === 'author' && !u.allowedCollections?.includes('publications')) {
+        return true
+      }
+      return false
+    },
   },
   access: {
-    read: () => true,
+    read: ({ req: { user } }) => {
+      const u = user as UserWithRole | null
+      if (!u) return true // Public can read publications
+      // Admins and editors can read all
+      if (!u.role || ['superadmin', 'admin', 'editor'].includes(u.role)) return true
+      // Authors can only read their own publications (and only if they have createdBy field)
+      if (u.role === 'author') {
+        return {
+          and: [
+            { createdBy: { equals: u.id } },
+            { createdBy: { exists: true } }, // Must have createdBy field
+          ],
+        }
+      }
+      return true
+    },
     create: ({ req: { user } }) => {
-      // All authenticated users can create
-      return !!user
+      const u = user as UserWithRole | null
+      if (!u) return false
+      if (!u.role || ['superadmin', 'admin', 'editor'].includes(u.role)) return true
+      if (u.role === 'author') return u.allowedCollections?.includes('publications') || false
+      return false
     },
     update: ({ req: { user } }) => {
       const u = user as UserWithRole | null
       if (!u) return false
-      // Admins and editors can update all
-      if (['superadmin', 'admin', 'editor'].includes(u.role || '')) return true
-      // Authors can only update their own
-      return {
-        createdBy: { equals: u.id },
+      if (!u.role || ['superadmin', 'admin', 'editor'].includes(u.role)) return true
+      // Authors must have collection access and can only update their own (with createdBy)
+      if (u.role === 'author') {
+        if (!u.allowedCollections?.includes('publications')) return false
+        return {
+          and: [
+            { createdBy: { equals: u.id } },
+            { createdBy: { exists: true } },
+          ],
+        }
       }
+      return false
     },
     delete: ({ req: { user } }) => {
       const u = user as UserWithRole | null
       if (!u) return false
-      // Only admins can delete all
-      if (['superadmin', 'admin'].includes(u.role || '')) return true
-      // Authors can only delete their own
-      return {
-        createdBy: { equals: u.id },
+      if (!u.role || ['superadmin', 'admin'].includes(u.role)) return true
+      // Authors must have collection access and can only delete their own (with createdBy)
+      if (u.role === 'author') {
+        if (!u.allowedCollections?.includes('publications')) return false
+        return {
+          and: [
+            { createdBy: { equals: u.id } },
+            { createdBy: { exists: true } },
+          ],
+        }
       }
+      return false
     },
   },
   hooks: {
