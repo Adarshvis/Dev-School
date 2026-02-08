@@ -8,14 +8,15 @@ export default async function CMSPublicationsPage() {
   try {
     const payload = await getPayload({ config })
     
-    // Fetch all publications
+    // Fetch publications with reasonable limit (pagination handled client-side)
     const publicationsData = await payload.find({
       collection: 'publications' as any,
       where: {
         status: { equals: 'published' }
       },
-      limit: 1000, // Fetch all
+      limit: 200, // Reasonable limit - most labs won't have more
       sort: '-year', // Default sort by year descending
+      depth: 1, // Reduce depth for better performance
     })
 
     const publications = publicationsData.docs || []

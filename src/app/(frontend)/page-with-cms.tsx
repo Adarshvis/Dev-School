@@ -295,7 +295,6 @@ export default function HomepageWithCMS() {
                   <div className="member-info">
                     <h4>{instructor.fullName}</h4>
                     <span>{instructor.specialty}</span>
-                    <p>{instructor.shortBio}</p>
                     <div className="stats">
                       <span>{instructor.stats.studentsCount} Students</span>
                       <span>{instructor.stats.rating}/5 Rating</span>

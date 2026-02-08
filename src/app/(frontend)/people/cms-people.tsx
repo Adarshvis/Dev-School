@@ -82,7 +82,6 @@ export default async function CMSPeoplePage({ isHomePage = false }: { isHomePage
                       <div className="instructor-info">
                         <h5>{person.name}</h5>
                         {person.specialty && <p className="specialty">{person.specialty}</p>}
-                        {person.description && <p className="description">{person.description}</p>}
                         {((person.studentCount && person.studentCount > 0) || (person.rating && person.rating > 0)) && (
                         <div className="stats-grid">
                           {person.studentCount && person.studentCount > 0 && (

@@ -3,6 +3,9 @@ import { getPayload } from 'payload'
 import config from '@payload-config'
 import InstructorProfileClient from './InstructorProfileClient'
 
+// Use ISR - revalidate every 60 seconds for better performance
+export const revalidate = 60
+
 interface PageProps {
   params: Promise<{ slug: string }>
 }

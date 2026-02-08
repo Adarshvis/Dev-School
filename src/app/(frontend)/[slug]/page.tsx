@@ -4,6 +4,9 @@ import config from '@payload-config'
 import { Metadata } from 'next'
 import DynamicPageRenderer from '@/app/(frontend)/components/DynamicPageRenderer'
 
+// Use ISR - revalidate every 60 seconds for better performance
+export const revalidate = 60
+
 interface PageProps {
   params: Promise<{ slug: string }>
 }

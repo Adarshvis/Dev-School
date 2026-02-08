@@ -2,7 +2,7 @@ import { getPayload } from 'payload'
 import config from '@payload-config'
 import { unstable_cache } from 'next/cache'
 
-// Cache settings for 60 seconds in production
+// Cache settings for 5 minutes in production (300 seconds)
 const getCachedSettings = unstable_cache(
   async () => {
     const payload = await getPayload({ config })
@@ -13,7 +13,7 @@ const getCachedSettings = unstable_cache(
     return settings
   },
   ['settings'],
-  { revalidate: 60 }
+  { revalidate: 300, tags: ['settings'] }
 )
 
 export async function getSettings() {
@@ -34,7 +34,7 @@ export async function getSettings() {
   }
 }
 
-// Cache navigation for 60 seconds in production
+// Cache navigation for 5 minutes in production (300 seconds)
 const getCachedNavigation = unstable_cache(
   async () => {
     const payload = await getPayload({ config })
@@ -45,7 +45,7 @@ const getCachedNavigation = unstable_cache(
     return navigation
   },
   ['navigation'],
-  { revalidate: 60 }
+  { revalidate: 300, tags: ['navigation'] }
 )
 
 export async function getNavigation() {

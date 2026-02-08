@@ -2,6 +2,9 @@ import { redirect } from 'next/navigation'
 import { getPayload } from 'payload'
 import config from '@/payload.config'
 
+// Use ISR - revalidate every 60 seconds for better performance
+export const revalidate = 60
+
 interface ApplyNowSettings {
   redirectUrl?: string
   openInNewTab?: boolean

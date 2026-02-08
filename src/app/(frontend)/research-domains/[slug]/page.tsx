@@ -3,6 +3,9 @@ import Link from 'next/link'
 import { getPayload } from 'payload'
 import config from '@payload-config'
 
+// Use ISR - revalidate every 60 seconds for better performance
+export const revalidate = 60
+
 interface ResearchDomainData {
   title: string
   slug: string

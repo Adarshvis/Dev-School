@@ -1,14 +1,25 @@
 import { getPayload } from 'payload'
 import config from '../payload.config'
+import { unstable_cache } from 'next/cache'
 
-// Initialize payload instance
+// Initialize payload instance with singleton pattern
 let payloadInstance: any = null
+let payloadPromise: Promise<any> | null = null
 
 async function getPayloadInstance() {
-  if (!payloadInstance) {
-    payloadInstance = await getPayload({ config })
+  if (payloadInstance) {
+    return payloadInstance
   }
-  return payloadInstance
+  
+  // Use promise to prevent multiple simultaneous initializations
+  if (!payloadPromise) {
+    payloadPromise = getPayload({ config }).then((instance) => {
+      payloadInstance = instance
+      return instance
+    })
+  }
+  
+  return payloadPromise
 }
 
 // Utility functions for fetching data
@@ -72,7 +83,8 @@ export async function getFeaturedTestimonials() {
   return []
 }
 
-export async function getPageContent(pageName: string, section?: string) {
+// Internal function for fetching page content (used by cached version)
+async function _getPageContent(pageName: string, section?: string) {
   try {
     const payload = await getPayloadInstance()
     
@@ -105,6 +117,7 @@ export async function getPageContent(pageName: string, section?: string) {
       where: whereClause,
       sort: 'order', // Sort by order field for proper section sequencing
       overrideAccess: true,
+      depth: 2, // Limit depth for better performance
     })
     
     if (section && content.docs?.length > 0) {
@@ -116,6 +129,24 @@ export async function getPageContent(pageName: string, section?: string) {
     console.error(`Error fetching page content for ${pageName}:`, error instanceof Error ? error.message : 'Unknown error')
     return section ? null : []
   }
+}
+
+// Cached version for production - revalidates every 60 seconds
+const getCachedPageContent = (pageName: string, section?: string) => {
+  const cacheKey = section ? `page-${pageName}-${section}` : `page-${pageName}`
+  return unstable_cache(
+    async () => _getPageContent(pageName, section),
+    [cacheKey],
+    { revalidate: 60, tags: ['page-content', `page-${pageName}`] }
+  )()
+}
+
+export async function getPageContent(pageName: string, section?: string) {
+  // Use cache in production, direct query in development
+  if (process.env.NODE_ENV === 'production') {
+    return getCachedPageContent(pageName, section)
+  }
+  return _getPageContent(pageName, section)
 }
 
 export async function getMediaUrl(mediaId: any) {
