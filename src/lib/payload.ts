@@ -95,11 +95,10 @@ async function _getPageContent(pageName: string, section?: string) {
       'about': 'about-page', 
       'courses': 'courses-page',
       'people': 'people-page',
-      'pricing': 'pricing-page',
       'blog': 'blog-page',
       'blog-details': 'blog-details-page',
       'contact': 'contact-page',
-      'enroll': 'enroll-page'
+      'enroll': 'apply-now'
     }
     
     const collectionSlug = collectionMap[pageName] || pageName
@@ -185,62 +184,18 @@ export async function getSettings() {
   }
 }
 
+// NOTE: pricing-plans, events, and contact-info collections do not exist.
+// These functions are kept as stubs that return empty arrays.
 export async function getPricingPlans() {
-  try {
-    const payload = await getPayloadInstance()
-    const plans = await payload.find({
-      collection: 'pricing-plans',
-      where: {
-        status: { equals: 'active' }
-      },
-      sort: 'order',
-      overrideAccess: true,
-    })
-    return plans.docs
-  } catch (error) {
-    console.error('Error fetching pricing plans:', error)
-    return []
-  }
+  return []
 }
 
 export async function getUpcomingEvents() {
-  try {
-    const payload = await getPayloadInstance()
-    const events = await payload.find({
-      collection: 'events',
-      where: {
-        and: [
-          { status: { equals: 'upcoming' } },
-          { eventDate: { greater_than: new Date().toISOString() } }
-        ]
-      },
-      limit: 6,
-      sort: 'eventDate',
-      overrideAccess: true,
-    })
-    return events.docs
-  } catch (error) {
-    console.error('Error fetching upcoming events:', error)
-    return []
-  }
+  return []
 }
 
 export async function getContactInfo() {
-  try {
-    const payload = await getPayloadInstance()
-    const contactInfo = await payload.find({
-      collection: 'contact-info',
-      where: {
-        status: { equals: 'active' }
-      },
-      sort: 'order',
-      overrideAccess: true,
-    })
-    return contactInfo.docs
-  } catch (error) {
-    console.error('Error fetching contact info:', error)
-    return []
-  }
+  return []
 }
 
 export async function getCollection(collectionSlug: string, options?: any) {
@@ -258,9 +213,8 @@ export async function getCollection(collectionSlug: string, options?: any) {
       'blog-details-page': 'blog-details-page',
       'courses-page': 'courses-page',
       'people-page': 'people-page',
-      'pricing-page': 'pricing-page',
       'contact-page': 'contact-page',
-      'enroll-page': 'enroll-page'
+      'enroll-page': 'apply-now'
     }
 
     const actualCollection = collectionMapping[collectionSlug] || collectionSlug
