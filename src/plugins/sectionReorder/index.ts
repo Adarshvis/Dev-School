@@ -10,7 +10,7 @@ export const sectionReorderPlugin = (pluginConfig: SectionReorderPluginConfig): 
 
     // Add the reorder component to specified collections
     config.collections = (config.collections || []).map((collection) => {
-      if (typeof collection === 'object' && pluginConfig.collections.includes(collection.slug)) {
+      if (typeof collection === 'object' && pluginConfig?.collections && pluginConfig.collections.includes(collection.slug)) {
         return {
           ...collection,
           admin: {

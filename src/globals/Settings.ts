@@ -22,8 +22,9 @@ export const Settings: GlobalConfig = {
   },
   access: {
     read: () => true,
-    update: ({ req: { user } }) => {
-      const u = user as UserWithRole | null
+    update: ({ req }) => {
+      if (!req) return false
+      const u = req.user as UserWithRole | null
       if (!u) return false
       // Only superadmin, admin, and editor can update settings
       if (!u.role || ['superadmin', 'admin', 'editor'].includes(u.role)) return true
@@ -95,11 +96,18 @@ export const Settings: GlobalConfig = {
               type: 'text',
               required: false,
               admin: {
-                condition: (data) => data.useLogo !== true,
-                description: 'Text to display as site name (leave empty to hide)',
+                placeholder: 'Enter school name (optional)',
+                description: 'Optional name text to show in header (works with logo too)',
               },
               defaultValue: 'Learner',
             },
+            colorPickerField({
+              name: 'siteNameColor',
+              defaultValue: '#3d8de3',
+              admin: {
+                description: 'Optional color for header name text',
+              },
+            }),
             {
               name: 'siteDescription',
               type: 'textarea',
@@ -313,37 +321,37 @@ export const Settings: GlobalConfig = {
               fields: [
                 colorPickerField({
                   name: 'primaryColor',
-                  defaultValue: '#04415f',
+                  defaultValue: '#00cec9',
                   admin: {
-                    description: 'Primary brand color (nav, buttons)',
+                    description: 'Primary brand color (nav, buttons) - KidKinder Teal',
                   },
                 }),
                 colorPickerField({
                   name: 'secondaryColor',
-                  defaultValue: '#2086b8',
+                  defaultValue: '#ff5349',
                   admin: {
-                    description: 'Secondary color (hover states, links)',
+                    description: 'Secondary color (hover states, links) - Coral Red',
                   },
                 }),
                 colorPickerField({
                   name: 'accentColor',
-                  defaultValue: '#011e2c',
+                  defaultValue: '#ff5349',
                   admin: {
-                    description: 'Accent color for headings',
+                    description: 'Accent color for headings - Coral Red',
                   },
                 }),
                 colorPickerField({
                   name: 'textColor',
-                  defaultValue: '#010608',
+                  defaultValue: '#2d3436',
                   admin: {
-                    description: 'Main text color',
+                    description: 'Main text color - Dark Gray',
                   },
                 }),
                 colorPickerField({
                   name: 'backgroundColor',
-                  defaultValue: '#f1f5f7',
+                  defaultValue: '#fff9e6',
                   admin: {
-                    description: 'Page background color',
+                    description: 'Page background color - Soft Cream',
                   },
                 }),
               ],

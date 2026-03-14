@@ -1,5 +1,5 @@
 import type { CollectionConfig } from 'payload'
-import { canAccessCollection } from '../lib/access'
+import { canAccessCollection, getSafeUser } from '../lib/access'
 
 // Type for user with role field
 type UserWithRole = {
@@ -29,8 +29,8 @@ export const BlogPosts: CollectionConfig = {
     },
   },
   access: {
-    read: ({ req: { user } }) => {
-      const u = user as UserWithRole | null
+    read: ({ req }) => {
+      const u = getSafeUser(req)
       if (!u) return true // Public can read published posts
       // Admins and editors can read all
       if (!u.role || ['superadmin', 'admin', 'editor'].includes(u.role)) return true
@@ -46,8 +46,8 @@ export const BlogPosts: CollectionConfig = {
       return true
     },
     create: canAccessCollection('blog-posts'),
-    update: ({ req: { user } }) => {
-      const u = user as UserWithRole | null
+    update: ({ req }) => {
+      const u = getSafeUser(req)
       if (!u) return false
       // Admins and editors can update all
       if (!u.role || ['superadmin', 'admin', 'editor'].includes(u.role)) return true
@@ -64,8 +64,8 @@ export const BlogPosts: CollectionConfig = {
       }
       return false
     },
-    delete: ({ req: { user } }) => {
-      const u = user as UserWithRole | null
+    delete: ({ req }) => {
+      const u = getSafeUser(req)
       if (!u) return false
       // Only admins can delete all
       if (!u.role || ['superadmin', 'admin'].includes(u.role)) return true

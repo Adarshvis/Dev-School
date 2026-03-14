@@ -1,4 +1,5 @@
 import type { CollectionConfig } from 'payload'
+import { hasAdminOnlyAccess, hasCollectionAccess } from '@/lib/access'
 
 // Type for user with role field
 type UserWithRole = {
@@ -31,32 +32,9 @@ export const CoursesPage: CollectionConfig = {
   },
   access: {
     read: () => true,
-    create: ({ req: { user } }) => {
-      const u = user as UserWithRole | null
-      if (!u) return false
-      if (!u.role || ['superadmin', 'admin', 'editor'].includes(u.role)) return true
-      if (u.role === 'author') {
-        const allowed = u.allowedCollections || []
-        return allowed.includes('courses-page')
-      }
-      return false
-    },
-    update: ({ req: { user } }) => {
-      const u = user as UserWithRole | null
-      if (!u) return false
-      if (!u.role || ['superadmin', 'admin', 'editor'].includes(u.role)) return true
-      if (u.role === 'author') {
-        const allowed = u.allowedCollections || []
-        return allowed.includes('courses-page')
-      }
-      return false
-    },
-    delete: ({ req: { user } }) => {
-      const u = user as UserWithRole | null
-      if (!u) return false
-      if (!u.role || ['superadmin', 'admin'].includes(u.role)) return true
-      return false
-    },
+    create: ({ req }) => hasCollectionAccess(req, 'courses-page'),
+    update: ({ req }) => hasCollectionAccess(req, 'courses-page'),
+    delete: ({ req }) => hasAdminOnlyAccess(req),
   },
   fields: [
     {
@@ -79,8 +57,7 @@ export const CoursesPage: CollectionConfig = {
       required: true,
       options: [
         { label: 'Page Title', value: 'page-title' },
-        { label: 'Filters Sidebar', value: 'filters' },
-        { label: 'Courses Grid', value: 'courses-grid' },
+        { label: 'Facilities Grid', value: 'courses-grid' },
       ],
     },
     {
@@ -115,60 +92,7 @@ export const CoursesPage: CollectionConfig = {
       ],
     },
 
-    // FILTERS SIDEBAR
-    {
-      name: 'filters',
-      type: 'group',
-      admin: {
-        condition: (data) => data.sectionType === 'filters',
-      },
-      fields: [
-        {
-          name: 'title',
-          type: 'text',
-          required: true,
-          defaultValue: 'Filter Courses',
-        },
-        {
-          name: 'categoryFilters',
-          type: 'array',
-          label: 'Category Filters',
-          fields: [
-            { name: 'label', type: 'text', required: true },
-            { name: 'value', type: 'text', required: true },
-          ],
-        },
-        {
-          name: 'levelFilters',
-          type: 'array',
-          label: 'Level Filters',
-          fields: [
-            { name: 'label', type: 'text', required: true },
-            { name: 'value', type: 'text', required: true },
-          ],
-        },
-        {
-          name: 'durationFilters',
-          type: 'array',
-          label: 'Duration Filters',
-          fields: [
-            { name: 'label', type: 'text', required: true },
-            { name: 'value', type: 'text', required: true },
-          ],
-        },
-        {
-          name: 'priceFilters',
-          type: 'array',
-          label: 'Price Filters',
-          fields: [
-            { name: 'label', type: 'text', required: true },
-            { name: 'value', type: 'text', required: true },
-          ],
-        },
-      ],
-    },
-
-    // COURSES GRID
+    // FACILITIES GRID
     {
       name: 'coursesGrid',
       type: 'group',
@@ -177,61 +101,15 @@ export const CoursesPage: CollectionConfig = {
       },
       fields: [
         {
-          name: 'searchPlaceholder',
-          type: 'text',
-          defaultValue: 'Search courses...',
-        },
-        {
-          name: 'sortOptions',
-          type: 'array',
-          label: 'Sort Options',
-          fields: [
-            { name: 'label', type: 'text', required: true },
-            { name: 'value', type: 'text', required: true },
-          ],
-        },
-        {
           name: 'courses',
           type: 'array',
-          label: 'Course Cards',
+          label: 'Facility Cards',
           fields: [
             {
               name: 'image',
               type: 'upload',
               relationTo: 'media',
               required: true,
-            },
-            {
-              name: 'badge',
-              type: 'select',
-              options: [
-                { label: 'None', value: 'none' },
-                { label: 'Best Seller', value: 'best-seller' },
-                { label: 'New', value: 'new' },
-                { label: 'Popular', value: 'popular' },
-                { label: 'Free', value: 'free' },
-                { label: 'Certificate', value: 'certificate' },
-              ],
-            },
-            {
-              name: 'price',
-              type: 'text',
-              required: true,
-            },
-            {
-              name: 'category',
-              type: 'text',
-              required: true,
-            },
-            {
-              name: 'level',
-              type: 'select',
-              required: true,
-              options: [
-                { label: 'Beginner', value: 'Beginner' },
-                { label: 'Intermediate', value: 'Intermediate' },
-                { label: 'Advanced', value: 'Advanced' },
-              ],
             },
             {
               name: 'title',
@@ -244,45 +122,27 @@ export const CoursesPage: CollectionConfig = {
               required: true,
             },
             {
-              name: 'duration',
-              type: 'text',
-              required: true,
+              name: 'showViewMoreButton',
+              type: 'checkbox',
+              defaultValue: false,
+              label: 'Show View More Button',
             },
             {
-              name: 'studentCount',
+              name: 'viewMoreText',
               type: 'text',
-              required: true,
-            },
-            {
-              name: 'rating',
-              type: 'number',
-              required: true,
-              min: 0,
-              max: 5,
+              defaultValue: 'View More',
               admin: {
-                step: 0.1,
+                condition: (data, siblingData) => siblingData?.showViewMoreButton === true,
               },
             },
             {
-              name: 'reviewCount',
-              type: 'number',
-              required: true,
-            },
-            {
-              name: 'instructorAvatar',
-              type: 'upload',
-              relationTo: 'media',
-              required: true,
-            },
-            {
-              name: 'instructorName',
+              name: 'viewMoreLink',
               type: 'text',
-              required: true,
-            },
-            {
-              name: 'enrollLink',
-              type: 'text',
-              defaultValue: '/enroll',
+              defaultValue: '',
+              admin: {
+                condition: (data, siblingData) => siblingData?.showViewMoreButton === true,
+                description: 'Optional URL for the View More button',
+              },
             },
           ],
         },

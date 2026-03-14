@@ -3,6 +3,7 @@ import Link from 'next/link'
 import { getPayload } from 'payload'
 import config from '@payload-config'
 import PublicationsClient from './PublicationsClient.tsx'
+import { BlockRenderer } from '../components/BlockRenderer'
 
 export default async function CMSPublicationsPage() {
   try {
@@ -20,6 +21,19 @@ export default async function CMSPublicationsPage() {
     })
 
     const publications = publicationsData.docs || []
+
+    const publicationsPageSections = await payload.find({
+      collection: 'publications-page' as any,
+      where: {
+        status: { equals: 'active' },
+      },
+      sort: 'order',
+      depth: 2,
+    })
+
+    const sections = publicationsPageSections.docs || []
+    const pageTitleSection = sections.find((section: any) => section.sectionType === 'page-title')
+    const publicationsListSection = sections.find((section: any) => section.sectionType === 'publications-list')
     
     // Extract unique values for filters (dynamic from data)
     const uniqueYears = [...new Set(publications.map((p: any) => p.year))].sort((a: any, b: any) => b - a)
@@ -44,6 +58,9 @@ export default async function CMSPublicationsPage() {
               </ol>
             </nav>
           </div>
+            {pageTitleSection?.contentBlocks && pageTitleSection.contentBlocks.length > 0 && (
+              <BlockRenderer blocks={pageTitleSection.contentBlocks} />
+            )}
         </div>
 
         {/* Publications Section */}
@@ -58,6 +75,10 @@ export default async function CMSPublicationsPage() {
                 keywords: uniqueKeywords,
               }}
             />
+
+            {publicationsListSection?.contentBlocks && publicationsListSection.contentBlocks.length > 0 && (
+              <BlockRenderer blocks={publicationsListSection.contentBlocks} />
+            )}
           </div>
         </section>
       </>

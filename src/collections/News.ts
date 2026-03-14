@@ -26,8 +26,9 @@ export const News: CollectionConfig = {
   },
   access: {
     read: () => true,
-    create: ({ req: { user } }) => {
-      const u = user as UserWithRole | null
+    create: ({ req }) => {
+      if (!req) return false
+      const u = req.user as UserWithRole | null
       if (!u) return false
       if (!u.role || ['superadmin', 'admin', 'editor'].includes(u.role)) return true
       if (u.role === 'author') {
@@ -36,8 +37,9 @@ export const News: CollectionConfig = {
       }
       return false
     },
-    update: ({ req: { user } }) => {
-      const u = user as UserWithRole | null
+    update: ({ req }) => {
+      if (!req) return false
+      const u = req.user as UserWithRole | null
       if (!u) return false
       if (!u.role || ['superadmin', 'admin', 'editor'].includes(u.role)) return true
       if (u.role === 'author') {
@@ -46,8 +48,9 @@ export const News: CollectionConfig = {
       }
       return false
     },
-    delete: ({ req: { user } }) => {
-      const u = user as UserWithRole | null
+    delete: ({ req }) => {
+      if (!req) return false
+      const u = req.user as UserWithRole | null
       if (!u) return false
       if (!u.role || ['superadmin', 'admin'].includes(u.role)) return true
       return false

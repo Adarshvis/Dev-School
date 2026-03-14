@@ -7,7 +7,7 @@ import { useState, useEffect } from 'react'
 interface MenuItem {
   id?: string
   label: string
-  linkType: 'internal' | 'external' | 'anchor' | 'dropdown' | 'custom'
+  linkType: 'internal' | 'external' | 'anchor' | 'dropdown' | 'custom' | 'dynamic'
   internalLink?: string
   customLink?: string
   dynamicPageLink?: { slug: string } | string | null
@@ -35,6 +35,35 @@ interface NavigationData {
 interface CMSNavigationProps {
   navigation: NavigationData | null
   homePage?: string
+}
+
+function normalizePath(path: string): string {
+  const trimmed = path.trim().toLowerCase()
+  if (trimmed === '/') return '/'
+  return trimmed.replace(/\/+$/, '')
+}
+
+function getItemIdentity(item: MenuItem): string | null {
+  if (item.dynamicPageLink) {
+    if (typeof item.dynamicPageLink === 'object') {
+      const obj = item.dynamicPageLink as any
+      if (obj.id) return `id:${String(obj.id)}`
+      if (obj.slug) return `slug:${String(obj.slug).trim().toLowerCase()}`
+    }
+    if (typeof item.dynamicPageLink === 'string') {
+      return `dyn:${item.dynamicPageLink.trim().toLowerCase()}`
+    }
+  }
+
+  if (item.customLink) {
+    return `path:${normalizePath(item.customLink)}`
+  }
+
+  if (item.internalLink) {
+    return `path:${normalizePath(item.internalLink)}`
+  }
+
+  return null
 }
 
 export default function CMSNavigation({ navigation, homePage = 'home' }: CMSNavigationProps) {
@@ -179,7 +208,7 @@ export default function CMSNavigation({ navigation, homePage = 'home' }: CMSNavi
   }
 
   // Fallback menu if no navigation data
-  const fallbackMenu = [
+  const fallbackMenu: MenuItem[] = [
     { label: 'Home', linkType: 'internal' as const, internalLink: '/', isVisible: true },
     { label: 'About', linkType: 'internal' as const, internalLink: '/about', isVisible: true },
     { label: 'Courses', linkType: 'internal' as const, internalLink: '/courses', isVisible: true },
@@ -189,7 +218,22 @@ export default function CMSNavigation({ navigation, homePage = 'home' }: CMSNavi
     { label: 'Contact', linkType: 'internal' as const, internalLink: '/contact', isVisible: true },
   ]
 
-  const menuItems = navigation?.menuItems?.length ? navigation.menuItems : fallbackMenu
+  const rawMenuItems: MenuItem[] = navigation?.menuItems?.length ? navigation.menuItems : fallbackMenu
+
+  // If a page already appears inside a submenu, hide its duplicate top-level item.
+  const childIdentities = new Set<string>()
+  rawMenuItems.forEach((item) => {
+    item.children?.forEach((child) => {
+      const identity = getItemIdentity(child)
+      if (identity) childIdentities.add(identity)
+    })
+  })
+
+  const menuItems = rawMenuItems.filter((item) => {
+    const identity = getItemIdentity(item)
+    if (!identity) return true
+    return !childIdentities.has(identity)
+  })
 
   // Get CTA button settings
   const ctaButton = navigation?.ctaButton

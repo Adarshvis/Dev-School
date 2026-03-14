@@ -1,7 +1,78 @@
 import React from 'react'
+import Link from 'next/link'
+import FlexibleRowBlock from './blocks/FlexibleRowBlock'
+import { lexicalToHtml } from '@/lib/lexicalToHtml'
 
 interface BlockRendererProps {
   blocks?: any[]
+}
+
+const getCardDescription = (value: unknown): string => {
+  if (!value) return ''
+  const text = String(value).replace(/\s+/g, ' ').trim()
+  if (!text) return ''
+  return text.length > 140 ? `${text.slice(0, 140).trim()}...` : text
+}
+
+const isExternalHref = (value: string): boolean => /^(https?:\/\/|mailto:|tel:)/i.test(value)
+
+const normalizeProfilePath = (value: string): string => {
+  const raw = String(value || '').trim()
+  if (!raw) return ''
+
+  if (/^\/?people-id-/i.test(raw)) {
+    const normalized = raw.replace(/^\/?people-id-/i, 'id-')
+    return `/people/${normalized}`
+  }
+
+  if (/^\/?instructors-id-/i.test(raw)) {
+    const normalized = raw.replace(/^\/?instructors-id-/i, 'id-')
+    return `/people/${normalized}`
+  }
+
+  if (/^\/people-profile\//i.test(raw)) {
+    return raw.replace(/^\/people-profile\//i, '/people/')
+  }
+
+  if (/^\/instructor-profile\//i.test(raw)) {
+    return raw.replace(/^\/instructor-profile\//i, '/people/')
+  }
+
+  if (/^\/instructors\//i.test(raw)) {
+    return raw.replace(/^\/instructors\//i, '/people/')
+  }
+
+  return raw
+}
+
+const getPersonProfileHref = (person: any): string => {
+  const explicitProfileLink = String(person?.profileLink || '').trim()
+  if (explicitProfileLink !== '') {
+    return normalizeProfilePath(explicitProfileLink)
+  }
+
+  const personId = String(person?.id || person?._id || '').trim()
+  if (personId !== '') {
+    return `/people/id-${personId}`
+  }
+
+  if (person?.slug && String(person.slug).trim() !== '') {
+    return `/people/${String(person.slug).trim()}`
+  }
+
+  if (person?.name && String(person.name).trim() !== '') {
+    const generatedSlug = String(person.name)
+      .toLowerCase()
+      .trim()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/(^-|-$)/g, '')
+
+    if (generatedSlug) {
+      return `/people/${generatedSlug}`
+    }
+  }
+
+  return '/people'
 }
 
 export const BlockRenderer: React.FC<BlockRendererProps> = ({ blocks }) => {
@@ -44,6 +115,8 @@ export const BlockRenderer: React.FC<BlockRendererProps> = ({ blocks }) => {
             return <MapBlock key={index} {...block} />
           case 'people':
             return <PeopleBlock key={index} {...block} />
+          case 'flexibleRow':
+            return <FlexibleRowBlock key={index} {...block} />
           default:
             console.warn('Unknown block type:', block.blockType)
             return <div className="alert alert-warning m-3">Unknown block type: {block.blockType}</div>
@@ -150,7 +223,23 @@ const VideoBlock: React.FC<any> = ({ videoType, videoUrl, videoFile, title, desc
 }
 
 // Image Gallery Block Component
-const ImageGalleryBlock: React.FC<any> = ({ title, description, galleryType, images, columns }) => {
+const ImageGalleryBlock: React.FC<any> = ({
+  title,
+  description,
+  galleryType,
+  images,
+  columns,
+  showViewMoreButton,
+  viewMoreButtonText,
+  viewMoreLink,
+}) => {
+  const shouldShowViewMore = !!showViewMoreButton
+  const galleryImages = shouldShowViewMore && galleryType !== 'carousel'
+    ? (images || []).slice(0, 4)
+    : (images || [])
+
+  const viewMoreHref = String(viewMoreLink || '/gallery').trim() || '/gallery'
+
   return (
     <section className="image-gallery-block section">
       <div className="container">
@@ -164,7 +253,7 @@ const ImageGalleryBlock: React.FC<any> = ({ title, description, galleryType, ima
         {galleryType === 'carousel' ? (
           <div id="galleryCarousel" className="carousel slide" data-bs-ride="carousel" data-aos="fade-up" data-aos-delay="100">
             <div className="carousel-indicators">
-              {images?.map((_: any, index: number) => (
+              {galleryImages?.map((_: any, index: number) => (
                 <button
                   key={index}
                   type="button"
@@ -177,7 +266,7 @@ const ImageGalleryBlock: React.FC<any> = ({ title, description, galleryType, ima
               ))}
             </div>
             <div className="carousel-inner rounded">
-              {images?.map((item: any, index: number) => (
+              {galleryImages?.map((item: any, index: number) => (
                 <div key={index} className={`carousel-item ${index === 0 ? 'active' : ''}`}>
                   <img
                     src={typeof item.image === 'object' ? item.image.url : item.image}
@@ -204,7 +293,7 @@ const ImageGalleryBlock: React.FC<any> = ({ title, description, galleryType, ima
           </div>
         ) : (
           <div className={`row gy-4`} data-aos="fade-up" data-aos-delay="100">
-            {images?.map((item: any, index: number) => (
+            {galleryImages?.map((item: any, index: number) => (
               <div key={index} className={`col-lg-${12 / parseInt(columns || '3')} col-md-6`}>
                 <div className="gallery-item">
                   <img
@@ -216,6 +305,14 @@ const ImageGalleryBlock: React.FC<any> = ({ title, description, galleryType, ima
                 </div>
               </div>
             ))}
+          </div>
+        )}
+
+        {shouldShowViewMore && (
+          <div className="text-center mt-4" data-aos="fade-up" data-aos-delay="150">
+            <Link href={viewMoreHref} className="btn btn-primary">
+              {viewMoreButtonText || 'View More'}
+            </Link>
           </div>
         )}
       </div>
@@ -308,11 +405,16 @@ const CTABlock: React.FC<any> = ({ style, heading, subheading, image, primaryBut
 // Rich Text Block Component
 const RichTextBlock: React.FC<any> = ({ content, width }) => {
   const containerClass = width === 'narrow' ? 'container-narrow' : width === 'full' ? 'container-fluid' : 'container'
+  const htmlContent = typeof content === 'string' ? content : lexicalToHtml(content)
+
+  if (!htmlContent) {
+    return null
+  }
   
   return (
     <section className="rich-text-block section">
       <div className={containerClass}>
-        <div data-aos="fade-up" dangerouslySetInnerHTML={{ __html: content }} />
+        <div data-aos="fade-up" dangerouslySetInnerHTML={{ __html: htmlContent }} />
       </div>
     </section>
   )
@@ -605,7 +707,7 @@ const PeopleBlock: React.FC<any> = ({ title, description, layout, showStats, sho
                 <div className="instructor-info">
                   <h5>{person.name || 'Unnamed Person'}</h5>
                   {person.specialty && <p className="specialty">{person.specialty}</p>}
-                  {person.description && <p className="description">{person.description}</p>}
+                  {getCardDescription(person.description) ? <p className="description">{getCardDescription(person.description)}</p> : null}
                   
                   {showStats && ((person.studentCount && person.studentCount !== '0') || (person.rating && person.rating > 0)) && (
                   <div className="stats-grid">
@@ -625,7 +727,7 @@ const PeopleBlock: React.FC<any> = ({ title, description, layout, showStats, sho
                   )}
                   
                   <div className="action-buttons">
-                    <a href={person.profileLink || '#'} className="btn-view">View Profile</a>
+                    <Link href={getPersonProfileHref(person)} className="btn-view">View Profile</Link>
                     <div className="social-links">
                       {showSocialLinks && person.socialLinks && person.socialLinks.map((social: any, idx: number) => (
                         <a key={idx} href={social.url} target="_blank" rel="noopener noreferrer">

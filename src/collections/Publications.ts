@@ -32,8 +32,9 @@ export const Publications: CollectionConfig = {
     },
   },
   access: {
-    read: ({ req: { user } }) => {
-      const u = user as UserWithRole | null
+    read: ({ req }) => {
+      if (!req) return true // Public can read publications
+      const u = req.user as UserWithRole | null
       if (!u) return true // Public can read publications
       // Admins and editors can read all
       if (!u.role || ['superadmin', 'admin', 'editor'].includes(u.role)) return true
@@ -48,8 +49,9 @@ export const Publications: CollectionConfig = {
       }
       return true
     },
-    create: ({ req: { user } }) => {
-      const u = user as UserWithRole | null
+    create: ({ req }) => {
+      if (!req) return false
+      const u = req.user as UserWithRole | null
       if (!u) return false
       if (!u.role || ['superadmin', 'admin', 'editor'].includes(u.role)) return true
       if (u.role === 'author') {
@@ -58,8 +60,9 @@ export const Publications: CollectionConfig = {
       }
       return false
     },
-    update: ({ req: { user } }) => {
-      const u = user as UserWithRole | null
+    update: ({ req }) => {
+      if (!req) return false
+      const u = req.user as UserWithRole | null
       if (!u) return false
       if (!u.role || ['superadmin', 'admin', 'editor'].includes(u.role)) return true
       // Authors must have collection access and can only update their own (with createdBy)
@@ -75,8 +78,9 @@ export const Publications: CollectionConfig = {
       }
       return false
     },
-    delete: ({ req: { user } }) => {
-      const u = user as UserWithRole | null
+    delete: ({ req }) => {
+      if (!req) return false
+      const u = req.user as UserWithRole | null
       if (!u) return false
       if (!u.role || ['superadmin', 'admin'].includes(u.role)) return true
       // Authors must have collection access and can only delete their own (with createdBy)
@@ -85,7 +89,7 @@ export const Publications: CollectionConfig = {
         if (!allowed.includes('publications')) return false
         return {
           and: [
-            { createdBy: { equals: u.id } },
+            { createdBy:{ equals: u.id } },
             { createdBy: { exists: true } },
           ],
         }

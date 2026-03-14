@@ -221,8 +221,13 @@ export default async function CMSHomePage() {
         {ourStorySection && ourStorySection.ourStory && (
           <section id="about" className="about section">
             <div className="container" data-aos="fade-up" data-aos-delay="100">
+              {(() => {
+                const isImageLeft = ourStorySection.ourStory.layout === 'image-left'
+                const contentColClass = isImageLeft ? 'col-lg-6 order-lg-2' : 'col-lg-6'
+                const imageColClass = isImageLeft ? 'col-lg-6 order-lg-1' : 'col-lg-6'
+                return (
               <div className="row align-items-center g-5">
-                <div className="col-lg-6">
+                <div className={contentColClass}>
                   <div className="about-content" data-aos="fade-up" data-aos-delay="200">
                     {ourStorySection.ourStory.subtitle && <h3>{ourStorySection.ourStory.subtitle}</h3>}
                     {ourStorySection.ourStory.title && <h2>{ourStorySection.ourStory.title}</h2>}
@@ -260,7 +265,7 @@ export default async function CMSHomePage() {
                   </div>
                 </div>
 
-                <div className="col-lg-6">
+                <div className={imageColClass}>
                   <div className="about-image" data-aos="zoom-in" data-aos-delay="300">
                     {ourStorySection.ourStory.campusImage && (
                       <img 
@@ -286,6 +291,8 @@ export default async function CMSHomePage() {
                   </div>
                 </div>
               </div>
+                )
+              })()}
 
               {/* Core Values */}
               {ourStorySection.ourStory.coreValues && ourStorySection.ourStory.coreValues.length > 0 && (

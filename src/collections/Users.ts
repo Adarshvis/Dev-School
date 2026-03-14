@@ -10,25 +10,29 @@ type UserWithRole = {
 
 // Access control helpers
 // Note: Users without a role are treated as admins for backward compatibility
-const isAdmin: Access = ({ req: { user } }) => {
-  const u = user as UserWithRole | null
+const isAdmin: Access = ({ req }) => {
+  if (!req) return false
+  const u = req.user as UserWithRole | null
   // If no role is set, treat as admin (backward compatibility)
   return !u?.role || u?.role === 'admin' || u?.role === 'superadmin'
 }
 
-const isSuperAdmin: Access = ({ req: { user } }) => {
-  const u = user as UserWithRole | null
+const isSuperAdmin: Access = ({ req }) => {
+  if (!req) return false
+  const u = req.user as UserWithRole | null
   return u?.role === 'superadmin'
 }
 
-const isAdminOrEditor: Access = ({ req: { user } }) => {
-  const u = user as UserWithRole | null
+const isAdminOrEditor: Access = ({ req }) => {
+  if (!req) return false
+  const u = req.user as UserWithRole | null
   // If no role is set, treat as admin (backward compatibility)
   return !u?.role || u?.role === 'admin' || u?.role === 'editor'
 }
 
-const isAdminOrSelf: Access = ({ req: { user } }) => {
-  const u = user as UserWithRole | null
+const isAdminOrSelf: Access = ({ req }) => {
+  if (!req) return false
+  const u = req.user as UserWithRole | null
   // If no role is set, treat as admin (backward compatibility)
   if (!u?.role || u?.role === 'admin') return true
   return {
@@ -55,14 +59,16 @@ export const Users: CollectionConfig = {
   auth: true,
   access: {
     // Only admins can create users (invitations handle author creation)
-    create: ({ req: { user } }) => {
-      const u = user as UserWithRole | null
+    create: ({ req }) => {
+      if (!req) return false
+      const u = req.user as UserWithRole | null
       if (!u) return false
       return !u.role || ['superadmin', 'admin'].includes(u.role)
     },
     // Users can read their own data, admins can read all
-    read: ({ req: { user } }) => {
-      const u = user as UserWithRole | null
+    read: ({ req }) => {
+      if (!req) return false
+      const u = req.user as UserWithRole | null
       if (!u) return false
       // Admins can read all users
       if (!u.role || ['superadmin', 'admin'].includes(u.role)) return true
@@ -70,8 +76,9 @@ export const Users: CollectionConfig = {
       return { id: { equals: u.id } }
     },
     // Users can update their own data, admins can update all
-    update: ({ req: { user } }) => {
-      const u = user as UserWithRole | null
+    update: ({ req }) => {
+      if (!req) return false
+      const u = req.user as UserWithRole | null
       if (!u) return false
       // Admins can update all users
       if (!u.role || ['superadmin', 'admin'].includes(u.role)) return true
@@ -79,8 +86,9 @@ export const Users: CollectionConfig = {
       return { id: { equals: u.id } }
     },
     // Only superadmins and admins can delete users
-    delete: ({ req: { user } }) => {
-      const u = user as UserWithRole | null
+    delete: ({ req }) => {
+      if (!req) return false
+      const u = req.user as UserWithRole | null
       if (!u) return false
       return !u.role || ['superadmin', 'admin'].includes(u.role)
     },
@@ -124,8 +132,9 @@ export const Users: CollectionConfig = {
       },
       access: {
         // Admins can change any role, users can change their own role to admin (for initial setup)
-        update: ({ req: { user }, id }) => {
-          const u = user as UserWithRole | null
+        update: ({ req, id }) => {
+          if (!req) return false
+          const u = req.user as UserWithRole | null
           // If no role is set, treat as admin (backward compatibility)
           if (!u?.role || u?.role === 'admin') return true
           // Allow users to update their own role (for initial admin setup)

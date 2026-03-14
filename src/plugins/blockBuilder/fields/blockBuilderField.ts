@@ -12,6 +12,7 @@ import { socialFeedBlock } from './blocks/socialFeedBlock.ts'
 import { customCodeBlock } from './blocks/customCodeBlock.ts'
 import { mapBlock } from './blocks/mapBlock.ts'
 import { peopleBlock } from './blocks/peopleBlock.ts'
+import { FlexibleRowBlock } from '../../../blocks/FlexibleRow.ts'
 
 export const blockBuilderField = (
   fieldName: string = 'contentBlocks',
@@ -32,6 +33,7 @@ export const blockBuilderField = (
     customCodeBlock,
     mapBlock,
     peopleBlock,
+    FlexibleRowBlock,
   ]
 
   // Filter blocks based on enabled options

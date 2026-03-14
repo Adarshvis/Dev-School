@@ -2,6 +2,14 @@ import * as React from 'react'
 import Link from 'next/link'
 import { getPayload } from 'payload'
 import config from '@payload-config'
+import { BlockRenderer } from '../components/BlockRenderer'
+
+const getCardDescription = (value: unknown): string => {
+  if (!value) return ''
+  const text = String(value).replace(/\s+/g, ' ').trim()
+  if (!text) return ''
+  return text.length > 140 ? `${text.slice(0, 140).trim()}...` : text
+}
 
 export default async function CMSInstructorsPage({ isHomePage = false }: { isHomePage?: boolean } = {}) {
   try {
@@ -23,6 +31,7 @@ export default async function CMSInstructorsPage({ isHomePage = false }: { isHom
     
     // Get content blocks that have people data
     const peopleBlocks = instructorsGridSection?.contentBlocks?.filter((block: any) => block.blockType === 'people') || []
+    const additionalBlocks = instructorsGridSection?.contentBlocks?.filter((block: any) => block.blockType !== 'people') || []
     
     console.log('Sections found:', sections.length)
     console.log('People blocks found:', peopleBlocks.length)
@@ -44,6 +53,9 @@ export default async function CMSInstructorsPage({ isHomePage = false }: { isHom
                 </ol>
               </nav>
             </div>
+            {pageTitleSection?.contentBlocks && pageTitleSection.contentBlocks.length > 0 && (
+              <BlockRenderer blocks={pageTitleSection.contentBlocks} />
+            )}
           </div>
         )}
 
@@ -81,11 +93,11 @@ export default async function CMSInstructorsPage({ isHomePage = false }: { isHom
                           <div className="instructor-info">
                             <h5>{person.name}</h5>
                             {person.specialty && <p className="specialty" style={{ color: '#011e2c' }}>{person.specialty}</p>}
-                            {person.description && <p className="description">{person.description}</p>}
+                            {getCardDescription(person.description) ? <p className="description">{getCardDescription(person.description)}</p> : null}
                             
                             <div className="action-buttons">
                               <Link 
-                                href={`/instructors/${person.slug || person.name?.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')}`} 
+                                href={person?.id ? `/instructors/id-${person.id}` : `/instructors/${person.slug || person.name?.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')}`} 
                                 className="btn-view"
                                 style={{ backgroundColor: '#011e2c', borderColor: '#011e2c' }}
                               >
@@ -116,6 +128,8 @@ export default async function CMSInstructorsPage({ isHomePage = false }: { isHom
                 </div>
               </div>
             )}
+
+            {additionalBlocks.length > 0 && <BlockRenderer blocks={additionalBlocks} />}
 
           </div>
         </section>

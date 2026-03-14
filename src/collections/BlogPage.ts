@@ -1,4 +1,5 @@
 import type { CollectionConfig } from 'payload'
+import { hasAdminOnlyAccess, hasCollectionAccess } from '@/lib/access'
 
 // Type for user with role field
 type UserWithRole = {
@@ -23,24 +24,9 @@ export const BlogPage: CollectionConfig = {
   },
   access: {
     read: () => true,
-    create: ({ req: { user } }) => {
-      const u = user as UserWithRole | null
-      if (!u) return false
-      if (!u.role || ['superadmin', 'admin', 'editor'].includes(u.role)) return true
-      return false
-    },
-    update: ({ req: { user } }) => {
-      const u = user as UserWithRole | null
-      if (!u) return false
-      if (!u.role || ['superadmin', 'admin', 'editor'].includes(u.role)) return true
-      return false
-    },
-    delete: ({ req: { user } }) => {
-      const u = user as UserWithRole | null
-      if (!u) return false
-      if (!u.role || ['superadmin', 'admin'].includes(u.role)) return true
-      return false
-    },
+    create: ({ req }) => hasCollectionAccess(req, 'blog-page'),
+    update: ({ req }) => hasCollectionAccess(req, 'blog-page'),
+    delete: ({ req }) => hasAdminOnlyAccess(req),
   },
   fields: [
     {

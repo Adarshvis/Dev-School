@@ -21,45 +21,45 @@
 
 /* Global Colors - The following color variables are used throughout the website. Updating them here will change the color scheme of the entire website */
 :root { 
-  --background-color: #f1f5f7; /* Background color for the entire website, including individual sections */
-  --default-color: #010608; /* Default color used for the majority of the text content across the entire website */
-  --heading-color: #011e2c; /* Color for headings, subheadings and title throughout the website */
-  --accent-color: #011e2c; /* Accent color that represents your brand on the website. It's used for buttons, links, and other elements that need to stand out */
+  --background-color: #fff9e6; /* Background color for the entire website, including individual sections */
+  --default-color: #2d3436; /* Default color used for the majority of the text content across the entire website */
+  --heading-color: #ff5349; /* Color for headings, subheadings and title throughout the website */
+  --accent-color: #00cec9; /* Accent color that represents your brand on the website. It's used for buttons, links, and other elements that need to stand out */
   --surface-color: #ffffff; /* The surface color is used as a background of boxed elements within sections, such as cards, icon boxes, or other elements that require a visual separation from the global background. */
   --contrast-color: #ffffff; /* Contrast color for text, ensuring readability against backgrounds of accent, heading, or default colors. */
 }
 
 /* Nav Menu Colors - The following color variables are used specifically for the navigation menu. They are separate from the global colors to allow for more customization options */
 :root {
-  --nav-color: #04415f;  /* The default color of the main navmenu links */
-  --nav-hover-color: #2086b8; /* Applied to main navmenu links when they are hovered over or active */
+  --nav-color: #00cec9;  /* The default color of the main navmenu links */
+  --nav-hover-color: #ff5349; /* Applied to main navmenu links when they are hovered over or active */
   --nav-mobile-background-color: #ffffff; /* Used as the background color for mobile navigation menu */
   --nav-dropdown-background-color: #ffffff; /* Used as the background color for dropdown items that appear when hovering over primary navigation items */
-  --nav-dropdown-color: #010608; /* Used for navigation links of the dropdown items in the navigation menu. */
-  --nav-dropdown-hover-color: #04415f; /* Similar to --nav-hover-color, this color is applied to dropdown navigation links when they are hovered over. */
+  --nav-dropdown-color: #2d3436; /* Used for navigation links of the dropdown items in the navigation menu. */
+  --nav-dropdown-hover-color: #ff5349; /* Similar to --nav-hover-color, this color is applied to dropdown navigation links when they are hovered over. */
 }
 
 /* Color Presets - These classes override global colors when applied to any section or element, providing reuse of the sam color scheme. */
 
 .light-background {
-  --background-color: #e6edf0;
+  --background-color: #fff9e6;
   --surface-color: #ffffff;
 }
 
 .dark-background {
-  --background-color: #060606;
+  --background-color: #2d3436;
   --default-color: #ffffff;
-  --heading-color: #ffffff;
-  --surface-color: #252525;
+  --heading-color: #ffd93d;
+  --surface-color: #636e72;
   --contrast-color: #ffffff;
 }
 
 .accent-background {
-  --background-color: #04415f;
+  --background-color: #00cec9;
   --default-color: #ffffff;
   --heading-color: #ffffff;
-  --accent-color: #2086b8;
-  --surface-color: #065778;
+  --accent-color: #ffd93d;
+  --surface-color: #00cec9;
   --contrast-color: #ffffff;
 }
 
@@ -154,7 +154,7 @@ h6 {
 # Global Header
 --------------------------------------------------------------*/
 .header {
-  --background-color: #f1f5f7;
+  --background-color: #ffffff;
   --default-color: #04415f;
   --heading-color: #04415f;
   color: var(--default-color);
@@ -731,6 +731,11 @@ section,
   padding: 30px 0;
   scroll-margin-top: 90px;
   overflow: clip;
+}
+
+.cms-home-section > section,
+.cms-home-section > .section {
+  background-color: var(--cms-section-bg, var(--background-color)) !important;
 }
 
 @media (max-width: 1199px) {

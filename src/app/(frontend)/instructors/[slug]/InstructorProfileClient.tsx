@@ -6,9 +6,16 @@ import Link from 'next/link'
 interface InstructorProfileClientProps {
   person: any
   blockTitle: string
+  listingPath?: string
+  listingLabel?: string
 }
 
-export default function InstructorProfileClient({ person, blockTitle }: InstructorProfileClientProps) {
+export default function InstructorProfileClient({
+  person,
+  blockTitle,
+  listingPath = '/instructors',
+  listingLabel = 'Instructors',
+}: InstructorProfileClientProps) {
   const [activeTab, setActiveTab] = React.useState('about')
 
   // Check which tabs have content
@@ -39,7 +46,7 @@ export default function InstructorProfileClient({ person, blockTitle }: Instruct
           <nav className="breadcrumbs">
             <ol>
               <li><Link href="/">Home</Link></li>
-              <li><Link href="/instructors">Instructors</Link></li>
+                  <li><Link href={listingPath}>{listingLabel}</Link></li>
               <li className="current">{person.name}</li>
             </ol>
           </nav>

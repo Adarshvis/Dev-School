@@ -18,6 +18,7 @@ export default async function Header() {
   const headerType = headerStyle?.headerType || 'sticky'
   const headerBackground = headerStyle?.headerBackground || 'white'
   const headerShadow = headerStyle?.headerShadow !== false
+  const siteNameColor = (settings as any)?.siteNameColor || undefined
 
   // Build header classes based on settings
   const headerClasses = [
@@ -43,20 +44,29 @@ export default async function Header() {
       <div className="container-fluid container-xl position-relative d-flex align-items-center">
         <Link href="/" className="logo d-flex align-items-center me-auto">
           {settings?.useLogo && logoUrl ? (
-            <img 
-              src={logoUrl} 
-              alt={settings?.siteName || 'Learner'} 
-              className="site-logo"
-              style={{ 
-                height: '60px', 
-                maxHeight: '60px',
-                width: 'auto', 
-                objectFit: 'contain',
-                display: 'block'
-              }}
-            />
+            <>
+              <img
+                src={logoUrl}
+                alt={settings?.siteName || 'Learner'}
+                className="site-logo"
+                style={{
+                  height: '60px',
+                  maxHeight: '60px',
+                  width: 'auto',
+                  objectFit: 'contain',
+                  display: 'block'
+                }}
+              />
+              {settings?.siteName ? (
+                <h1 className="sitename ms-2 mb-0" style={{ fontSize: '30px', color: siteNameColor }}>
+                  {settings.siteName}
+                </h1>
+              ) : null}
+            </>
           ) : (
-            <h1 className="sitename">{settings?.siteName || 'Learner'}</h1>
+            <h1 className="sitename" style={{ fontSize: '30px', color: siteNameColor }}>
+              {settings?.siteName || 'Learner'}
+            </h1>
           )}
         </Link>
 

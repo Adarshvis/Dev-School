@@ -1,4 +1,5 @@
 import type { CollectionConfig } from 'payload'
+import { contentBlocksField } from '@/fields/contentBlocks'
 
 export const PublicationsPage: CollectionConfig = {
   slug: 'publications-page',
@@ -50,6 +51,13 @@ export const PublicationsPage: CollectionConfig = {
         { label: 'Active', value: 'active' },
         { label: 'Inactive', value: 'inactive' },
       ],
+    },
+    {
+      ...contentBlocksField,
+      admin: {
+        ...contentBlocksField.admin,
+        description: 'Optional content blocks rendered after this Publications section.',
+      },
     },
 
     // PAGE TITLE

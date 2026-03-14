@@ -33,6 +33,7 @@ export const blockBuilderPlugin = (options?: {
     customCode?: boolean
     map?: boolean
     people?: boolean
+    flexibleRow?: boolean
   }
 }): Plugin => {
   return (incomingConfig: Config): Config => {
@@ -42,11 +43,11 @@ export const blockBuilderPlugin = (options?: {
     // Create the modified config
     const config: Config = {
       ...incomingConfig,
-      collections: incomingConfig.collections?.map((collection) => {
+      collections: (incomingConfig.collections || [])?.map((collection) => {
         // Only add to specified collections, or all if none specified
         const shouldAddBlocks =
           enabledCollections.length === 0 ||
-          enabledCollections.includes(collection.slug)
+          (enabledCollections && enabledCollections.includes(collection.slug))
 
         if (!shouldAddBlocks) {
           return collection

@@ -11,6 +11,57 @@ interface PageProps {
   params: Promise<{ slug: string }>
 }
 
+function slugify(value: string): string {
+  return value
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/(^-|-$)/g, '')
+}
+
+function getSlugCandidates(rawSlug: string): string[] {
+  const decoded = decodeURIComponent(String(rawSlug || '')).trim()
+  const lower = decoded.toLowerCase()
+  const slugified = slugify(decoded)
+
+  return Array.from(new Set([decoded, lower, slugified].filter(Boolean)))
+}
+
+function normalizeStoredSlug(value: string): string {
+  const raw = String(value || '').trim().replace(/^\/+/, '')
+  return slugify(raw)
+}
+
+async function findPublishedPageBySlug(rawSlug: string, depth: number = 1) {
+  const payload = await getPayload({ config })
+  const slugCandidates = getSlugCandidates(rawSlug)
+  const normalizedCandidates = slugCandidates.map((candidate) => normalizeStoredSlug(candidate))
+
+  const pages = await payload.find({
+    collection: 'pages' as any,
+    where: {
+      status: { equals: 'published' },
+    },
+    depth,
+    limit: 500,
+  })
+
+  const docs = pages.docs || []
+  const page = docs.find((doc: any) => {
+    const docSlugRaw = String(doc?.slug || '')
+    const docSlug = normalizeStoredSlug(docSlugRaw)
+    if (!docSlug) return false
+
+    if (slugCandidates.includes(docSlugRaw)) return true
+    if (slugCandidates.includes(docSlug)) return true
+    if (normalizedCandidates.includes(docSlug)) return true
+
+    return false
+  })
+
+  return page || null
+}
+
 // Generate static params for all published pages
 export async function generateStaticParams() {
   try {
@@ -37,17 +88,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const { slug } = await params
   
   try {
-    const payload = await getPayload({ config })
-    const pages = await payload.find({
-      collection: 'pages' as any,
-      where: {
-        slug: { equals: slug },
-        status: { equals: 'published' },
-      },
-      limit: 1,
-    })
-    
-    const page = pages.docs[0] as any
+    const page = await findPublishedPageBySlug(slug, 1) as any
     if (!page) return {}
     
     return {
@@ -66,6 +107,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
 export default async function DynamicPage({ params }: PageProps) {
   const { slug } = await params
+  const normalizedSlug = slugify(String(slug || ''))
   
   // Skip reserved routes that have their own pages
   const reservedRoutes = [
@@ -75,23 +117,12 @@ export default async function DynamicPage({ params }: PageProps) {
     'terms', 'privacy', '404'
   ]
   
-  if (reservedRoutes.includes(slug)) {
+  if (reservedRoutes.includes(normalizedSlug)) {
     notFound()
   }
   
   try {
-    const payload = await getPayload({ config })
-    const pages = await payload.find({
-      collection: 'pages' as any,
-      where: {
-        slug: { equals: slug },
-        status: { equals: 'published' },
-      },
-      depth: 3,
-      limit: 1,
-    })
-    
-    const page = pages.docs[0] as any
+    const page = await findPublishedPageBySlug(slug, 3) as any
     
     if (!page) {
       notFound()

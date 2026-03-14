@@ -1,6 +1,7 @@
 import * as React from 'react'
 import Link from 'next/link'
 import { getPageContent } from '../../../lib/payload'
+import { BlockRenderer } from '../components/BlockRenderer'
 
 export default async function CMSContactPage({ isHomePage = false }: { isHomePage?: boolean } = {}) {
   try {
@@ -38,6 +39,9 @@ export default async function CMSContactPage({ isHomePage = false }: { isHomePag
                 </ol>
               </nav>
             </div>
+            {pageTitleSection?.contentBlocks && pageTitleSection.contentBlocks.length > 0 && (
+              <BlockRenderer blocks={pageTitleSection.contentBlocks} />
+            )}
           </div>
         )}
 
@@ -48,16 +52,21 @@ export default async function CMSContactPage({ isHomePage = false }: { isHomePag
               
               {/* Map Wrapper */}
               {contactMapSection && contactMapSection.contactMap && (
-                <div className="map-wrapper">
-                  <iframe 
-                    src={contactMapSection.contactMap.mapEmbedUrl || 'https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d48389.78314118045!2d-74.006138!3d40.710059!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x89c25a22a3bda30d%3A0xb89d1fe6bc499443!2sDowntown%20Conference%20Center!5e0!3m2!1sen!2sus!4v1676961268712!5m2!1sen!2sus'}
-                    width="100%" 
-                    height="100%" 
-                    style={{border: 0}} 
-                    allowFullScreen={true}
-                    loading="lazy" 
-                    referrerPolicy="no-referrer-when-downgrade"
-                  ></iframe>
+                <div>
+                  <div className="map-wrapper">
+                    <iframe 
+                      src={contactMapSection.contactMap.mapEmbedUrl || 'https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d48389.78314118045!2d-74.006138!3d40.710059!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x89c25a22a3bda30d%3A0xb89d1fe6bc499443!2sDowntown%20Conference%20Center!5e0!3m2!1sen!2sus!4v1676961268712!5m2!1sen!2sus'}
+                      width="100%" 
+                      height="100%" 
+                      style={{border: 0}} 
+                      allowFullScreen={true}
+                      loading="lazy" 
+                      referrerPolicy="no-referrer-when-downgrade"
+                    ></iframe>
+                  </div>
+                  {contactMapSection.contentBlocks && contactMapSection.contentBlocks.length > 0 && (
+                    <BlockRenderer blocks={contactMapSection.contentBlocks} />
+                  )}
                 </div>
               )}
 
@@ -128,6 +137,10 @@ export default async function CMSContactPage({ isHomePage = false }: { isHomePag
                     </form>
                   </div>
 
+                  {contactInfoSection.contentBlocks && contactInfoSection.contentBlocks.length > 0 && (
+                    <BlockRenderer blocks={contactInfoSection.contentBlocks} />
+                  )}
+
                 </div>
               )}
 
@@ -145,6 +158,7 @@ export default async function CMSContactPage({ isHomePage = false }: { isHomePag
             </div>
           </div>
         )}
+
       </>
     )
   } catch (error) {

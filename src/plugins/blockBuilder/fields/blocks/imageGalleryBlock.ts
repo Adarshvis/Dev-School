@@ -81,5 +81,31 @@ export const imageGalleryBlock: Block = {
         { label: 'Large', value: 'large' },
       ],
     },
+    {
+      name: 'showViewMoreButton',
+      type: 'checkbox',
+      defaultValue: false,
+      admin: {
+        description: 'When enabled, frontend shows only first 4 images with a View More button',
+      },
+    },
+    {
+      name: 'viewMoreButtonText',
+      type: 'text',
+      defaultValue: 'View More',
+      admin: {
+        condition: (data, siblingData) => !!siblingData?.showViewMoreButton,
+        description: 'Button label shown on frontend',
+      },
+    },
+    {
+      name: 'viewMoreLink',
+      type: 'text',
+      defaultValue: '/gallery',
+      admin: {
+        condition: (data, siblingData) => !!siblingData?.showViewMoreButton,
+        description: 'Destination URL for View More button',
+      },
+    },
   ],
 }

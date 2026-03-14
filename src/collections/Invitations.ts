@@ -30,24 +30,24 @@ export const Invitations: CollectionConfig = {
   },
   access: {
     // Only admins and superadmins can manage invitations
-    create: ({ req: { user } }) => {
-      if (!user) return false
-      const role = (user as any).role
+    create: ({ req }) => {
+      if (!req || !req.user) return false
+      const role = (req.user as any).role
       return role === 'superadmin' || role === 'admin'
     },
-    read: ({ req: { user } }) => {
-      if (!user) return false
-      const role = (user as any).role
+    read: ({ req }) => {
+      if (!req || !req.user) return false
+      const role = (req.user as any).role
       return role === 'superadmin' || role === 'admin'
     },
-    update: ({ req: { user } }) => {
-      if (!user) return false
-      const role = (user as any).role
+    update: ({ req }) => {
+      if (!req || !req.user) return false
+      const role = (req.user as any).role
       return role === 'superadmin' || role === 'admin'
     },
-    delete: ({ req: { user } }) => {
-      if (!user) return false
-      const role = (user as any).role
+    delete: ({ req }) => {
+      if (!req || !req.user) return false
+      const role = (req.user as any).role
       return role === 'superadmin' || role === 'admin'
     },
   },

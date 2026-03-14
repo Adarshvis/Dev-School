@@ -6,6 +6,119 @@ import { BlockRenderer } from './components/BlockRenderer'
 import RecentBlogPosts from './components/RecentBlogPosts'
 import FeaturedNews from './components/FeaturedNews'
 import { HeroSectionRenderer } from './components/HeroSectionRenderer'
+import { lexicalToHtml } from '@/lib/lexicalToHtml'
+
+const EXCLUDED_BLOCK_PATTERNS = [/\bvc'?s?\s*speech\b/i, /\bvice\s+chancellor'?s?\s*speech\b/i]
+
+const normalizeSectionType = (sectionType: unknown): string => {
+  const raw = String(sectionType || '')
+    .trim()
+    .toLowerCase()
+    .replace(/_/g, '-')
+    .replace(/\s+/g, '-')
+    .replace(/&/g, 'and')
+
+  if (
+    raw === 'news-notification' ||
+    raw === 'news-notifications' ||
+    raw === 'news-and-notification' ||
+    raw === 'news-and-notifications' ||
+    raw === 'notification-news'
+  ) {
+    return 'featured-news'
+  }
+
+  return raw
+}
+
+const isExcludedBlock = (block: any): boolean => {
+  const serialized = JSON.stringify(block || {})
+  return EXCLUDED_BLOCK_PATTERNS.some((pattern) => pattern.test(serialized))
+}
+
+const filterVisibleBlocks = (blocks: any[] | undefined): any[] => {
+  if (!Array.isArray(blocks)) return []
+  return blocks.filter((block) => !isExcludedBlock(block))
+}
+
+const getSectionBlocks = (section: any): any[] => {
+  const fromCustomBlock = filterVisibleBlocks(section?.customBlock)
+  if (fromCustomBlock.length > 0) return fromCustomBlock
+
+  const fromContentBlocks = filterVisibleBlocks(section?.contentBlocks)
+  if (fromContentBlocks.length > 0) return fromContentBlocks
+
+  return []
+}
+
+const getCardDescription = (value: unknown): string => {
+  if (!value) return ''
+  const text = String(value).replace(/\s+/g, ' ').trim()
+  if (!text) return ''
+  return text.length > 140 ? `${text.slice(0, 140).trim()}...` : text
+}
+
+const isExternalHref = (value: string): boolean => /^(https?:\/\/|mailto:|tel:)/i.test(value)
+
+const normalizeProfilePath = (value: string): string => {
+  const raw = String(value || '').trim()
+  if (!raw) return ''
+
+  if (/^\/?people-id-/i.test(raw)) {
+    const normalized = raw.replace(/^\/?people-id-/i, 'id-')
+    return `/people/${normalized}`
+  }
+
+  if (/^\/?instructors-id-/i.test(raw)) {
+    const normalized = raw.replace(/^\/?instructors-id-/i, 'id-')
+    return `/people/${normalized}`
+  }
+
+  if (/^\/people-profile\//i.test(raw)) {
+    return raw.replace(/^\/people-profile\//i, '/people/')
+  }
+
+  if (/^\/instructor-profile\//i.test(raw)) {
+    return raw.replace(/^\/instructor-profile\//i, '/people/')
+  }
+
+  if (/^\/instructors\//i.test(raw)) {
+    return raw.replace(/^\/instructors\//i, '/people/')
+  }
+
+  return raw
+}
+
+const getHomePersonProfileHref = (person: any): string => {
+  const explicitProfileLink = String(person?.profileLink || '').trim()
+  if (explicitProfileLink !== '') {
+    return normalizeProfilePath(explicitProfileLink)
+  }
+
+  const personId = String(person?.id || person?._id || '').trim()
+  if (personId) {
+    return `/people/id-${personId}`
+  }
+
+  const personSlug = String(person?.slug || '').trim()
+  if (personSlug) {
+    return `/people/${personSlug}`
+  }
+
+  const name = String(person?.name || '').trim()
+  if (name) {
+    const generatedSlug = name
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/(^-|-$)/g, '')
+
+    if (generatedSlug) {
+      return `/people/${generatedSlug}`
+    }
+  }
+
+  return '/people'
+}
 
 // Section renderer components
 const HeroRenderer = ({ section }: { section: any }) => {
@@ -16,16 +129,25 @@ const HeroRenderer = ({ section }: { section: any }) => {
 const OurStoryRenderer = ({ section }: { section: any }) => {
   const ourStory = section?.ourStory
   if (!ourStory) return null
+  const formattedDescriptionHtml = ourStory?.formattedDescription
+    ? lexicalToHtml(ourStory.formattedDescription)
+    : ''
+  const isImageLeft = ourStory.layout === 'image-left'
+  const contentColClass = isImageLeft ? 'col-lg-6 order-lg-2' : 'col-lg-6'
+  const imageColClass = isImageLeft ? 'col-lg-6 order-lg-1' : 'col-lg-6'
   
   return (
     <section id="about" className="about section">
       <div className="container" data-aos="fade-up" data-aos-delay="100">
         <div className="row align-items-center g-5">
-          <div className="col-lg-6">
+          <div className={contentColClass}>
             <div className="about-content" data-aos="fade-up" data-aos-delay="200">
               {ourStory.subtitle && <h3>{ourStory.subtitle}</h3>}
               {ourStory.title && <h2>{ourStory.title}</h2>}
               {ourStory.description && <p>{ourStory.description}</p>}
+              {formattedDescriptionHtml && (
+                <div dangerouslySetInnerHTML={{ __html: formattedDescriptionHtml }} />
+              )}
 
               {ourStory.timelinePoints && ourStory.timelinePoints.length > 0 && (
                 <div className="timeline">
@@ -38,26 +160,13 @@ const OurStoryRenderer = ({ section }: { section: any }) => {
                       </div>
                     </div>
                   ))}
-                  
-                  {(ourStory.buttonText || ourStory.buttonLink) && (
-                    <div className="timeline-item">
-                      <div className="timeline-dot"></div>
-                      <div className="timeline-content">
-                        <Link 
-                          href={ourStory.buttonLink || '/about'} 
-                          className="btn btn-primary"
-                        >
-                          {ourStory.buttonText || 'Learn More About Us'}
-                        </Link>
-                      </div>
-                    </div>
-                  )}
                 </div>
               )}
+
             </div>
           </div>
 
-          <div className="col-lg-6">
+          <div className={imageColClass}>
             <div className="about-image" data-aos="zoom-in" data-aos-delay="300">
               {ourStory.campusImage && (
                 <img 
@@ -77,6 +186,17 @@ const OurStoryRenderer = ({ section }: { section: any }) => {
                       {card.description && <p>{card.description}</p>}
                     </div>
                   ))}
+                </div>
+              )}
+
+              {(ourStory.buttonText || ourStory.buttonLink) && (
+                <div className="mt-3 d-flex justify-content-center" data-aos="fade-up" data-aos-delay="350">
+                  <Link
+                    href={ourStory.buttonLink || '/about'}
+                    className="btn btn-primary"
+                  >
+                    {ourStory.buttonText || 'Learn More About Us'}
+                  </Link>
                 </div>
               )}
             </div>
@@ -123,7 +243,11 @@ const FeaturedInstructorsRenderer = ({ section }: { section: any }) => {
 
       <div className="container" data-aos="fade-up" data-aos-delay="100">
         <div className="row gy-4">
-          {data.instructors && data.instructors.map((instructor: any, index: number) => (
+          {data.instructors && data.instructors.map((instructor: any, index: number) => {
+            const profileHref = getHomePersonProfileHref(instructor)
+            const externalProfileHref = isExternalHref(profileHref)
+
+            return (
             <div key={index} className="col-xl-3 col-lg-4 col-md-6">
               <div className="instructor-card">
                 {instructor.image && (
@@ -156,7 +280,7 @@ const FeaturedInstructorsRenderer = ({ section }: { section: any }) => {
                 )}
                 <div className="instructor-info">
                   {instructor.name && <h5>{instructor.name}</h5>}
-                  {instructor.description && <p className="description">{instructor.description}</p>}
+                  {getCardDescription(instructor.description) ? <p className="description">{getCardDescription(instructor.description)}</p> : null}
                   {(instructor.studentCount || instructor.rating) && (
                     <div className="stats-grid">
                       {instructor.studentCount && (
@@ -173,12 +297,16 @@ const FeaturedInstructorsRenderer = ({ section }: { section: any }) => {
                       )}
                     </div>
                   )}
-                  {(instructor.profileLink || instructor.profileButtonText || instructor.socialLinks) && (
+                  {(profileHref || instructor.profileButtonText || instructor.socialLinks) && (
                     <div className="action-buttons">
-                      {(instructor.profileLink || instructor.profileButtonText) && (
-                        <a href={instructor.profileLink || '#'} className="btn-view">
+                      {externalProfileHref ? (
+                        <a href={profileHref} className="btn-view" target="_blank" rel="noopener noreferrer">
                           {instructor.profileButtonText || 'View Profile'}
                         </a>
+                      ) : (
+                        <Link href={profileHref} className="btn-view">
+                          {instructor.profileButtonText || 'View Profile'}
+                        </Link>
                       )}
                       {instructor.socialLinks && instructor.socialLinks.length > 0 && (
                         <div className="social-links">
@@ -196,7 +324,7 @@ const FeaturedInstructorsRenderer = ({ section }: { section: any }) => {
                 </div>
               </div>
             </div>
-          ))}
+          )})}
         </div>
       </div>
     </section>
@@ -368,7 +496,7 @@ const CTARenderer = ({ section }: { section: any }) => {
   if (!cta) return null
   
   return (
-    <section id="cta" className="cta section light-background">
+    <section id="cta" className="cta section">
       <div className="container" data-aos="fade-up" data-aos-delay="100">
         <div className="row align-items-center">
           <div className="col-lg-6" data-aos="fade-right" data-aos-delay="200">
@@ -453,8 +581,9 @@ const CTARenderer = ({ section }: { section: any }) => {
 }
 
 const CustomBlockRenderer = ({ section }: { section: any }) => {
-  if (!section?.customBlock) return null
-  return <BlockRenderer blocks={section.customBlock} />
+  const blocks = getSectionBlocks(section)
+  if (!blocks || blocks.length === 0) return null
+  return <BlockRenderer blocks={blocks} />
 }
 
 // Map section types to their renderers
@@ -520,12 +649,32 @@ export default async function CMSHomePage() {
     return (
       <>
         {sections.map((section: any, index: number) => {
-          const Renderer = sectionRenderers[section.sectionType]
+          const normalizedSectionType = normalizeSectionType(section?.sectionType)
+          const Renderer = sectionRenderers[normalizedSectionType]
           if (!Renderer) {
             console.warn(`Unknown section type: ${section.sectionType}`)
             return null
           }
-          return <Renderer key={section.id || index} section={section} />
+          const inlineBlocks = filterVisibleBlocks(section?.contentBlocks)
+          const sectionBackgroundColor = section?.sectionBackgroundColor
+          const sectionWrapperStyle = sectionBackgroundColor
+            ? ({
+                '--cms-section-bg': sectionBackgroundColor,
+                backgroundColor: sectionBackgroundColor,
+              } as React.CSSProperties)
+            : undefined
+          return (
+            <div
+              key={section.id || index}
+              className="cms-home-section"
+              style={sectionWrapperStyle}
+            >
+              <Renderer section={section} />
+              {normalizedSectionType !== 'custom-block' && inlineBlocks.length > 0 ? (
+                <BlockRenderer blocks={inlineBlocks} />
+              ) : null}
+            </div>
+          )
         })}
       </>
     )

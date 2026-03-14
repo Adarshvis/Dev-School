@@ -21,19 +21,16 @@ import { ContactPage } from './collections/ContactPage.ts'
 import { EnrollPage } from './collections/EnrollPage.ts'
 import { Pages } from './collections/Pages.ts'
 import { Publications } from './collections/Publications.ts'
+import { PublicationsPage } from './collections/PublicationsPage.ts'
 import { Invitations } from './collections/Invitations.ts'
 import { Settings } from './globals/Settings.ts'
 import { Navigation } from './globals/Navigation.ts'
 import { blockBuilderPlugin } from './plugins/blockBuilder/index.ts'
 import { sectionReorderPlugin } from './plugins/sectionReorder/index.ts'
-import { LogoutButton } from './components/admin/LogoutButton.tsx'
 
 export default buildConfig({
   admin: {
     user: Users.slug,
-    components: {
-      afterNavLinks: [LogoutButton as any],
-    },
   },
   collections: [
     Users, 
@@ -52,6 +49,7 @@ export default buildConfig({
     BlogPosts,
     ContactPage,
     Publications,
+    PublicationsPage,
     Invitations,
   ],
   globals: [Settings, Navigation, EnrollPage],
@@ -91,6 +89,7 @@ export default buildConfig({
         'instructors-page',
         'news-page',
         'contact-page',
+        'pages',
       ],
       // Optional: Customize which blocks are available
       enabledBlocks: {

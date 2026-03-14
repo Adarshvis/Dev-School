@@ -28,20 +28,23 @@ export const InstructorsPage: CollectionConfig = {
   },
   access: {
     read: () => true,
-    create: ({ req: { user } }) => {
-      const u = user as UserWithRole | null
+    create: ({ req }) => {
+      if (!req) return false
+      const u = req.user as UserWithRole | null
       if (!u) return false
       if (!u.role || ['superadmin', 'admin', 'editor'].includes(u.role)) return true
       return false
     },
-    update: ({ req: { user } }) => {
-      const u = user as UserWithRole | null
+    update: ({ req }) => {
+      if (!req) return false
+      const u = req.user as UserWithRole | null
       if (!u) return false
       if (!u.role || ['superadmin', 'admin', 'editor'].includes(u.role)) return true
       return false
     },
-    delete: ({ req: { user } }) => {
-      const u = user as UserWithRole | null
+    delete: ({ req }) => {
+      if (!req) return false
+      const u = req.user as UserWithRole | null
       if (!u) return false
       if (!u.role || ['superadmin', 'admin'].includes(u.role)) return true
       return false

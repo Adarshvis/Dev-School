@@ -1,4 +1,7 @@
 import type { CollectionConfig } from 'payload'
+import { hasAdminOnlyAccess, hasCollectionAccess } from '@/lib/access'
+import { colorPickerField } from '@innovixx/payload-color-picker-field'
+import { FlexibleRowBlock } from '@/blocks/FlexibleRow'
 
 // Type for user with role field
 type UserWithRole = {
@@ -31,32 +34,9 @@ export const HomePage: CollectionConfig = {
   },
   access: {
     read: () => true,
-    create: ({ req: { user } }) => {
-      const u = user as UserWithRole | null
-      if (!u) return false
-      if (!u.role || ['superadmin', 'admin', 'editor'].includes(u.role)) return true
-      if (u.role === 'author') {
-        const allowed = u.allowedCollections || []
-        return allowed.includes('home-page')
-      }
-      return false
-    },
-    update: ({ req: { user } }) => {
-      const u = user as UserWithRole | null
-      if (!u) return false
-      if (!u.role || ['superadmin', 'admin', 'editor'].includes(u.role)) return true
-      if (u.role === 'author') {
-        const allowed = u.allowedCollections || []
-        return allowed.includes('home-page')
-      }
-      return false
-    },
-    delete: ({ req: { user } }) => {
-      const u = user as UserWithRole | null
-      if (!u) return false
-      if (!u.role || ['superadmin', 'admin'].includes(u.role)) return true
-      return false
-    },
+    create: ({ req }) => hasCollectionAccess(req, 'home-page'),
+    update: ({ req }) => hasCollectionAccess(req, 'home-page'),
+    delete: ({ req }) => hasAdminOnlyAccess(req),
   },
   fields: [
     {
@@ -106,6 +86,13 @@ export const HomePage: CollectionConfig = {
         { label: 'Inactive', value: 'inactive' },
       ],
     },
+    colorPickerField({
+      name: 'sectionBackgroundColor',
+      defaultValue: '#ffffff',
+      admin: {
+        description: 'Background color for this home page section',
+      },
+    }),
 
     // HERO SECTION FIELDS
     {
@@ -1429,6 +1416,18 @@ export const HomePage: CollectionConfig = {
       },
       fields: [
         {
+          name: 'layout',
+          type: 'select',
+          defaultValue: 'content-left',
+          options: [
+            { label: 'Content Left + Image Right', value: 'content-left' },
+            { label: 'Image Left + Content Right', value: 'image-left' },
+          ],
+          admin: {
+            description: 'Select layout for About Us section on homepage',
+          },
+        },
+        {
           name: 'subtitle',
           type: 'text',
           admin: {
@@ -1445,6 +1444,13 @@ export const HomePage: CollectionConfig = {
         {
           name: 'description',
           type: 'textarea',
+        },
+        {
+          name: 'formattedDescription',
+          type: 'richText',
+          admin: {
+            description: 'Optional formatted content shown after description',
+          },
         },
         {
           name: 'timelinePoints',
@@ -2345,6 +2351,32 @@ export const HomePage: CollectionConfig = {
                 { label: 'Large', value: 'large' },
               ],
             },
+            {
+              name: 'showViewMoreButton',
+              type: 'checkbox',
+              defaultValue: false,
+              admin: {
+                description: 'When enabled, frontend shows only first 4 images with a View More button',
+              },
+            },
+            {
+              name: 'viewMoreButtonText',
+              type: 'text',
+              defaultValue: 'View More',
+              admin: {
+                condition: (data, siblingData) => !!siblingData?.showViewMoreButton,
+                description: 'Button label shown on frontend',
+              },
+            },
+            {
+              name: 'viewMoreLink',
+              type: 'text',
+              defaultValue: '/gallery',
+              admin: {
+                condition: (data, siblingData) => !!siblingData?.showViewMoreButton,
+                description: 'Destination URL for View More button',
+              },
+            },
           ],
         },
         {
@@ -2368,6 +2400,7 @@ export const HomePage: CollectionConfig = {
             },
           ],
         },
+        FlexibleRowBlock,
       ],
       admin: {
         condition: (data) => data?.sectionType === 'custom-block',

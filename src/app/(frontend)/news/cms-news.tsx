@@ -2,6 +2,7 @@ import React from 'react'
 import Link from 'next/link'
 import { getPayload } from 'payload'
 import config from '@payload-config'
+import { BlockRenderer } from '../components/BlockRenderer'
 
 interface NewsArticle {
   id: string
@@ -60,6 +61,22 @@ function formatDate(dateString: string): string {
 
 export default async function CMSNewsPage({ isHomePage = false }: { isHomePage?: boolean } = {}) {
   const news = await getAllNews()
+  let sections: any[] = []
+
+  try {
+    const payload = await getPayload({ config })
+    const newsPageSections = await payload.find({
+      collection: 'news-page' as any,
+      where: {
+        status: { equals: 'active' },
+      },
+      sort: 'order',
+      depth: 2,
+    })
+    sections = newsPageSections.docs || []
+  } catch (error) {
+    console.error('Error fetching news page sections:', error)
+  }
 
   // Separate featured and regular news
   const featuredNews = news.filter(n => n.isFeatured)
@@ -73,6 +90,9 @@ export default async function CMSNewsPage({ isHomePage = false }: { isHomePage?:
   const topStoriesNews = regularNews.slice(0, 3)
   const trendingNews = regularNews.slice(3, 6)
   const latestNews = news.slice(0, 3)
+  const pageTitleSection = sections.find((section: any) => section.sectionType === 'page-title')
+  const newsHeroSection = sections.find((section: any) => section.sectionType === 'news-hero')
+  const newsListingSection = sections.find((section: any) => section.sectionType === 'news-listing')
 
   return (
     <>
@@ -88,6 +108,9 @@ export default async function CMSNewsPage({ isHomePage = false }: { isHomePage?:
               </ol>
             </nav>
           </div>
+          {pageTitleSection?.contentBlocks && pageTitleSection.contentBlocks.length > 0 && (
+            <BlockRenderer blocks={pageTitleSection.contentBlocks} />
+          )}
         </div>
       )}
 
@@ -302,6 +325,10 @@ export default async function CMSNewsPage({ isHomePage = false }: { isHomePage?:
         </div>
       </section>
 
+      {newsHeroSection?.contentBlocks && newsHeroSection.contentBlocks.length > 0 && (
+        <BlockRenderer blocks={newsHeroSection.contentBlocks} />
+      )}
+
       {/* News Posts Section */}
       {regularNews.length > 0 && (
         <section id="news-posts" className="news-posts section">
@@ -361,6 +388,10 @@ export default async function CMSNewsPage({ isHomePage = false }: { isHomePage?:
             </div>
           </div>
         </section>
+      )}
+
+      {newsListingSection?.contentBlocks && newsListingSection.contentBlocks.length > 0 && (
+        <BlockRenderer blocks={newsListingSection.contentBlocks} />
       )}
     </>
   )

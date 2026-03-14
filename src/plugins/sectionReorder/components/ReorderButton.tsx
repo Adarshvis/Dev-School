@@ -1,7 +1,6 @@
 'use client'
 
 import React, { useEffect, useState, useCallback } from 'react'
-import { useConfig } from '@payloadcms/ui'
 import {
   DndContext,
   closestCenter,
@@ -127,7 +126,6 @@ const SortableItem: React.FC<SortableItemProps> = ({ section, collectionSlug }) 
 }
 
 const ReorderButton: React.FC = () => {
-  const { config } = useConfig()
   const [isOpen, setIsOpen] = useState(false)
   const [sections, setSections] = useState<Section[]>([])
   const [originalSections, setOriginalSections] = useState<Section[]>([])

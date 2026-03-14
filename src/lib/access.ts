@@ -8,11 +8,54 @@ export type UserWithRole = {
   [key: string]: unknown
 }
 
+// Safe user extraction that handles undefined req
+export function getSafeUser(req: any): UserWithRole | null {
+  if (!req || !req.user) return null
+  return req.user as UserWithRole | null
+}
+
+// Check if user has admin/editor access
+export function hasAdminAccess(req: any): boolean {
+  const user = getSafeUser(req)
+  if (!user) return false
+  return !user.role || ['superadmin', 'admin', 'editor'].includes(user.role)
+}
+
+// Check if user is superadmin or admin only
+export function hasAdminOnlyAccess(req: any): boolean {
+  const user = getSafeUser(req)
+  if (!user) return false
+  return !user.role || ['superadmin', 'admin'].includes(user.role)
+}
+
+// Check if user has access to a specific collection
+export function hasCollectionAccess(req: any, collectionSlug: string): boolean {
+  const user = getSafeUser(req)
+  if (!user) return false
+  
+  // Admins have access to everything
+  if (!user.role || ['superadmin', 'admin', 'editor'].includes(user.role)) return true
+  
+  // Authors are restricted by allowedCollections
+  if (user.role === 'author') {
+    const allowed = user.allowedCollections || []
+    return allowed.includes(collectionSlug)
+  }
+  
+  return false
+}
+
+// Check if user can access a collection (for use in access controls)
+export function canAccessCollection(collectionSlug: string): Access {
+  return ({ req }) => hasCollectionAccess(req, collectionSlug)
+}
+
 /**
  * Check if user is a super admin
  */
-export const isSuperAdmin: Access = ({ req: { user } }) => {
-  const u = user as UserWithRole | null
+export const isSuperAdmin: Access = ({ req }) => {
+  if (!req) return false
+  const u = req.user as UserWithRole | null
   return u?.role === 'superadmin'
 }
 
@@ -20,8 +63,9 @@ export const isSuperAdmin: Access = ({ req: { user } }) => {
  * Check if user is an admin (includes superadmin)
  * Users without a role are treated as admins for backward compatibility
  */
-export const isAdmin: Access = ({ req: { user } }) => {
-  const u = user as UserWithRole | null
+export const isAdmin: Access = ({ req }) => {
+  if (!req) return false
+  const u = req.user as UserWithRole | null
   if (!u) return false
   // If no role is set, treat as admin (backward compatibility)
   return !u.role || u.role === 'admin' || u.role === 'superadmin'
@@ -30,41 +74,12 @@ export const isAdmin: Access = ({ req: { user } }) => {
 /**
  * Check if user is an admin or editor
  */
-export const isAdminOrEditor: Access = ({ req: { user } }) => {
-  const u = user as UserWithRole | null
+export const isAdminOrEditor: Access = ({ req }) => {
+  if (!req) return false
+  const u = req.user as UserWithRole | null
   if (!u) return false
   // If no role is set, treat as admin (backward compatibility)
   return !u.role || u.role === 'admin' || u.role === 'superadmin' || u.role === 'editor'
-}
-
-/**
- * Check if user has access to a specific collection
- * - Superadmin/Admin/Editor: Full access to all collections
- * - Author: Only access to collections in their allowedCollections list
- */
-export const canAccessCollection = (collectionSlug: string): Access => {
-  return ({ req: { user } }) => {
-    const u = user as UserWithRole | null
-    if (!u) return false
-    
-    // Superadmin, admin, or no role (backward compatibility) - full access
-    if (!u.role || u.role === 'superadmin' || u.role === 'admin') {
-      return true
-    }
-    
-    // Editor - full access to content
-    if (u.role === 'editor') {
-      return true
-    }
-    
-    // Author - check allowedCollections
-    if (u.role === 'author') {
-      const allowed = u.allowedCollections || []
-      return allowed.includes(collectionSlug)
-    }
-    
-    return false
-  }
 }
 
 /**
@@ -72,9 +87,10 @@ export const canAccessCollection = (collectionSlug: string): Access => {
  * All authenticated users can read, or allow public read
  */
 export const canRead = (publicAccess: boolean = true): Access => {
-  return ({ req: { user } }) => {
+  return ({ req }) => {
     if (publicAccess) return true
-    return !!user
+    if (!req) return false
+    return !!req.user
   }
 }
 

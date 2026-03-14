@@ -21,8 +21,9 @@ export const Navigation: GlobalConfig = {
   },
   access: {
     read: () => true,
-    update: ({ req: { user } }) => {
-      const u = user as UserWithRole | null
+    update: ({ req }) => {
+      if (!req) return false
+      const u = req.user as UserWithRole | null
       if (!u) return false
       // Only superadmin, admin, and editor can update navigation
       if (!u.role || ['superadmin', 'admin', 'editor'].includes(u.role)) return true

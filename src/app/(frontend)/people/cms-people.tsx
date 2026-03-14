@@ -38,6 +38,9 @@ export default async function CMSPeoplePage({ isHomePage = false }: { isHomePage
                 </ol>
               </nav>
             </div>
+            {pageTitleSection?.contentBlocks && pageTitleSection.contentBlocks.length > 0 && (
+              <BlockRenderer blocks={pageTitleSection.contentBlocks} />
+            )}
           </div>
         )}
 
@@ -122,15 +125,12 @@ export default async function CMSPeoplePage({ isHomePage = false }: { isHomePage
               </div>
             )}
 
+            {peopleGridSection?.contentBlocks && peopleGridSection.contentBlocks.length > 0 && (
+              <BlockRenderer blocks={peopleGridSection.contentBlocks} />
+            )}
+
           </div>
         </section>
-
-        {/* Render Content Blocks from all sections */}
-        {peoplePageContent && peoplePageContent.map((section: any, idx: number) => (
-          section.contentBlocks && section.contentBlocks.length > 0 && (
-            <BlockRenderer key={`blocks-${idx}`} blocks={section.contentBlocks} />
-          )
-        ))}
       </>
     )
   } catch (error) {

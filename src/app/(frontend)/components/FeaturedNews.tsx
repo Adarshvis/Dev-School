@@ -28,6 +28,14 @@ interface FeaturedNewsProps {
   description?: string
 }
 
+const EXCLUDED_NEWS_PATTERNS = [/\bvc\s*speech\b/i, /\bvice\s+chancellor\s+speech\b/i]
+
+function isExcludedNewsItem(article: NewsArticle): boolean {
+  const title = article?.title || ''
+  const excerpt = article?.excerpt || ''
+  return EXCLUDED_NEWS_PATTERNS.some((pattern) => pattern.test(title) || pattern.test(excerpt))
+}
+
 // Helper function to format date
 function formatDate(dateString: string): string {
   const date = new Date(dateString)
@@ -53,12 +61,13 @@ async function getNewsForHome(): Promise<{ featured: NewsArticle | null; recent:
     })
     
     const docs = (data.docs || []) as unknown as NewsArticle[]
+    const visibleDocs = docs.filter((article) => !isExcludedNewsItem(article))
     
     // Get 1 featured article (first one)
-    const featured = docs[0] || null
+    const featured = visibleDocs[0] || null
     
     // Get 4 recent articles (remaining ones)
-    const recent = docs.slice(1, 5)
+    const recent = visibleDocs.slice(1, 5)
     
     return { featured, recent }
   } catch (error) {

@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import { BlockRenderer } from './BlockRenderer'
 
 interface PageSection {
   id?: string
@@ -87,6 +88,8 @@ interface DynamicPage {
   showPageTitle?: boolean
   breadcrumbs?: Array<{ label: string; link?: string }>
   content?: any
+  contentBlocks?: any[]
+  layout?: any[]
   sections?: PageSection[]
 }
 
@@ -193,6 +196,30 @@ const RichTextRenderer = ({ content }: { content: any }) => {
       <div className="rich-text-content">
         {content.root.children.map((node: any, index: number) => {
           const alignStyle = getAlignmentStyle(node.format)
+
+          if (node.type === 'upload') {
+            const mediaValue = node?.value || null
+            const mediaUrl = mediaValue?.url || ''
+            const mediaAlt = mediaValue?.alt || mediaValue?.filename || 'Media'
+
+            if (!mediaUrl) return null
+
+            if (String(mediaValue?.mimeType || '').startsWith('video/')) {
+              return (
+                <div key={index} style={{ margin: '1rem 0', ...alignStyle }}>
+                  <video controls style={{ maxWidth: '100%', height: 'auto' }}>
+                    <source src={mediaUrl} type={mediaValue?.mimeType || 'video/mp4'} />
+                  </video>
+                </div>
+              )
+            }
+
+            return (
+              <div key={index} style={{ margin: '1rem 0', ...alignStyle }}>
+                <img src={mediaUrl} alt={mediaAlt} style={{ maxWidth: '100%', height: 'auto' }} />
+              </div>
+            )
+          }
           
           if (node.type === 'paragraph') {
             return (
@@ -847,6 +874,12 @@ export default function DynamicPageRenderer({ page }: DynamicPageRendererProps) 
           </div>
         </section>
       )}
+
+      {/* Layout Blocks (Payload blocks field) */}
+      {page.layout && page.layout.length > 0 && <BlockRenderer blocks={page.layout} />}
+
+      {/* Content Blocks (blockBuilder plugin field) */}
+      {page.contentBlocks && page.contentBlocks.length > 0 && <BlockRenderer blocks={page.contentBlocks} />}
 
       {/* Dynamic Sections */}
       {page.sections?.map((section, index) => renderSection(section, index))}
