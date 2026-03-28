@@ -46,6 +46,10 @@ export default async function GalleryPage() {
   }
 
   const totalImages = galleryBlocks.reduce((sum, block) => sum + (block.images?.length || 0), 0)
+  const getSpanClass = (index: number): string => {
+    void index
+    return ''
+  }
 
   return (
     <>
@@ -61,7 +65,7 @@ export default async function GalleryPage() {
         </div>
       </div>
 
-      <section className="section">
+      <section className="section image-gallery-block gallery-v2 gallery-v2-page">
         <div className="container" data-aos="fade-up" data-aos-delay="100">
           {galleryBlocks.length === 0 ? (
             <div className="text-center py-4">
@@ -71,7 +75,7 @@ export default async function GalleryPage() {
             </div>
           ) : (
             <>
-              <div className="section-title text-center mb-4">
+              <div className="section-title gallery-v2-header text-center mb-4" data-aos="fade-up">
                 <h2>All Gallery Images</h2>
                 <p>{totalImages} images</p>
               </div>
@@ -85,16 +89,34 @@ export default async function GalleryPage() {
                     </div>
                   )}
 
-                  <div className="row gy-4">
+                  <div className="gallery-v2-grid">
                     {(gallery.images || []).map((item: GalleryImage, imageIndex: number) => (
-                      <div key={`${galleryIndex}-${imageIndex}`} className="col-xl-3 col-lg-4 col-md-6">
-                        <div className="gallery-item">
+                      <div
+                        key={`${galleryIndex}-${imageIndex}`}
+                        className={`gallery-v2-item ${getSpanClass(imageIndex)}`}
+                        data-aos="fade-up"
+                        data-aos-delay={Math.min(90 + (imageIndex * 70), 500)}
+                      >
+                        <div className="gallery-item gallery-v2-card">
                           <img
                             src={typeof item.image === 'object' ? item.image?.url : item.image}
                             alt={item.alt || item.caption || `Gallery image ${imageIndex + 1}`}
-                            className="img-fluid rounded"
+                            className="img-fluid"
                           />
-                          {item.caption ? <p className="mt-2 mb-0 text-center">{item.caption}</p> : null}
+                          <div className="gallery-v2-overlay">
+                            <div className="gallery-v2-overlay-content">
+                              <div>
+                                <span className="gallery-v2-overlay-line" aria-hidden="true" />
+                                <span className="gallery-v2-overlay-label">{item.caption || item.alt || `Photo ${imageIndex + 1}`}</span>
+                              </div>
+                              <span className="gallery-v2-zoom" aria-hidden="true">
+                                <i className="bi bi-search" />
+                              </span>
+                            </div>
+                          </div>
+                          <span className="gallery-v2-camera" aria-hidden="true">
+                            <i className="bi bi-camera" />
+                          </span>
                         </div>
                       </div>
                     ))}

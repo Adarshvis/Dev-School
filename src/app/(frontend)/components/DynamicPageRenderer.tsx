@@ -256,10 +256,19 @@ const RichTextRenderer = ({ content }: { content: any }) => {
           if (node.type === 'horizontalrule') {
             return <hr key={index} />
           }
-          if (node.type === 'quote') {
+          if (node.type === 'quote' || node.type === 'blockquote' || node.type === 'block-quote') {
             return (
               <blockquote key={index} style={alignStyle}>
-                {node.children?.map((child: any, childIndex: number) => renderTextNode(child, childIndex))}
+                {node.children?.map((child: any, childIndex: number) => {
+                  if (child.type === 'paragraph') {
+                    return (
+                      <p key={childIndex}>
+                        {child.children?.map((textChild: any, textChildIndex: number) => renderTextNode(textChild, textChildIndex))}
+                      </p>
+                    )
+                  }
+                  return renderTextNode(child, childIndex)
+                })}
               </blockquote>
             )
           }

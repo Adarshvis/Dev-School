@@ -132,69 +132,235 @@ const OurStoryRenderer = ({ section }: { section: any }) => {
   const formattedDescriptionHtml = ourStory?.formattedDescription
     ? lexicalToHtml(ourStory.formattedDescription)
     : ''
+  const mediaType = ourStory?.mediaType || 'image'
+
+  const extractYouTubeId = (url: string): string => {
+    if (!url) return ''
+    const match = url.match(/(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/)
+    return match ? match[1] : ''
+  }
+
+  const extractVimeoId = (url: string): string => {
+    if (!url) return ''
+    const match = url.match(/vimeo\.com\/(\d+)/)
+    return match ? match[1] : ''
+  }
+
+  const mediaPanelContent = (() => {
+    if (mediaType === 'text' && ourStory?.textContent) {
+      return (
+        <div className="p-4 p-lg-5 d-flex flex-column justify-content-center h-100" style={{ minHeight: '320px', background: 'color-mix(in srgb, var(--accent-color), transparent 92%)' }}>
+          {ourStory.textContent.title && <h3>{ourStory.textContent.title}</h3>}
+          {ourStory.textContent.description && <p className="mb-0">{ourStory.textContent.description}</p>}
+        </div>
+      )
+    }
+
+    if (mediaType === 'video' && ourStory?.videoFile) {
+      return (
+        <video
+          src={typeof ourStory.videoFile === 'object' ? ourStory.videoFile.url : ourStory.videoFile}
+          poster={ourStory.videoPoster && typeof ourStory.videoPoster === 'object' ? ourStory.videoPoster.url : ourStory.videoPoster}
+          autoPlay={ourStory.videoAutoplay}
+          controls={ourStory.videoControls !== false}
+          muted
+          loop
+          className="img-fluid rounded"
+          style={{ width: '100%', maxHeight: '420px', objectFit: 'cover' }}
+        />
+      )
+    }
+
+    if (mediaType === 'audio' && ourStory?.audioFile) {
+      return (
+        <div className="p-4 d-flex align-items-center justify-content-center" style={{ minHeight: '240px', background: 'color-mix(in srgb, var(--background-color), #fff 20%)' }}>
+          <audio
+            src={typeof ourStory.audioFile === 'object' ? ourStory.audioFile.url : ourStory.audioFile}
+            controls
+            autoPlay={ourStory.audioAutoplay}
+            className="w-100"
+          />
+        </div>
+      )
+    }
+
+    if (mediaType === 'document' && ourStory?.documentFile) {
+      const docUrl = typeof ourStory.documentFile === 'object' ? ourStory.documentFile.url : ourStory.documentFile
+      if (ourStory.documentDisplayMode === 'embed') {
+        return <iframe src={docUrl} title="About Document" style={{ width: '100%', height: '420px', border: 'none' }} className="rounded" />
+      }
+
+      return (
+        <div className="p-4 d-flex align-items-center justify-content-center" style={{ minHeight: '240px', background: 'color-mix(in srgb, var(--background-color), #fff 20%)' }}>
+          <a href={docUrl} download className="btn btn-primary">Download Document</a>
+        </div>
+      )
+    }
+
+    if (mediaType === 'animation' && ourStory?.animationFile) {
+      return (
+        <img
+          src={typeof ourStory.animationFile === 'object' ? ourStory.animationFile.url : ourStory.animationFile}
+          alt={ourStory.imageAlt || 'Animation'}
+          className="img-fluid rounded"
+          style={{ width: '100%', maxHeight: '420px', objectFit: 'cover' }}
+        />
+      )
+    }
+
+    if (mediaType === '3d' && ourStory?.model3DFile) {
+      return (
+        <div className="d-flex align-items-center justify-content-center text-white rounded" style={{ minHeight: '300px', background: '#1a1a1a' }}>
+          <div className="text-center">
+            <i className="bi bi-box" style={{ fontSize: '3rem' }}></i>
+            <p className="mb-0 mt-2">3D Model Viewer</p>
+          </div>
+        </div>
+      )
+    }
+
+    if (mediaType === 'embed' && ourStory?.embedUrl) {
+      if (ourStory.embedType === 'youtube') {
+        const videoId = extractYouTubeId(ourStory.embedUrl)
+        return (
+          <iframe
+            src={`https://www.youtube.com/embed/${videoId}?autoplay=${ourStory.embedAutoplay ? 1 : 0}&mute=1&rel=0&modestbranding=1`}
+            title="About Video"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowFullScreen
+            style={{ width: '100%', height: '420px', border: 'none' }}
+            className="rounded"
+          ></iframe>
+        )
+      }
+
+      if (ourStory.embedType === 'vimeo') {
+        const videoId = extractVimeoId(ourStory.embedUrl)
+        return (
+          <iframe
+            src={`https://player.vimeo.com/video/${videoId}?autoplay=${ourStory.embedAutoplay ? 1 : 0}`}
+            title="About Vimeo"
+            allow="autoplay; fullscreen; picture-in-picture"
+            allowFullScreen
+            style={{ width: '100%', height: '420px', border: 'none' }}
+            className="rounded"
+          ></iframe>
+        )
+      }
+
+      return <div className="rounded" dangerouslySetInnerHTML={{ __html: ourStory.embedUrl }} />
+    }
+
+    if (mediaType === 'data' && ourStory?.dataEmbedUrl) {
+      return (
+        <iframe
+          src={ourStory.dataEmbedUrl}
+          title="About Data"
+          style={{ width: '100%', height: `${ourStory.dataHeight || 400}px`, border: 'none' }}
+          className="rounded"
+        />
+      )
+    }
+
+    const imageSource =
+      (typeof ourStory?.imageFile === 'object' ? ourStory.imageFile?.url : ourStory?.imageFile) ||
+      (typeof ourStory?.campusImage === 'object' ? ourStory.campusImage?.url : ourStory?.campusImage)
+
+    if (!imageSource) return null
+
+    return (
+      <img
+        src={imageSource}
+        alt={ourStory?.imageAlt || 'Campus'}
+        className="img-fluid rounded"
+      />
+    )
+  })()
+
   const isImageLeft = ourStory.layout === 'image-left'
   const contentColClass = isImageLeft ? 'col-lg-6 order-lg-2' : 'col-lg-6'
   const imageColClass = isImageLeft ? 'col-lg-6 order-lg-1' : 'col-lg-6'
+  const highlightItems = (
+    (ourStory.timelinePoints || [])
+      .map((item: any) => String(item?.title || item?.description || '').trim())
+      .filter(Boolean)
+      .slice(0, 4)
+  )
+  const fallbackHighlights = (
+    (ourStory.coreValues || [])
+      .map((item: any) => String(item?.title || '').trim())
+      .filter(Boolean)
+      .slice(0, 4)
+  )
+  const highlights = highlightItems.length > 0 ? highlightItems : fallbackHighlights
+  const statCardTitle = String(ourStory?.missionVisionCards?.[0]?.title || '').trim()
+  const statCardSubtitle = String(ourStory?.missionVisionCards?.[0]?.description || '').trim()
+  const badgeTitle = String(ourStory?.missionVisionCards?.[1]?.title || '').trim()
+  const badgeSubtitle = String(ourStory?.missionVisionCards?.[1]?.description || '').trim()
+  const quoteText = String(ourStory?.missionVisionCards?.[2]?.description || '').trim()
+  const quoteAuthor = String(ourStory?.missionVisionCards?.[2]?.title || '').trim()
   
   return (
-    <section id="about" className="about section">
+    <section id="about" className="about about-v2 section">
       <div className="container" data-aos="fade-up" data-aos-delay="100">
-        <div className="row align-items-center g-5">
-          <div className={contentColClass}>
-            <div className="about-content" data-aos="fade-up" data-aos-delay="200">
-              {ourStory.subtitle && <h3>{ourStory.subtitle}</h3>}
-              {ourStory.title && <h2>{ourStory.title}</h2>}
-              {ourStory.description && <p>{ourStory.description}</p>}
-              {formattedDescriptionHtml && (
-                <div dangerouslySetInnerHTML={{ __html: formattedDescriptionHtml }} />
-              )}
+        <div className="row align-items-center g-5 g-xl-6">
+          <div className={imageColClass}>
+            <div className="about-image about-v2-media" data-aos="zoom-in" data-aos-delay="250">
+              <div className="about-v2-frame"></div>
+              <div className="about-v2-main-media">
+                {mediaPanelContent}
+              </div>
 
-              {ourStory.timelinePoints && ourStory.timelinePoints.length > 0 && (
-                <div className="timeline">
-                  {ourStory.timelinePoints.map((item: any, index: number) => (
-                    <div key={index} className="timeline-item">
-                      <div className="timeline-dot"></div>
-                      <div className="timeline-content">
-                        {item.title && <h4>{item.title}</h4>}
-                        {item.description && <p>{item.description}</p>}
-                      </div>
-                    </div>
-                  ))}
+              {(statCardTitle || statCardSubtitle) && (
+                <div className="about-v2-floating about-v2-floating-top">
+                  {statCardTitle && <div className="value">{statCardTitle}</div>}
+                  {statCardSubtitle && <div className="label">{statCardSubtitle}</div>}
                 </div>
               )}
 
+              {(badgeTitle || badgeSubtitle) && (
+                <div className="about-v2-floating about-v2-floating-bottom">
+                  {badgeTitle && <div className="title">{badgeTitle}</div>}
+                  {badgeSubtitle && <div className="subtitle">{badgeSubtitle}</div>}
+                </div>
+              )}
             </div>
           </div>
 
-          <div className={imageColClass}>
-            <div className="about-image" data-aos="zoom-in" data-aos-delay="300">
-              {ourStory.campusImage && (
-                <img 
-                  src={typeof ourStory.campusImage === 'object' 
-                    ? ourStory.campusImage.url 
-                    : ourStory.campusImage}
-                  alt="Campus" 
-                  className="img-fluid rounded"
-                />
+          <div className={contentColClass}>
+            <div className="about-content about-v2-content" data-aos="fade-up" data-aos-delay="200">
+              <div className="about-v2-label-wrap">
+                <span className="line"></span>
+                <span className="label-text">{ourStory.subtitle || 'An Introduction'}</span>
+              </div>
+
+              {ourStory.title && <h2>{ourStory.title}</h2>}
+              {ourStory.description && <p>{ourStory.description}</p>}
+              {formattedDescriptionHtml && (
+                <div className="rich-text-content" dangerouslySetInnerHTML={{ __html: formattedDescriptionHtml }} />
               )}
 
-              {ourStory.missionVisionCards && ourStory.missionVisionCards.length > 0 && (
-                <div className="mission-vision" data-aos="fade-up" data-aos-delay="400">
-                  {ourStory.missionVisionCards.map((card: any, index: number) => (
-                    <div key={index} className={index === 0 ? 'mission' : 'vision'}>
-                      {card.title && <h3>{card.title}</h3>}
-                      {card.description && <p>{card.description}</p>}
+              {highlights.length > 0 && (
+                <div className="about-v2-highlights">
+                  {highlights.map((item: string, index: number) => (
+                    <div key={`${item}-${index}`} className="highlight-item">
+                      <i className="bi bi-check-circle-fill" aria-hidden="true"></i>
+                      <span>{item}</span>
                     </div>
                   ))}
                 </div>
               )}
 
+              {quoteText && (
+                <blockquote className="about-v2-quote">
+                  <p>&quot;{quoteText}&quot;</p>
+                  {quoteAuthor && <footer>- {quoteAuthor}</footer>}
+                </blockquote>
+              )}
+
               {(ourStory.buttonText || ourStory.buttonLink) && (
-                <div className="mt-3 d-flex justify-content-center" data-aos="fade-up" data-aos-delay="350">
-                  <Link
-                    href={ourStory.buttonLink || '/about'}
-                    className="btn btn-primary"
-                  >
+                <div className="mt-3" data-aos="fade-up" data-aos-delay="260">
+                  <Link href={ourStory.buttonLink || '/about'} className="btn btn-primary">
                     {ourStory.buttonText || 'Learn More About Us'}
                   </Link>
                 </div>
@@ -242,88 +408,93 @@ const FeaturedInstructorsRenderer = ({ section }: { section: any }) => {
       </div>
 
       <div className="container" data-aos="fade-up" data-aos-delay="100">
-        <div className="row gy-4">
+        <div className="row g-4 facility-grid-v2 research-facilities-grid">
           {data.instructors && data.instructors.map((instructor: any, index: number) => {
             const profileHref = getHomePersonProfileHref(instructor)
             const externalProfileHref = isExternalHref(profileHref)
+            const iconClasses = [
+              'bi bi-display',
+              'bi bi-book',
+              'bi bi-pc-display',
+              'bi bi-dribbble',
+              'bi bi-palette',
+              'bi bi-bus-front',
+            ]
+            const iconClassByKey: Record<string, string> = {
+              monitor: 'bi bi-display',
+              book: 'bi bi-book',
+              cpu: 'bi bi-pc-display',
+              sports: 'bi bi-dribbble',
+              palette: 'bi bi-palette',
+              bus: 'bi bi-bus-front',
+            }
+            const facilityThemes = [
+              { color: '#F06F05', bg: 'rgba(240,111,5,0.1)' },
+              { color: '#22C55E', bg: 'rgba(34,197,94,0.1)' },
+              { color: '#3B82F6', bg: 'rgba(59,130,246,0.1)' },
+              { color: '#F45525', bg: 'rgba(244,85,37,0.1)' },
+              { color: '#A855F7', bg: 'rgba(168,85,247,0.1)' },
+              { color: '#F59E0B', bg: 'rgba(245,158,11,0.1)' },
+            ]
+            const imageSrc = typeof instructor.image === 'object'
+              ? instructor.image.url
+              : '/assets/img/education/teacher-2.webp'
+            const cardDescription = getCardDescription(instructor.description)
+            const theme = facilityThemes[index % facilityThemes.length]
+            const selectedIconClass = iconClassByKey[String(instructor.icon || '').trim()] || iconClasses[index % iconClasses.length]
 
             return (
-            <div key={index} className="col-xl-3 col-lg-4 col-md-6">
-              <div className="instructor-card">
-                {instructor.image && (
-                  <div className="instructor-image">
-                    <img 
-                      src={typeof instructor.image === 'object' ? instructor.image.url : '/assets/img/education/teacher-2.webp'} 
-                      className="img-fluid" 
-                      alt={instructor.name || 'Instructor'} 
+              <div
+                key={index}
+                className="col-xl-4 col-lg-4 col-md-6"
+                data-aos="fade-up"
+                data-aos-delay={Math.min(120 + index * 70, 520)}
+              >
+                <article
+                  className="facility-card h-100"
+                  style={{
+                    ['--facility-color' as any]: theme.color,
+                    ['--facility-bg' as any]: theme.bg,
+                  }}
+                >
+                  <div className="facility-media">
+                    <img
+                      src={imageSrc}
+                      className="img-fluid"
+                      alt={instructor.name || 'Research Domain'}
                     />
-                    {(instructor.rating || instructor.courseCount) && (
-                      <div className="overlay-content">
-                        {instructor.rating && (
-                          <div className="rating-stars">
-                            {Array.from({ length: Math.floor(instructor.rating) }, (_, i) => (
-                              <i key={i} className="bi bi-star-fill"></i>
-                            ))}
-                            {instructor.rating % 1 !== 0 && <i className="bi bi-star-half"></i>}
-                            <span>{instructor.rating}</span>
-                          </div>
-                        )}
-                        {instructor.courseCount && (
-                          <div className="course-count">
-                            <i className="bi bi-play-circle"></i>
-                            <span>{instructor.courseCount} Courses</span>
-                          </div>
-                        )}
-                      </div>
+
+                    <span className="facility-icon" aria-hidden="true">
+                      <i className={selectedIconClass} />
+                    </span>
+
+                    {externalProfileHref ? (
+                      <a
+                        href={profileHref}
+                        className="facility-arrow"
+                        aria-label={`Open ${instructor.name || 'research domain'}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        <i className="bi bi-arrow-up-right" aria-hidden="true" />
+                      </a>
+                    ) : (
+                      <Link
+                        href={profileHref}
+                        className="facility-arrow"
+                        aria-label={`Open ${instructor.name || 'research domain'}`}
+                      >
+                        <i className="bi bi-arrow-up-right" aria-hidden="true" />
+                      </Link>
                     )}
                   </div>
-                )}
-                <div className="instructor-info">
-                  {instructor.name && <h5>{instructor.name}</h5>}
-                  {getCardDescription(instructor.description) ? <p className="description">{getCardDescription(instructor.description)}</p> : null}
-                  {(instructor.studentCount || instructor.rating) && (
-                    <div className="stats-grid">
-                      {instructor.studentCount && (
-                        <div className="stat">
-                          <span className="number">{instructor.studentCount}</span>
-                          <span className="label">Students</span>
-                        </div>
-                      )}
-                      {instructor.rating && (
-                        <div className="stat">
-                          <span className="number">{instructor.rating}</span>
-                          <span className="label">Rating</span>
-                        </div>
-                      )}
-                    </div>
-                  )}
-                  {(profileHref || instructor.profileButtonText || instructor.socialLinks) && (
-                    <div className="action-buttons">
-                      {externalProfileHref ? (
-                        <a href={profileHref} className="btn-view" target="_blank" rel="noopener noreferrer">
-                          {instructor.profileButtonText || 'View Profile'}
-                        </a>
-                      ) : (
-                        <Link href={profileHref} className="btn-view">
-                          {instructor.profileButtonText || 'View Profile'}
-                        </Link>
-                      )}
-                      {instructor.socialLinks && instructor.socialLinks.length > 0 && (
-                        <div className="social-links">
-                          {instructor.socialLinks.map((social: any, socialIndex: number) => (
-                            social.url && (
-                              <a key={socialIndex} href={social.url} target="_blank" rel="noopener noreferrer">
-                                <i className={`bi bi-${social.platform}`}></i>
-                              </a>
-                            )
-                          ))}
-                        </div>
-                      )}
-                    </div>
-                  )}
-                </div>
+
+                  <div className="facility-content instructor-info">
+                    {instructor.name && <h5>{instructor.name}</h5>}
+                    {cardDescription ? <p className="description">{cardDescription}</p> : null}
+                  </div>
+                </article>
               </div>
-            </div>
           )})}
         </div>
       </div>
@@ -343,75 +514,57 @@ const FeaturedCoursesRenderer = ({ section }: { section: any }) => {
       </div>
 
       <div className="container">
-        <div className="row gy-4">
-          {data.courses && data.courses.map((course: any, index: number) => (
-            <div key={index} className="col-lg-4 col-md-6">
-              <div className="course-card" style={{ height: 'auto' }}>
-                {course.image && (
-                  <div className="course-image">
-                    <img 
-                      src={typeof course.image === 'object' ? course.image.url : '/assets/img/education/students-9.webp'} 
-                      alt={course.title || 'Course'} 
-                      className="img-fluid" 
-                    />
-                    {course.badge && <div className={`badge ${course.badge}`}>{course.badge}</div>}
-                    {course.price && <div className="price-badge">{course.price}</div>}
-                  </div>
-                )}
-                <div className="course-content">
-                  {(course.level || course.duration) && (
-                    <div className="course-meta">
-                      {course.level && <span className="level">{course.level}</span>}
-                      {course.duration && <span className="duration">{course.duration}</span>}
-                    </div>
-                  )}
-                  {course.title && <h3><a href="#">{course.title}</a></h3>}
-                  {course.description && <p>{course.description}</p>}
-                  {(course.instructorAvatar || course.instructorName || course.instructorSpecialty) && (
-                    <div className="instructor">
-                      {course.instructorAvatar && (
-                        <img 
-                          src={typeof course.instructorAvatar === 'object' ? course.instructorAvatar.url : '/assets/img/person/person-f-3.webp'} 
-                          alt={course.instructorName || 'Instructor'} 
-                          className="instructor-img" 
-                        />
-                      )}
-                      {(course.instructorName || course.instructorSpecialty) && (
-                        <div className="instructor-info">
-                          {course.instructorName && <h6>{course.instructorName}</h6>}
-                          {course.instructorSpecialty && <span>{course.instructorSpecialty}</span>}
-                        </div>
-                      )}
-                    </div>
-                  )}
-                  {(course.rating || course.studentCount) && (
-                    <div className="course-stats">
-                      {course.rating && (
-                        <div className="rating">
-                          {Array.from({ length: Math.floor(course.rating) }, (_, i) => (
-                            <i key={i} className="bi bi-star-fill"></i>
-                          ))}
-                          {course.rating % 1 !== 0 && <i className="bi bi-star-half"></i>}
-                          <span>({course.rating})</span>
-                        </div>
-                      )}
-                      {course.studentCount && (
-                        <div className="students">
-                          <i className="bi bi-people-fill"></i>
-                          <span>{course.studentCount} students</span>
-                        </div>
-                      )}
-                    </div>
-                  )}
-                  {(course.buttonText || course.buttonLink) && (
-                    <a href={course.buttonLink || '#'} className="btn-course">
-                      {course.buttonText || 'Enroll Now'}
+        <div className="row g-4 facility-grid-v2">
+          {data.courses && data.courses.map((course: any, index: number) => {
+            const iconClasses = [
+              'bi bi-display',
+              'bi bi-book',
+              'bi bi-pc-display',
+              'bi bi-dribbble',
+              'bi bi-palette',
+              'bi bi-bus-front',
+            ]
+
+            const cardHref = String(course.buttonLink || '').trim()
+            const imageSrc = typeof course.image === 'object' ? course.image.url : '/assets/img/education/students-9.webp'
+
+            return (
+              <div
+                key={index}
+                className="col-xl-3 col-lg-4 col-md-6"
+                data-aos="fade-up"
+                data-aos-delay={Math.min(120 + index * 70, 520)}
+              >
+                <article className="facility-card h-100">
+                  <div className="facility-media">
+                    <img src={imageSrc} alt={course.title || 'Facility'} className="img-fluid" />
+
+                    <span className="facility-icon" aria-hidden="true">
+                      <i className={iconClasses[index % iconClasses.length]} />
+                    </span>
+
+                    <a
+                      href={cardHref || '#'}
+                      className="facility-arrow"
+                      aria-label={`Open ${course.title || 'facility'}`}
+                    >
+                      <i className="bi bi-arrow-up-right" aria-hidden="true" />
                     </a>
-                  )}
-                </div>
+                  </div>
+
+                  <div className="facility-content">
+                    {course.title && <h3>{course.title}</h3>}
+                    {course.description && <p>{course.description}</p>}
+                    {(course.buttonText || course.buttonLink) && (
+                      <a href={cardHref || '#'} className="btn-course facility-btn">
+                        {course.buttonText || 'Read More'}
+                      </a>
+                    )}
+                  </div>
+                </article>
               </div>
-            </div>
-          ))}
+            )
+          })}
         </div>
 
         {data.viewAllButton && data.viewAllButton.text && data.viewAllButton.link && (

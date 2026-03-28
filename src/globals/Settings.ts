@@ -321,39 +321,68 @@ export const Settings: GlobalConfig = {
               fields: [
                 colorPickerField({
                   name: 'primaryColor',
-                  defaultValue: '#00cec9',
+                  defaultValue: '#F0690F',
                   admin: {
-                    description: 'Primary brand color (nav, buttons) - KidKinder Teal',
+                    description: 'Primary brand color',
                   },
                 }),
                 colorPickerField({
                   name: 'secondaryColor',
-                  defaultValue: '#ff5349',
+                  defaultValue: '#1C2E40',
                   admin: {
-                    description: 'Secondary color (hover states, links) - Coral Red',
+                    description: 'Secondary color',
                   },
                 }),
                 colorPickerField({
                   name: 'accentColor',
-                  defaultValue: '#ff5349',
+                  defaultValue: '#FAC219',
                   admin: {
-                    description: 'Accent color for headings - Coral Red',
-                  },
-                }),
-                colorPickerField({
-                  name: 'textColor',
-                  defaultValue: '#2d3436',
-                  admin: {
-                    description: 'Main text color - Dark Gray',
+                    description: 'Accent highlight color',
                   },
                 }),
                 colorPickerField({
                   name: 'backgroundColor',
-                  defaultValue: '#fff9e6',
+                  defaultValue: '#F9F7F6',
                   admin: {
-                    description: 'Page background color - Soft Cream',
+                    description: 'Page background color',
                   },
                 }),
+                colorPickerField({
+                  name: 'darkModeColor',
+                  defaultValue: '#0F1A24',
+                  admin: {
+                    description: 'Dark mode surface color (used for dark sections like stats)',
+                  },
+                }),
+                colorPickerField({
+                  name: 'primaryForegroundColor',
+                  defaultValue: '#FFFFFF',
+                  admin: {
+                    description: 'Foreground text color on primary backgrounds',
+                  },
+                }),
+                {
+                  name: 'enableSoftGradientBackground',
+                  type: 'checkbox',
+                  defaultValue: true,
+                  admin: {
+                    description: 'Enable soft gradient background overlay across the site',
+                  },
+                },
+                {
+                  name: 'softGradientIntensity',
+                  type: 'select',
+                  defaultValue: 'medium',
+                  options: [
+                    { label: 'Low', value: 'low' },
+                    { label: 'Medium', value: 'medium' },
+                    { label: 'High', value: 'high' },
+                  ],
+                  admin: {
+                    condition: (data, siblingData) => siblingData?.enableSoftGradientBackground !== false,
+                    description: 'Control how visible the soft gradient should be',
+                  },
+                },
               ],
             },
             {

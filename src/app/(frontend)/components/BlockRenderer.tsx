@@ -1,6 +1,7 @@
 import React from 'react'
 import Link from 'next/link'
 import FlexibleRowBlock from './blocks/FlexibleRowBlock'
+import CountUpValue from './CountUpValue'
 import { lexicalToHtml } from '@/lib/lexicalToHtml'
 
 interface BlockRendererProps {
@@ -12,6 +13,16 @@ const getCardDescription = (value: unknown): string => {
   const text = String(value).replace(/\s+/g, ' ').trim()
   if (!text) return ''
   return text.length > 140 ? `${text.slice(0, 140).trim()}...` : text
+}
+
+const parseCounter = (value: unknown): { end: number; suffix: string } => {
+  const text = String(value || '').trim()
+  const numeric = text.match(/\d+(?:\.\d+)?/)
+  if (!numeric) return { end: 0, suffix: '' }
+
+  const end = Math.floor(Number(numeric[0]) || 0)
+  const suffix = text.replace(numeric[0], '').trim()
+  return { end, suffix }
 }
 
 const isExternalHref = (value: string): boolean => /^(https?:\/\/|mailto:|tel:)/i.test(value)
@@ -239,12 +250,16 @@ const ImageGalleryBlock: React.FC<any> = ({
     : (images || [])
 
   const viewMoreHref = String(viewMoreLink || '/gallery').trim() || '/gallery'
+  const getSpanClass = (index: number): string => {
+    void index
+    return ''
+  }
 
   return (
-    <section className="image-gallery-block section">
+    <section className="image-gallery-block gallery-v2 section">
       <div className="container">
         {(title || description) && (
-          <div className="section-title" data-aos="fade-up">
+          <div className="section-title gallery-v2-header text-center" data-aos="fade-up">
             {title && <h2>{title}</h2>}
             {description && <p>{description}</p>}
           </div>
@@ -292,16 +307,34 @@ const ImageGalleryBlock: React.FC<any> = ({
             </button>
           </div>
         ) : (
-          <div className={`row gy-4`} data-aos="fade-up" data-aos-delay="100">
+          <div className="gallery-v2-grid" data-aos="fade-up" data-aos-delay="100">
             {galleryImages?.map((item: any, index: number) => (
-              <div key={index} className={`col-lg-${12 / parseInt(columns || '3')} col-md-6`}>
-                <div className="gallery-item">
+              <div
+                key={index}
+                className={`gallery-v2-item ${getSpanClass(index)}`}
+                data-aos="fade-up"
+                data-aos-delay={Math.min(100 + (index * 80), 520)}
+              >
+                <div className="gallery-item gallery-v2-card">
                   <img
                     src={typeof item.image === 'object' ? item.image.url : item.image}
                     alt={item.alt || item.caption || 'Gallery image'}
-                    className="img-fluid rounded"
+                    className="img-fluid"
                   />
-                  {item.caption && <p className="mt-2 text-center">{item.caption}</p>}
+                  <div className="gallery-v2-overlay">
+                    <div className="gallery-v2-overlay-content">
+                      <div>
+                        <span className="gallery-v2-overlay-line" aria-hidden="true" />
+                        <span className="gallery-v2-overlay-label">{item.caption || item.alt || `Photo ${index + 1}`}</span>
+                      </div>
+                      <span className="gallery-v2-zoom" aria-hidden="true">
+                        <i className="bi bi-search" />
+                      </span>
+                    </div>
+                  </div>
+                  <span className="gallery-v2-camera" aria-hidden="true">
+                    <i className="bi bi-camera" />
+                  </span>
                 </div>
               </div>
             ))}
@@ -309,8 +342,9 @@ const ImageGalleryBlock: React.FC<any> = ({
         )}
 
         {shouldShowViewMore && (
-          <div className="text-center mt-4" data-aos="fade-up" data-aos-delay="150">
-            <Link href={viewMoreHref} className="btn btn-primary">
+          <div className="text-center mt-4" data-aos="fade-up" data-aos-delay="180">
+            <Link href={viewMoreHref} className="btn btn-primary gallery-v2-btn">
+              <i className="bi bi-camera me-2" aria-hidden="true" />
               {viewMoreButtonText || 'View More'}
             </Link>
           </div>
@@ -414,7 +448,7 @@ const RichTextBlock: React.FC<any> = ({ content, width }) => {
   return (
     <section className="rich-text-block section">
       <div className={containerClass}>
-        <div data-aos="fade-up" dangerouslySetInnerHTML={{ __html: htmlContent }} />
+        <div className="rich-text-content" data-aos="fade-up" dangerouslySetInnerHTML={{ __html: htmlContent }} />
       </div>
     </section>
   )
@@ -422,26 +456,144 @@ const RichTextBlock: React.FC<any> = ({ content, width }) => {
 
 // Stats Block Component
 const StatsBlock: React.FC<any> = ({ title, description, stats, layout }) => {
+  const fallbackIcons = ['bi-people', 'bi-book', 'bi-trophy', 'bi-star']
+
   return (
-    <section className="stats-block section">
+    <section
+      className="stats-block section"
+      style={{
+        background: 'var(--cms-section-bg, var(--stats-block-bg, color-mix(in srgb, var(--heading-color), black 82%)))',
+        position: 'relative',
+        overflow: 'hidden',
+      }}
+    >
+      <div
+        style={{
+          position: 'absolute',
+          inset: 0,
+          pointerEvents: 'none',
+          background: 'radial-gradient(ellipse 56% 75% at 18% 8%, color-mix(in srgb, var(--primary-color, var(--accent-color)), transparent 90%) 0%, transparent 72%), radial-gradient(ellipse 70% 80% at 88% 95%, color-mix(in srgb, var(--accent-color), transparent 93%) 0%, transparent 70%)',
+        }}
+      />
+      <div
+        style={{
+          position: 'absolute',
+          inset: 0,
+          pointerEvents: 'none',
+          backgroundImage: 'radial-gradient(color-mix(in srgb, var(--secondary-foreground, #fff), transparent 94%) 1px, transparent 1px)',
+          backgroundSize: '24px 24px',
+          opacity: 0.55,
+        }}
+      />
+
       <div className="container">
         {(title || description) && (
-          <div className="section-title" data-aos="fade-up">
-            {title && <h2>{title}</h2>}
-            {description && <p>{description}</p>}
+          <div className="section-title text-center" data-aos="fade-up">
+            <div className="d-inline-flex align-items-center gap-2 mb-2">
+              <span style={{ width: '2rem', height: '2px', background: 'var(--primary-color, var(--accent-color))' }} />
+              <span
+                style={{
+                  fontSize: '0.72rem',
+                  letterSpacing: '0.14em',
+                  textTransform: 'uppercase',
+                  color: 'var(--primary-color, var(--accent-color))',
+                  fontWeight: 700,
+                }}
+              >
+                By The Numbers
+              </span>
+              <span style={{ width: '2rem', height: '2px', background: 'var(--primary-color, var(--accent-color))' }} />
+            </div>
+
+            {title && <h2 style={{ color: 'var(--secondary-foreground, #fff)' }}>{title}</h2>}
+            {description && (
+              <p style={{ color: 'color-mix(in srgb, var(--secondary-foreground, #fff), transparent 30%)' }}>
+                {description}
+              </p>
+            )}
           </div>
         )}
-        
-        <div className={`row ${layout === 'grid' ? 'gy-4' : 'justify-content-center'}`}>
-          {stats?.map((stat: any, index: number) => (
-            <div key={index} className={layout === 'grid' ? 'col-lg-4 col-md-6' : 'col-auto'} data-aos="fade-up" data-aos-delay={`${100 * (index + 1)}`}>
-              <div className="stat-card text-center p-4">
-                {stat.icon && <i className={`${stat.icon} fs-1 mb-3`} style={{ color: 'var(--accent-color)' }}></i>}
-                <h3 className="stat-number mb-2" style={{ color: 'var(--heading-color)' }}>{stat.number}</h3>
-                <p className="stat-label mb-0">{stat.label}</p>
+
+        <div
+          className="row g-0"
+          style={{
+            borderTop: '1px solid color-mix(in srgb, var(--secondary-foreground, #fff), transparent 88%)',
+          }}
+        >
+          {stats?.map((stat: any, index: number) => {
+            const parsed = parseCounter(stat.number)
+            const iconClass = String(stat?.icon || '').trim()
+            const resolvedIcon = iconClass
+              ? (iconClass.startsWith('bi ') ? iconClass : `bi ${iconClass}`)
+              : `bi ${fallbackIcons[index % fallbackIcons.length]}`
+
+            return (
+              <div
+                key={index}
+                className="col-6 col-lg-3"
+                data-aos="fade-up"
+                data-aos-delay={`${120 * index}`}
+              >
+                <div className="stat-card text-center py-4 px-3 position-relative h-100 d-flex flex-column align-items-center justify-content-center">
+                  {index > 0 && (
+                    <div
+                      className="d-none d-lg-block position-absolute"
+                      style={{
+                        left: 0,
+                        top: '24px',
+                        bottom: '24px',
+                        width: '1px',
+                        background: 'color-mix(in srgb, var(--accent-color), transparent 76%)',
+                      }}
+                    />
+                  )}
+
+                  <div
+                    className="d-inline-flex align-items-center justify-content-center mb-3"
+                    style={{
+                      width: '3.35rem',
+                      height: '3.35rem',
+                      borderRadius: '999px',
+                      border: '1px solid color-mix(in srgb, var(--secondary-foreground, #fff), transparent 84%)',
+                      background: 'color-mix(in srgb, var(--secondary-foreground, #fff), transparent 92%)',
+                    }}
+                  >
+                    <i className={resolvedIcon} style={{ color: 'var(--accent-color)', fontSize: '1.15rem' }} />
+                  </div>
+
+                  <h3
+                    className="stat-number mb-2"
+                    style={{
+                      fontSize: 'clamp(40px, 5vw, 68px)',
+                      lineHeight: 1,
+                      fontWeight: 700,
+                      color: 'var(--accent-color)',
+                      textShadow: '0 0 40px color-mix(in srgb, var(--accent-color), transparent 70%)',
+                    }}
+                  >
+                    <CountUpValue end={parsed.end} suffix={parsed.suffix} />
+                  </h3>
+
+                  <p
+                    className="stat-label mb-0"
+                    style={{
+                      color: 'color-mix(in srgb, var(--secondary-foreground, #fff), transparent 35%)',
+                      letterSpacing: '0.06em',
+                      fontSize: '0.82rem',
+                      fontWeight: 500,
+                    }}
+                  >
+                    {stat.label}
+                  </p>
+
+                  <div
+                    className="mx-auto mt-3"
+                    style={{ width: '2rem', height: '2px', borderRadius: '999px', background: 'color-mix(in srgb, var(--accent-color), transparent 50%)' }}
+                  />
+                </div>
               </div>
-            </div>
-          ))}
+            )
+          })}
         </div>
       </div>
     </section>
@@ -676,12 +828,38 @@ const MapBlock: React.FC<any> = ({ title, address, embedUrl, height }) => {
 // People Block Component
 const PeopleBlock: React.FC<any> = ({ title, description, layout, showStats, showSocialLinks, people }) => {
   if (!people || people.length === 0) return null
+  const useTwoEntryLayout = people.length === 2
+
+  const selectedColumns = (() => {
+    switch (layout) {
+      case 'grid-3':
+        return 3
+      case 'grid-5':
+        return 5
+      case 'grid-6':
+        return 6
+      case 'grid-4':
+      default:
+        return 4
+    }
+  })()
   
-  // Get column class based on layout - all use same card size
+  // Get responsive Bootstrap classes based on selected layout.
   const getColClass = (layoutType?: string) => {
-    // All layouts use the same card size for consistency
-    return 'col-xl-3 col-lg-4 col-md-6'
+    switch (layoutType) {
+      case 'grid-3':
+        return 'col-lg-4 col-md-6'
+      case 'grid-5':
+        return 'col-lg-3 col-md-6'
+      case 'grid-6':
+        return 'col-xl-2 col-lg-3 col-md-6'
+      case 'grid-4':
+      default:
+        return 'col-xl-3 col-lg-4 col-md-6'
+    }
   }
+
+  const shouldCenterSparseRow = !useTwoEntryLayout && people.length < selectedColumns
 
   return (
     <section id="people-block" className="instructors section">
@@ -693,51 +871,90 @@ const PeopleBlock: React.FC<any> = ({ title, description, layout, showStats, sho
           </div>
         )}
         
-        <div className="row gy-4">
+        <div className={`row gy-4${shouldCenterSparseRow ? ' justify-content-center' : ''}`}>
           {people.map((person: any, index: number) => (
-            <div key={person.id || index} className={getColClass(layout)} data-aos="fade-up" data-aos-delay={200 + (index * 50)}>
-              <div className="instructor-card">
-                <div className="instructor-image">
-                  <img 
-                    src={typeof person.image === 'object' && person.image?.url ? person.image.url : '/assets/img/education/teacher-2.webp'} 
-                    className="img-fluid" 
-                    alt={person.name || 'Person'}
-                  />
-                </div>
-                <div className="instructor-info">
-                  <h5>{person.name || 'Unnamed Person'}</h5>
-                  {person.specialty && <p className="specialty">{person.specialty}</p>}
-                  {getCardDescription(person.description) ? <p className="description">{getCardDescription(person.description)}</p> : null}
-                  
-                  {showStats && ((person.studentCount && person.studentCount !== '0') || (person.rating && person.rating > 0)) && (
-                  <div className="stats-grid">
-                    {person.studentCount && person.studentCount !== '0' && (
-                    <div className="stat">
-                      <span className="number">{person.studentCount}</span>
-                      <span className="label">Students</span>
-                    </div>
-                    )}
-                    {person.rating && person.rating > 0 && (
-                    <div className="stat">
-                      <span className="number">{person.rating}</span>
-                      <span className="label">Rating</span>
-                    </div>
-                    )}
+            <div key={person.id || index} className={useTwoEntryLayout ? 'col-xl-6 col-lg-6' : getColClass(layout)} data-aos="fade-up" data-aos-delay={200 + (index * 50)}>
+              {useTwoEntryLayout ? (
+                <div className="people-duo-card">
+                  <div className="people-duo-media">
+                    <img
+                      src={typeof person.image === 'object' && person.image?.url ? person.image.url : '/assets/img/education/teacher-2.webp'}
+                      className="img-fluid"
+                      alt={person.name || 'Person'}
+                    />
                   </div>
-                  )}
-                  
-                  <div className="action-buttons">
-                    <Link href={getPersonProfileHref(person)} className="btn-view">View Profile</Link>
-                    <div className="social-links">
-                      {showSocialLinks && person.socialLinks && person.socialLinks.map((social: any, idx: number) => (
-                        <a key={idx} href={social.url} target="_blank" rel="noopener noreferrer">
-                          <i className={`bi bi-${social.platform}`}></i>
-                        </a>
-                      ))}
+                  <div className="people-duo-content">
+                    {person.specialty && <span className="people-duo-tag">{person.specialty}</span>}
+                    <h4>{person.name || 'Unnamed Person'}</h4>
+                    {getCardDescription(person.description) ? <p>{getCardDescription(person.description)}</p> : null}
+
+                    {showStats && ((person.studentCount && person.studentCount !== '0') || (person.rating && person.rating > 0)) && (
+                      <div className="people-duo-meta">
+                        {person.studentCount && person.studentCount !== '0' && (
+                          <span><i className="bi bi-people"></i> {person.studentCount} Students</span>
+                        )}
+                        {person.rating && person.rating > 0 && (
+                          <span><i className="bi bi-star"></i> {person.rating} Rating</span>
+                        )}
+                      </div>
+                    )}
+
+                    <div className="action-buttons">
+                      <Link href={getPersonProfileHref(person)} className="btn-view">View Profile</Link>
+                      <div className="social-links">
+                        {showSocialLinks && person.socialLinks && person.socialLinks.map((social: any, idx: number) => (
+                          <a key={idx} href={social.url} target="_blank" rel="noopener noreferrer">
+                            <i className={`bi bi-${social.platform}`}></i>
+                          </a>
+                        ))}
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
+              ) : (
+                <div className="instructor-card">
+                  <div className="instructor-image">
+                    <img 
+                      src={typeof person.image === 'object' && person.image?.url ? person.image.url : '/assets/img/education/teacher-2.webp'} 
+                      className="img-fluid" 
+                      alt={person.name || 'Person'}
+                    />
+                  </div>
+                  <div className="instructor-info">
+                    <h5>{person.name || 'Unnamed Person'}</h5>
+                    {person.specialty && <p className="specialty">{person.specialty}</p>}
+                    {getCardDescription(person.description) ? <p className="description">{getCardDescription(person.description)}</p> : null}
+                    
+                    {showStats && ((person.studentCount && person.studentCount !== '0') || (person.rating && person.rating > 0)) && (
+                    <div className="stats-grid">
+                      {person.studentCount && person.studentCount !== '0' && (
+                      <div className="stat">
+                        <span className="number">{person.studentCount}</span>
+                        <span className="label">Students</span>
+                      </div>
+                      )}
+                      {person.rating && person.rating > 0 && (
+                      <div className="stat">
+                        <span className="number">{person.rating}</span>
+                        <span className="label">Rating</span>
+                      </div>
+                      )}
+                    </div>
+                    )}
+                    
+                    <div className="action-buttons">
+                      <Link href={getPersonProfileHref(person)} className="btn-view">View Profile</Link>
+                      <div className="social-links">
+                        {showSocialLinks && person.socialLinks && person.socialLinks.map((social: any, idx: number) => (
+                          <a key={idx} href={social.url} target="_blank" rel="noopener noreferrer">
+                            <i className={`bi bi-${social.platform}`}></i>
+                          </a>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
           ))}
         </div>

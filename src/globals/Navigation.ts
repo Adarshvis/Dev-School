@@ -349,6 +349,116 @@ export const Navigation: GlobalConfig = {
           ],
         },
         {
+          label: 'Info Bar',
+          description: 'Top bar above navigation. Every field below is optional.',
+          fields: [
+            {
+              name: 'infoBar',
+              type: 'group',
+              fields: [
+                {
+                  name: 'isVisible',
+                  type: 'checkbox',
+                  defaultValue: true,
+                  admin: {
+                    description: 'Enable or disable the top info bar',
+                  },
+                },
+                {
+                  name: 'phone',
+                  type: 'text',
+                  required: false,
+                  admin: {
+                    description: 'Optional phone number (e.g. +91 1572-251021)',
+                  },
+                },
+                {
+                  name: 'email',
+                  type: 'text',
+                  required: false,
+                  admin: {
+                    description: 'Optional email address',
+                  },
+                },
+                {
+                  name: 'locationText',
+                  type: 'text',
+                  required: false,
+                  admin: {
+                    description: 'Optional location/address text',
+                  },
+                },
+                {
+                  name: 'highlightText',
+                  type: 'text',
+                  required: false,
+                  admin: {
+                    description: 'Optional highlighted text (e.g. CBSE Affiliated)',
+                  },
+                },
+                {
+                  name: 'socialLinks',
+                  type: 'array',
+                  label: 'Social Icons',
+                  labels: {
+                    singular: 'Social Link',
+                    plural: 'Social Links',
+                  },
+                  admin: {
+                    description: 'Optional social icons for the info bar',
+                  },
+                  fields: [
+                    {
+                      name: 'icon',
+                      type: 'select',
+                      required: false,
+                      options: [
+                        { label: 'Facebook', value: 'bi-facebook' },
+                        { label: 'Instagram', value: 'bi-instagram' },
+                        { label: 'X (Twitter)', value: 'bi-twitter-x' },
+                        { label: 'LinkedIn', value: 'bi-linkedin' },
+                        { label: 'YouTube', value: 'bi-youtube' },
+                        { label: 'WhatsApp', value: 'bi-whatsapp' },
+                        { label: 'Telegram', value: 'bi-telegram' },
+                        { label: 'Globe', value: 'bi-globe2' },
+                      ],
+                      admin: {
+                        description: 'Choose icon to display',
+                      },
+                    },
+                    {
+                      name: 'url',
+                      type: 'text',
+                      required: false,
+                      admin: {
+                        description: 'Optional URL (include https://)',
+                      },
+                    },
+                    {
+                      name: 'label',
+                      type: 'text',
+                      required: false,
+                      admin: {
+                        description: 'Optional accessible label',
+                      },
+                    },
+                    {
+                      name: 'openInNewTab',
+                      type: 'checkbox',
+                      defaultValue: true,
+                    },
+                    {
+                      name: 'isVisible',
+                      type: 'checkbox',
+                      defaultValue: true,
+                    },
+                  ],
+                },
+              ],
+            },
+          ],
+        },
+        {
           label: 'Mobile Menu',
           description: 'Additional settings for mobile navigation',
           fields: [

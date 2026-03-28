@@ -59,10 +59,10 @@ export default async function CMSCoursesPage({ isHomePage = false }: { isHomePag
                           <div key={index} className="col-lg-4 col-md-6 mb-4">
                             <div className="course-card h-100">
                               <div className="course-image">
-                                <img 
-                                  src={typeof course.image === 'object' ? course.image.url : '/assets/img/education/courses-3.webp'} 
-                                  alt={course.title} 
-                                  className="img-fluid" 
+                                <img
+                                  src={typeof course.image === 'object' ? course.image.url : '/assets/img/education/courses-3.webp'}
+                                  alt={course.title}
+                                  className="img-fluid"
                                 />
                               </div>
                               <div className="course-content">

@@ -111,8 +111,6 @@ export const HomePage: CollectionConfig = {
             { label: 'Text + Slider (50/50) - Default', value: 'text-slider' },
             { label: 'Single Image (Full Width)', value: 'single-image' },
             { label: 'Slider (Full Width - Mixed Media)', value: 'slider-fullwidth' },
-            { label: 'Two Media Files', value: 'two-media' },
-            { label: 'More than Two Media Files', value: 'multi-media' },
           ],
           admin: {
             description: 'Select the hero layout style',
@@ -139,18 +137,207 @@ export const HomePage: CollectionConfig = {
         {
           name: 'heroImages',
           type: 'array',
-          label: 'Hero Images (Carousel)',
+          label: 'Hero Media (Carousel)',
           minRows: 1,
           admin: {
-            description: 'Add multiple images for a carousel/slider effect',
+            description: 'Add mixed media items for 50/50 hero carousel',
             condition: (data, siblingData) => siblingData?.layoutType === 'text-slider',
           },
           fields: [
             {
-              name: 'image',
+              name: 'mediaType',
+              type: 'select',
+              defaultValue: 'image',
+              required: false,
+              options: [
+                { label: 'Text Content', value: 'text' },
+                { label: 'Image Media', value: 'image' },
+                { label: 'Video Media', value: 'video' },
+                { label: 'Audio Media', value: 'audio' },
+                { label: 'Document Media', value: 'document' },
+                { label: 'Animation Media', value: 'animation' },
+                { label: '3D & Immersive', value: '3d' },
+                { label: 'YouTube/Vimeo', value: 'embed' },
+                { label: 'Data Visualization', value: 'data' },
+              ],
+            },
+            {
+              name: 'textContent',
+              type: 'group',
+              admin: {
+                condition: (data, siblingData) => siblingData?.mediaType === 'text',
+              },
+              fields: [
+                { name: 'title', type: 'text' },
+                { name: 'description', type: 'textarea' },
+              ],
+            },
+            {
+              name: 'imageFile',
               type: 'upload',
               relationTo: 'media',
-              required: true,
+              admin: {
+                condition: (data, siblingData) => siblingData?.mediaType === 'image' || !siblingData?.mediaType,
+              },
+            },
+            {
+              name: 'imageAlt',
+              type: 'text',
+              label: 'Image Alt Text',
+              admin: {
+                condition: (data, siblingData) => siblingData?.mediaType === 'image' || !siblingData?.mediaType,
+              },
+            },
+            {
+              name: 'videoFile',
+              type: 'upload',
+              relationTo: 'media',
+              admin: {
+                condition: (data, siblingData) => siblingData?.mediaType === 'video',
+              },
+            },
+            {
+              name: 'videoPoster',
+              type: 'upload',
+              relationTo: 'media',
+              label: 'Video Poster Image',
+              admin: {
+                condition: (data, siblingData) => siblingData?.mediaType === 'video',
+              },
+            },
+            {
+              name: 'videoAutoplay',
+              type: 'checkbox',
+              defaultValue: false,
+              label: 'Autoplay Video',
+              admin: {
+                condition: (data, siblingData) => siblingData?.mediaType === 'video',
+              },
+            },
+            {
+              name: 'videoControls',
+              type: 'checkbox',
+              defaultValue: true,
+              label: 'Show Video Controls',
+              admin: {
+                condition: (data, siblingData) => siblingData?.mediaType === 'video',
+              },
+            },
+            {
+              name: 'audioFile',
+              type: 'upload',
+              relationTo: 'media',
+              admin: {
+                condition: (data, siblingData) => siblingData?.mediaType === 'audio',
+              },
+            },
+            {
+              name: 'audioAutoplay',
+              type: 'checkbox',
+              defaultValue: false,
+              admin: {
+                condition: (data, siblingData) => siblingData?.mediaType === 'audio',
+              },
+            },
+            {
+              name: 'documentFile',
+              type: 'upload',
+              relationTo: 'media',
+              admin: {
+                condition: (data, siblingData) => siblingData?.mediaType === 'document',
+              },
+            },
+            {
+              name: 'documentDisplayMode',
+              type: 'select',
+              options: [
+                { label: 'Download Button', value: 'download' },
+                { label: 'Embedded Viewer', value: 'embed' },
+              ],
+              defaultValue: 'download',
+              admin: {
+                condition: (data, siblingData) => siblingData?.mediaType === 'document',
+              },
+            },
+            {
+              name: 'animationFile',
+              type: 'upload',
+              relationTo: 'media',
+              label: 'Lottie JSON or GIF',
+              admin: {
+                condition: (data, siblingData) => siblingData?.mediaType === 'animation',
+              },
+            },
+            {
+              name: 'animationLoop',
+              type: 'checkbox',
+              defaultValue: true,
+              admin: {
+                condition: (data, siblingData) => siblingData?.mediaType === 'animation',
+              },
+            },
+            {
+              name: 'model3DFile',
+              type: 'upload',
+              relationTo: 'media',
+              label: '3D Model (GLB/GLTF)',
+              admin: {
+                condition: (data, siblingData) => siblingData?.mediaType === '3d',
+              },
+            },
+            {
+              name: 'model3DAutoRotate',
+              type: 'checkbox',
+              defaultValue: true,
+              admin: {
+                condition: (data, siblingData) => siblingData?.mediaType === '3d',
+              },
+            },
+            {
+              name: 'embedType',
+              type: 'select',
+              options: [
+                { label: 'YouTube', value: 'youtube' },
+                { label: 'Vimeo', value: 'vimeo' },
+                { label: 'Custom iFrame', value: 'iframe' },
+              ],
+              defaultValue: 'youtube',
+              admin: {
+                condition: (data, siblingData) => siblingData?.mediaType === 'embed',
+              },
+            },
+            {
+              name: 'embedUrl',
+              type: 'text',
+              label: 'Video URL or Embed Code',
+              admin: {
+                condition: (data, siblingData) => siblingData?.mediaType === 'embed',
+              },
+            },
+            {
+              name: 'embedAutoplay',
+              type: 'checkbox',
+              defaultValue: false,
+              admin: {
+                condition: (data, siblingData) => siblingData?.mediaType === 'embed',
+              },
+            },
+            {
+              name: 'dataEmbedUrl',
+              type: 'text',
+              label: 'Dashboard/Chart Embed URL',
+              admin: {
+                condition: (data, siblingData) => siblingData?.mediaType === 'data',
+              },
+            },
+            {
+              name: 'dataHeight',
+              type: 'number',
+              defaultValue: 400,
+              label: 'Embed Height (px)',
+              admin: {
+                condition: (data, siblingData) => siblingData?.mediaType === 'data',
+              },
             },
             {
               name: 'alt',
@@ -1420,8 +1607,8 @@ export const HomePage: CollectionConfig = {
           type: 'select',
           defaultValue: 'content-left',
           options: [
-            { label: 'Content Left + Image Right', value: 'content-left' },
-            { label: 'Image Left + Content Right', value: 'image-left' },
+            { label: 'Content Left + Media Right', value: 'content-left' },
+            { label: 'Media Left + Content Right', value: 'image-left' },
           ],
           admin: {
             description: 'Select layout for About Us section on homepage',
@@ -1491,11 +1678,190 @@ export const HomePage: CollectionConfig = {
           },
         },
         {
+          name: 'mediaType',
+          type: 'select',
+          defaultValue: 'image',
+          options: [
+            { label: 'Text Content', value: 'text' },
+            { label: 'Image Media', value: 'image' },
+            { label: 'Video Media', value: 'video' },
+            { label: 'Audio Media', value: 'audio' },
+            { label: 'Document Media', value: 'document' },
+            { label: 'Animation Media', value: 'animation' },
+            { label: '3D & Immersive', value: '3d' },
+            { label: 'YouTube/Vimeo', value: 'embed' },
+            { label: 'Data Visualization', value: 'data' },
+          ],
+          admin: {
+            description: 'Choose media type for About Us media panel',
+          },
+        },
+        {
+          name: 'textContent',
+          type: 'group',
+          admin: {
+            condition: (data, siblingData) => siblingData?.mediaType === 'text',
+          },
+          fields: [
+            { name: 'title', type: 'text' },
+            { name: 'description', type: 'textarea' },
+          ],
+        },
+        {
+          name: 'imageFile',
+          type: 'upload',
+          relationTo: 'media',
+          admin: {
+            condition: (data, siblingData) => siblingData?.mediaType === 'image',
+            description: 'Main About Us image',
+          },
+        },
+        {
+          name: 'imageAlt',
+          type: 'text',
+          label: 'Image Alt Text',
+          admin: {
+            condition: (data, siblingData) => siblingData?.mediaType === 'image',
+          },
+        },
+        {
+          name: 'videoFile',
+          type: 'upload',
+          relationTo: 'media',
+          admin: {
+            condition: (data, siblingData) => siblingData?.mediaType === 'video',
+          },
+        },
+        {
+          name: 'videoPoster',
+          type: 'upload',
+          relationTo: 'media',
+          admin: {
+            condition: (data, siblingData) => siblingData?.mediaType === 'video',
+          },
+        },
+        {
+          name: 'videoAutoplay',
+          type: 'checkbox',
+          defaultValue: false,
+          admin: {
+            condition: (data, siblingData) => siblingData?.mediaType === 'video',
+          },
+        },
+        {
+          name: 'videoControls',
+          type: 'checkbox',
+          defaultValue: true,
+          admin: {
+            condition: (data, siblingData) => siblingData?.mediaType === 'video',
+          },
+        },
+        {
+          name: 'audioFile',
+          type: 'upload',
+          relationTo: 'media',
+          admin: {
+            condition: (data, siblingData) => siblingData?.mediaType === 'audio',
+          },
+        },
+        {
+          name: 'audioAutoplay',
+          type: 'checkbox',
+          defaultValue: false,
+          admin: {
+            condition: (data, siblingData) => siblingData?.mediaType === 'audio',
+          },
+        },
+        {
+          name: 'documentFile',
+          type: 'upload',
+          relationTo: 'media',
+          admin: {
+            condition: (data, siblingData) => siblingData?.mediaType === 'document',
+          },
+        },
+        {
+          name: 'documentDisplayMode',
+          type: 'select',
+          options: [
+            { label: 'Download Button', value: 'download' },
+            { label: 'Embedded Viewer', value: 'embed' },
+          ],
+          defaultValue: 'download',
+          admin: {
+            condition: (data, siblingData) => siblingData?.mediaType === 'document',
+          },
+        },
+        {
+          name: 'animationFile',
+          type: 'upload',
+          relationTo: 'media',
+          admin: {
+            condition: (data, siblingData) => siblingData?.mediaType === 'animation',
+          },
+        },
+        {
+          name: 'model3DFile',
+          type: 'upload',
+          relationTo: 'media',
+          label: '3D Model (GLB/GLTF)',
+          admin: {
+            condition: (data, siblingData) => siblingData?.mediaType === '3d',
+          },
+        },
+        {
+          name: 'embedType',
+          type: 'select',
+          options: [
+            { label: 'YouTube', value: 'youtube' },
+            { label: 'Vimeo', value: 'vimeo' },
+            { label: 'Custom iFrame', value: 'iframe' },
+          ],
+          defaultValue: 'youtube',
+          admin: {
+            condition: (data, siblingData) => siblingData?.mediaType === 'embed',
+          },
+        },
+        {
+          name: 'embedUrl',
+          type: 'text',
+          label: 'Video URL or Embed Code',
+          admin: {
+            condition: (data, siblingData) => siblingData?.mediaType === 'embed',
+          },
+        },
+        {
+          name: 'embedAutoplay',
+          type: 'checkbox',
+          defaultValue: false,
+          admin: {
+            condition: (data, siblingData) => siblingData?.mediaType === 'embed',
+          },
+        },
+        {
+          name: 'dataEmbedUrl',
+          type: 'text',
+          label: 'Dashboard/Chart Embed URL',
+          admin: {
+            condition: (data, siblingData) => siblingData?.mediaType === 'data',
+          },
+        },
+        {
+          name: 'dataHeight',
+          type: 'number',
+          defaultValue: 400,
+          label: 'Embed Height (px)',
+          admin: {
+            condition: (data, siblingData) => siblingData?.mediaType === 'data',
+          },
+        },
+        {
           name: 'campusImage',
           type: 'upload',
           relationTo: 'media',
           admin: {
-            description: 'Main campus/building image',
+            condition: (data, siblingData) => siblingData?.mediaType === 'image' || !siblingData?.mediaType,
+            description: 'Main campus/building image (legacy fallback)',
           },
         },
         {
@@ -1759,6 +2125,7 @@ export const HomePage: CollectionConfig = {
     {
       name: 'featuredInstructors',
       type: 'group',
+      label: 'Facilities',
       admin: {
         condition: (data) => data.sectionType === 'featured-instructors',
       },
@@ -1776,9 +2143,13 @@ export const HomePage: CollectionConfig = {
         {
           name: 'instructors',
           type: 'array',
-          label: 'Instructor Items',
+          label: 'Facility Items',
+          labels: {
+            singular: 'Facility',
+            plural: 'Facilities',
+          },
           minRows: 0,
-          maxRows: 4,
+          maxRows: 6,
           fields: [
             {
               name: 'image',
@@ -1787,8 +2158,26 @@ export const HomePage: CollectionConfig = {
               required: false,
             },
             {
+              name: 'icon',
+              type: 'select',
+              label: 'Facility Icon',
+              defaultValue: 'monitor',
+              options: [
+                { label: 'Monitor', value: 'monitor' },
+                { label: 'Book', value: 'book' },
+                { label: 'Computer', value: 'cpu' },
+                { label: 'Sports', value: 'sports' },
+                { label: 'Palette', value: 'palette' },
+                { label: 'Bus', value: 'bus' },
+              ],
+              admin: {
+                description: 'Select icon shown on the facility card',
+              },
+            },
+            {
               name: 'name',
               type: 'text',
+              label: 'Facility Name',
               required: false,
             },
             {
@@ -1821,7 +2210,7 @@ export const HomePage: CollectionConfig = {
               type: 'text',
               required: false,
               admin: {
-                description: 'Link to instructor profile page',
+                description: 'Link to facility details page',
               },
             },
             {

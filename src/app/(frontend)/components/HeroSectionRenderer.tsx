@@ -319,11 +319,117 @@ export function HeroSectionRenderer({ hero }: { hero: any }) {
                       <div className="carousel-inner">
                         {hero.heroImages.map((item: any, index: number) => (
                           <div key={index} className={`carousel-item ${index === 0 ? 'active' : ''}`}>
-                            <img
-                              src={typeof item.image === 'object' ? item.image.url : '/assets/img/education/courses-13.webp'}
-                              alt={item.alt || hero.title}
-                              className="d-block w-100"
-                            />
+                            {(item.mediaType === 'text' && item.textContent) && (
+                              <div className="d-flex align-items-center justify-content-center" style={{ minHeight: '360px', background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }}>
+                                <div className="text-center text-white px-4">
+                                  {item.textContent.title && <h2 className="mb-3">{item.textContent.title}</h2>}
+                                  {item.textContent.description && <p className="mb-0">{item.textContent.description}</p>}
+                                </div>
+                              </div>
+                            )}
+
+                            {(item.mediaType === 'image' || !item.mediaType) && (
+                              <img
+                                src={
+                                  typeof item.imageFile === 'object' ? item.imageFile.url :
+                                  typeof item.image === 'object' ? item.image.url :
+                                  '/assets/img/education/courses-13.webp'
+                                }
+                                alt={item.imageAlt || item.alt || hero.title}
+                                className="d-block w-100"
+                              />
+                            )}
+
+                            {item.mediaType === 'video' && item.videoFile && (
+                              <video
+                                src={typeof item.videoFile === 'object' ? item.videoFile.url : item.videoFile}
+                                poster={item.videoPoster && typeof item.videoPoster === 'object' ? item.videoPoster.url : item.videoPoster}
+                                autoPlay={item.videoAutoplay}
+                                controls={item.videoControls !== false}
+                                muted
+                                loop
+                                style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+                              />
+                            )}
+
+                            {item.mediaType === 'audio' && item.audioFile && (
+                              <div className="d-flex align-items-center justify-content-center" style={{ minHeight: '360px', background: '#f8f9fa' }}>
+                                <audio
+                                  src={typeof item.audioFile === 'object' ? item.audioFile.url : item.audioFile}
+                                  controls
+                                  autoPlay={item.audioAutoplay}
+                                  className="w-75"
+                                />
+                              </div>
+                            )}
+
+                            {item.mediaType === 'document' && item.documentFile && (
+                              <div className="d-flex align-items-center justify-content-center" style={{ minHeight: '360px', background: '#ffffff' }}>
+                                {item.documentDisplayMode === 'embed' ? (
+                                  <iframe
+                                    src={typeof item.documentFile === 'object' ? item.documentFile.url : item.documentFile}
+                                    className="w-100"
+                                    style={{ height: '500px', border: 'none' }}
+                                    title={item.alt || 'Document'}
+                                  />
+                                ) : (
+                                  <a href={typeof item.documentFile === 'object' ? item.documentFile.url : item.documentFile} download className="btn btn-primary btn-lg">
+                                    Download Document
+                                  </a>
+                                )}
+                              </div>
+                            )}
+
+                            {item.mediaType === 'animation' && item.animationFile && (
+                              <img
+                                src={typeof item.animationFile === 'object' ? item.animationFile.url : item.animationFile}
+                                alt={item.alt || 'Animation'}
+                                style={{ width: '100%', maxHeight: '600px', objectFit: 'cover', display: 'block' }}
+                              />
+                            )}
+
+                            {item.mediaType === '3d' && item.model3DFile && (
+                              <div className="d-flex align-items-center justify-content-center" style={{ minHeight: '360px', background: '#1a1a1a' }}>
+                                <div className="text-center text-white">
+                                  <i className="bi bi-box" style={{ fontSize: '4rem' }}></i>
+                                  <p className="mt-3 mb-0">3D Model Viewer</p>
+                                </div>
+                              </div>
+                            )}
+
+                            {item.mediaType === 'embed' && item.embedUrl && (
+                              <div className="hero-slide-embed" style={{ width: '100%', height: '100%', background: '#000' }}>
+                                {item.embedType === 'youtube' && (
+                                  <iframe
+                                    src={`https://www.youtube.com/embed/${extractYouTubeId(item.embedUrl)}?autoplay=${item.embedAutoplay ? 1 : 0}&mute=1&rel=0&modestbranding=1`}
+                                    title={item.alt || 'YouTube video'}
+                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                    allowFullScreen
+                                    style={{ width: '100%', height: '100%', border: 'none', display: 'block' }}
+                                  ></iframe>
+                                )}
+                                {item.embedType === 'vimeo' && (
+                                  <iframe
+                                    src={`https://player.vimeo.com/video/${extractVimeoId(item.embedUrl)}?autoplay=${item.embedAutoplay ? 1 : 0}`}
+                                    title={item.alt || 'Vimeo video'}
+                                    allow="autoplay; fullscreen; picture-in-picture"
+                                    allowFullScreen
+                                    style={{ width: '100%', height: '100%', border: 'none', display: 'block' }}
+                                  ></iframe>
+                                )}
+                                {item.embedType === 'iframe' && (
+                                  <div style={{ width: '100%', height: '100%' }} dangerouslySetInnerHTML={{ __html: item.embedUrl }} />
+                                )}
+                              </div>
+                            )}
+
+                            {item.mediaType === 'data' && item.dataEmbedUrl && (
+                              <iframe
+                                src={item.dataEmbedUrl}
+                                style={{ width: '100%', height: `${item.dataHeight || 400}px`, border: 'none' }}
+                                title={item.alt || 'Data visualization'}
+                              />
+                            )}
                           </div>
                         ))}
                       </div>

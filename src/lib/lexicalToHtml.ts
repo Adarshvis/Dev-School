@@ -109,6 +109,8 @@ function processNode(node: any): string {
     case 'listitem':
       return `<li>${children}</li>`
     case 'quote':
+    case 'blockquote':
+    case 'block-quote':
       return `<blockquote${styleAttr}>${children}</blockquote>`
     case 'link':
       const url = node.fields?.url || node.url || '#'

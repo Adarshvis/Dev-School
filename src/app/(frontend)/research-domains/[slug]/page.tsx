@@ -2,6 +2,7 @@ import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import { getPayload } from 'payload'
 import config from '@payload-config'
+import { lexicalToHtml } from '@/lib/lexicalToHtml'
 
 // Use ISR - revalidate every 60 seconds for better performance
 export const revalidate = 60
@@ -32,36 +33,6 @@ async function getResearchDomain(slug: string): Promise<ResearchDomainData | nul
   }
 }
 
-function renderRichText(content: any): string {
-  if (!content || !content.root || !content.root.children) return ''
-  
-  let html = ''
-  
-  content.root.children.forEach((node: any) => {
-    if (node.type === 'heading') {
-      const level = node.tag || 'h2'
-      const text = node.children?.map((child: any) => child.text).join('') || ''
-      html += `<${level}>${text}</${level}>`
-    } else if (node.type === 'paragraph') {
-      const text = node.children?.map((child: any) => {
-        if (child.bold) return `<strong>${child.text}</strong>`
-        if (child.italic) return `<em>${child.text}</em>`
-        return child.text || ''
-      }).join('') || ''
-      html += `<p>${text}</p>`
-    } else if (node.type === 'list') {
-      const tag = node.listType === 'number' ? 'ol' : 'ul'
-      const items = node.children?.map((item: any) => {
-        const itemText = item.children?.map((child: any) => child.children?.map((c: any) => c.text).join('')).join('') || ''
-        return `<li>${itemText}</li>`
-      }).join('') || ''
-      html += `<${tag}>${items}</${tag}>`
-    }
-  })
-  
-  return html
-}
-
 export default async function ResearchDomainDetail({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params
   const domain = await getResearchDomain(slug)
@@ -70,7 +41,7 @@ export default async function ResearchDomainDetail({ params }: { params: Promise
     notFound()
   }
   
-  const contentHTML = renderRichText(domain.content)
+  const contentHTML = lexicalToHtml(domain.content)
   
   return (
     <main className="main">

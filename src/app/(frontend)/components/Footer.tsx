@@ -5,7 +5,7 @@ export default async function Footer() {
   const settings = await getSettings()
   
   return (
-    <footer id="footer" className="footer accent-background">
+    <footer id="footer" className="footer">
       <div className="container footer-top">
         <div className="row gy-4">
           <div className="col-lg-5 col-md-12 footer-about">
