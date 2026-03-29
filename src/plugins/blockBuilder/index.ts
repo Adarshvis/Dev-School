@@ -20,6 +20,7 @@ export const blockBuilderPlugin = (options?: {
    * Enable/disable specific block types
    */
   enabledBlocks?: {
+    cardGrid?: boolean
     video?: boolean
     imageGallery?: boolean
     testimonials?: boolean
@@ -33,6 +34,7 @@ export const blockBuilderPlugin = (options?: {
     customCode?: boolean
     map?: boolean
     people?: boolean
+    tabs?: boolean
     flexibleRow?: boolean
   }
 }): Plugin => {

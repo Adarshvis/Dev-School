@@ -1,4 +1,5 @@
 import { FlexibleRowBlock } from '@/blocks/FlexibleRow'
+import { cardGridBlock } from '@/plugins/blockBuilder/fields/blocks/cardGridBlock'
 import { countdownBlock } from '@/plugins/blockBuilder/fields/blocks/countdownBlock'
 import { ctaBlock } from '@/plugins/blockBuilder/fields/blocks/ctaBlock'
 import { customCodeBlock } from '@/plugins/blockBuilder/fields/blocks/customCodeBlock'
@@ -20,6 +21,7 @@ export const contentBlocksField: any = {
     description: 'Flexible content blocks rendered on frontend for this section',
   },
   blocks: [
+    cardGridBlock,
     videoBlock,
     imageGalleryBlock,
     testimonialsBlock,

@@ -158,6 +158,70 @@ export default async function RootLayout(props: { children: React.ReactNode }) {
             color: var(--secondary-color);
           }
 
+          .tabs-content-block .tabs-nav {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 1.5rem;
+            border-bottom: 1px solid color-mix(in srgb, var(--heading-color), transparent 82%);
+            padding-bottom: 10px;
+          }
+
+          .tabs-content-block .tabs-nav-btn {
+            border: 1px solid color-mix(in srgb, var(--primary-color), transparent 72%);
+            background: color-mix(in srgb, var(--primary-color), transparent 90%);
+            color: var(--heading-color);
+            border-radius: 10px;
+            padding: 0.5rem 0.95rem;
+            font-weight: 600;
+            line-height: 1.2;
+            transition: all 0.25s ease;
+          }
+
+          .tabs-content-block .tabs-nav-btn:hover {
+            background: color-mix(in srgb, var(--primary-color), transparent 84%);
+            border-color: color-mix(in srgb, var(--primary-color), transparent 56%);
+          }
+
+          .tabs-content-block .tabs-nav-btn.is-active {
+            background: var(--primary-color);
+            color: var(--contrast-color);
+            border-color: var(--primary-color);
+            box-shadow: 0 6px 16px color-mix(in srgb, var(--primary-color), transparent 70%);
+          }
+
+          .tabs-content-block.tabs-style-underline .tabs-nav-btn {
+            border: none;
+            border-bottom: 2px solid transparent;
+            border-radius: 0;
+            background: transparent;
+            padding-left: 0.25rem;
+            padding-right: 0.25rem;
+          }
+
+          .tabs-content-block.tabs-style-underline .tabs-nav-btn.is-active {
+            background: transparent;
+            color: var(--primary-color);
+            border-bottom-color: var(--primary-color);
+            box-shadow: none;
+          }
+
+          .tabs-content-block.tabs-style-pills .tabs-nav {
+            border-bottom: none;
+            padding-bottom: 0;
+          }
+
+          .tabs-content-block .tabs-panel {
+            border: 1px solid color-mix(in srgb, var(--secondary-color), transparent 78%);
+            border-radius: 14px;
+            background: color-mix(in srgb, var(--background-color), #ffffff 22%);
+            padding: clamp(16px, 2vw, 28px);
+          }
+
+          .tabs-content-block .tabs-panel-empty {
+            color: var(--secondary-color);
+          }
+
           .page-title.light-background {
             background-color: color-mix(in srgb, white 10%, var(--background-color));
           }

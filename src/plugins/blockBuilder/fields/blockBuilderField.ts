@@ -1,4 +1,5 @@
 import type { Field } from 'payload'
+import { cardGridBlock } from './blocks/cardGridBlock.ts'
 import { videoBlock } from './blocks/videoBlock.ts'
 import { imageGalleryBlock } from './blocks/imageGalleryBlock.ts'
 import { testimonialsBlock } from './blocks/testimonialsBlock.ts'
@@ -12,6 +13,7 @@ import { socialFeedBlock } from './blocks/socialFeedBlock.ts'
 import { customCodeBlock } from './blocks/customCodeBlock.ts'
 import { mapBlock } from './blocks/mapBlock.ts'
 import { peopleBlock } from './blocks/peopleBlock.ts'
+import { tabsBlock } from './blocks/tabsBlock.ts'
 import { FlexibleRowBlock } from '../../../blocks/FlexibleRow.ts'
 
 export const blockBuilderField = (
@@ -20,6 +22,7 @@ export const blockBuilderField = (
 ): Field => {
   // All available blocks
   const allBlocks = [
+    cardGridBlock,
     videoBlock,
     imageGalleryBlock,
     testimonialsBlock,
@@ -33,6 +36,7 @@ export const blockBuilderField = (
     customCodeBlock,
     mapBlock,
     peopleBlock,
+    tabsBlock,
     FlexibleRowBlock,
   ]
 

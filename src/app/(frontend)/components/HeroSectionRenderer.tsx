@@ -58,7 +58,7 @@ export function HeroSectionRenderer({ hero }: { hero: any }) {
     
     return (
       <div id="fullWidthHeroCarousel" 
-        className="carousel slide" 
+        className="carousel slide pointer-event" 
         data-bs-ride="carousel" 
         data-bs-interval={hero.fullWidthSlider.interval ? hero.fullWidthSlider.interval * 1000 : 5000} 
         style={{ 

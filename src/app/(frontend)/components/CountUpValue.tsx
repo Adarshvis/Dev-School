@@ -13,6 +13,7 @@ const CountUpValue: React.FC<CountUpValueProps> = ({ end, suffix = '', duration 
   const [inView, setInView] = useState(false)
   const spanRef = useRef<HTMLSpanElement | null>(null)
   const startedRef = useRef(false)
+  const rafRef = useRef<number | null>(null)
 
   useEffect(() => {
     const el = spanRef.current
@@ -37,16 +38,25 @@ const CountUpValue: React.FC<CountUpValueProps> = ({ end, suffix = '', duration 
     startedRef.current = true
 
     const startTime = performance.now()
+    let isMounted = true
     const step = (now: number) => {
+      if (!isMounted) return
       const progress = Math.min((now - startTime) / duration, 1)
       const eased = 1 - Math.pow(1 - progress, 3)
       setCount(Math.floor(eased * end))
       if (progress < 1) {
-        requestAnimationFrame(step)
+        rafRef.current = requestAnimationFrame(step)
       }
     }
 
-    requestAnimationFrame(step)
+    rafRef.current = requestAnimationFrame(step)
+
+    return () => {
+      isMounted = false
+      if (rafRef.current !== null) {
+        cancelAnimationFrame(rafRef.current)
+      }
+    }
   }, [inView, end, duration])
 
   return (

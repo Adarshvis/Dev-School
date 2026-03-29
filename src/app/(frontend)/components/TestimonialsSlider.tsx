@@ -21,12 +21,18 @@ export default function TestimonialsSlider({ testimonials }: TestimonialsSliderP
 
   // Auto-play functionality - shift by 1 card each time
   useEffect(() => {
+    if (totalItems <= 1) return
+
     const interval = setInterval(() => {
       setCurrentIndex((prev) => (prev + 1) % totalItems)
     }, 3000) // Change every 3 seconds
 
     return () => clearInterval(interval)
   }, [totalItems])
+
+  if (totalItems === 0) {
+    return null
+  }
 
   const goToIndex = (index: number) => {
     setCurrentIndex(index)

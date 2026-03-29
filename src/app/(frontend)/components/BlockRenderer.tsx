@@ -1,3 +1,5 @@
+"use client"
+
 import React from 'react'
 import Link from 'next/link'
 import FlexibleRowBlock from './blocks/FlexibleRowBlock'
@@ -100,6 +102,8 @@ export const BlockRenderer: React.FC<BlockRendererProps> = ({ blocks }) => {
         console.log(`Rendering block ${index}:`, block.blockType, block)
         
         switch (block.blockType) {
+          case 'cardGrid':
+            return <CardGridBlock key={index} {...block} />
           case 'video':
             return <VideoBlock key={index} {...block} />
           case 'imageGallery':
@@ -126,6 +130,8 @@ export const BlockRenderer: React.FC<BlockRendererProps> = ({ blocks }) => {
             return <MapBlock key={index} {...block} />
           case 'people':
             return <PeopleBlock key={index} {...block} />
+          case 'tabs':
+            return <TabsBlock key={index} {...block} />
           case 'flexibleRow':
             return <FlexibleRowBlock key={index} {...block} />
           default:
@@ -134,6 +140,135 @@ export const BlockRenderer: React.FC<BlockRendererProps> = ({ blocks }) => {
         }
       })}
     </>
+  )
+}
+
+const CardGridBlock: React.FC<any> = ({ title, description, columns, cards }) => {
+  if (!Array.isArray(cards) || cards.length === 0) return null
+
+  const columnClass =
+    columns === '2'
+      ? 'col-lg-6 col-md-6'
+      : columns === '4'
+        ? 'col-xl-3 col-lg-4 col-md-6'
+        : 'col-lg-4 col-md-6'
+
+  return (
+    <section className="cards-section section">
+      <div className="container">
+        {(title || description) && (
+          <div className="section-title text-center mb-3" data-aos="fade-up">
+            {title && <h2>{title}</h2>}
+            {description && <p>{description}</p>}
+          </div>
+        )}
+
+        <div className="row g-4">
+          {cards.map((card: any, index: number) => {
+            const imageUrl =
+              card?.image && typeof card.image === 'object' ? card.image.url : card?.image
+            const linkText = String(card?.linkText || '').trim() || 'Learn More'
+            const href = String(card?.link || '').trim()
+
+            return (
+              <div key={index} className={columnClass}>
+                <div className="card h-100" data-aos="fade-up" data-aos-delay={Math.min(index * 80, 320)}>
+                  {imageUrl ? <img src={imageUrl} className="card-img-top" alt={card?.title || `Card ${index + 1}`} /> : null}
+                  <div className="card-body d-flex flex-column">
+                    {card?.icon ? <i className={`bi ${card.icon} card-icon mb-3`} aria-hidden="true"></i> : null}
+                    {card?.title ? <h5 className="card-title">{card.title}</h5> : null}
+                    {card?.description ? <p className="card-text">{card.description}</p> : null}
+                    {href ? (
+                      <div className="mt-auto pt-2">
+                        {isExternalHref(href) ? (
+                          <a href={href} className="btn btn-outline-primary" target="_blank" rel="noopener noreferrer">
+                            {linkText}
+                          </a>
+                        ) : (
+                          <Link href={href} className="btn btn-outline-primary">
+                            {linkText}
+                          </Link>
+                        )}
+                      </div>
+                    ) : null}
+                  </div>
+                </div>
+              </div>
+            )
+          })}
+        </div>
+      </div>
+    </section>
+  )
+}
+
+const TabsBlock: React.FC<any> = ({ title, description, tabs, tabStyle }) => {
+  const normalizedTabs = Array.isArray(tabs) ? tabs.filter(Boolean) : []
+  const [activeIndex, setActiveIndex] = React.useState(0)
+
+  React.useEffect(() => {
+    if (activeIndex > normalizedTabs.length - 1) {
+      setActiveIndex(0)
+    }
+  }, [activeIndex, normalizedTabs.length])
+
+  if (normalizedTabs.length === 0) return null
+
+  const activeTab = normalizedTabs[activeIndex]
+  const tabStyleClass =
+    tabStyle === 'pills' ? 'tabs-style-pills' : tabStyle === 'buttons' ? 'tabs-style-buttons' : 'tabs-style-underline'
+
+  return (
+    <section className={`tabs-content-block section ${tabStyleClass}`}>
+      <div className="container">
+        {(title || description) && (
+          <div className="section-title text-center mb-3" data-aos="fade-up">
+            {title && <h2>{title}</h2>}
+            {description && <p>{description}</p>}
+          </div>
+        )}
+
+        <div className="tabs-nav" role="tablist" aria-label={title || 'Content Tabs'}>
+          {normalizedTabs.map((tab: any, index: number) => {
+            const tabId = `tab-${index}`
+            const panelId = `tab-panel-${index}`
+            const isActive = activeIndex === index
+            const savedIcon = String(tab?.icon || '').trim()
+            const customIcon = String(tab?.customIcon || '').trim()
+            const iconClass = savedIcon === 'custom' ? customIcon : savedIcon
+
+            return (
+              <button
+                key={tabId}
+                id={tabId}
+                type="button"
+                role="tab"
+                className={`tabs-nav-btn ${isActive ? 'is-active' : ''}`}
+                aria-selected={isActive}
+                aria-controls={panelId}
+                onClick={() => setActiveIndex(index)}
+              >
+                {iconClass ? <i className={`${iconClass} me-2`} aria-hidden="true"></i> : null}
+                <span>{String(tab?.label || `Tab ${index + 1}`)}</span>
+              </button>
+            )
+          })}
+        </div>
+
+        <div
+          id={`tab-panel-${activeIndex}`}
+          role="tabpanel"
+          aria-labelledby={`tab-${activeIndex}`}
+          className="tabs-panel"
+        >
+          {Array.isArray(activeTab?.content) && activeTab.content.length > 0 ? (
+            <BlockRenderer blocks={activeTab.content} />
+          ) : (
+            <p className="tabs-panel-empty mb-0">No content added for this tab yet.</p>
+          )}
+        </div>
+      </div>
+    </section>
   )
 }
 
@@ -266,7 +401,7 @@ const ImageGalleryBlock: React.FC<any> = ({
         )}
         
         {galleryType === 'carousel' ? (
-          <div id="galleryCarousel" className="carousel slide" data-bs-ride="carousel" data-aos="fade-up" data-aos-delay="100">
+          <div id="galleryCarousel" className="carousel slide pointer-event" data-bs-ride="carousel" data-aos="fade-up" data-aos-delay="100">
             <div className="carousel-indicators">
               {galleryImages?.map((_: any, index: number) => (
                 <button

@@ -331,6 +331,7 @@ export const Pages: CollectionConfig = {
               label: 'Layout Blocks',
               blocks: [FlexibleRowBlock],
               admin: {
+                hidden: true,
                 description: 'Add advanced layout sections like Flexible Row / Content Grid.',
                 initCollapsed: true,
               },
@@ -340,6 +341,7 @@ export const Pages: CollectionConfig = {
               type: 'array',
               label: 'Page Sections',
               admin: {
+                hidden: true,
                 description: 'Add flexible content sections to your page. Drag to reorder.',
                 initCollapsed: true,
               },
