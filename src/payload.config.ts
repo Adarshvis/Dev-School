@@ -1,6 +1,13 @@
 // storage-adapter-import-placeholder
 import { mongooseAdapter } from '@payloadcms/db-mongodb'
 import { lexicalEditor, FixedToolbarFeature, InlineToolbarFeature, HeadingFeature, BoldFeature, ItalicFeature, UnderlineFeature, StrikethroughFeature, SubscriptFeature, SuperscriptFeature, AlignFeature, IndentFeature, UnorderedListFeature, OrderedListFeature, ChecklistFeature, LinkFeature, BlockquoteFeature, HorizontalRuleFeature, InlineCodeFeature } from '@payloadcms/richtext-lexical'
+import {
+  TextColorFeature,
+  TextFontFamilyFeature,
+  TextLetterSpacingFeature,
+  TextLineHeightFeature,
+  TextSizeFeature,
+} from 'payload-lexical-typography'
 import { buildConfig } from 'payload'
 import sharp from 'sharp'
 
@@ -58,6 +65,21 @@ export default buildConfig({
       ...defaultFeatures,
       FixedToolbarFeature(),
       InlineToolbarFeature(),
+      TextColorFeature({
+        colorPicker: true,
+      }),
+      TextSizeFeature({
+        customSize: false,
+      }),
+      TextLetterSpacingFeature({
+        customSpacing: false,
+      }),
+      TextLineHeightFeature({
+        customLineHeight: false,
+      }),
+      TextFontFamilyFeature({
+        customFontFamily: false,
+      }),
     ],
   }),
   secret: process.env.PAYLOAD_SECRET || '',

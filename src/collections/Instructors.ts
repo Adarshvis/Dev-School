@@ -14,15 +14,7 @@ export const Instructors: CollectionConfig = {
     useAsTitle: 'name',
     defaultColumns: ['name', 'specialty', 'studentCount', 'rating'],
     group: 'Content Management',
-    hidden: ({ user }) => {
-      const u = user as UserWithRole | null
-      if (!u) return true
-      if (u.role === 'author') {
-        const allowed = u.allowedCollections || []
-        if (!allowed.includes('instructors')) return true
-      }
-      return false
-    },
+    hidden: () => true,
   },
   access: {
     read: () => true,

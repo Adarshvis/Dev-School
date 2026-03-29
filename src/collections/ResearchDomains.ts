@@ -22,15 +22,7 @@ export const ResearchDomains: CollectionConfig = {
     useAsTitle: 'title',
     defaultColumns: ['title', 'slug', 'updatedAt'],
     group: 'Content Management',
-    hidden: ({ user }) => {
-      const u = user as UserWithRole | null
-      if (!u) return true
-      if (u.role === 'author') {
-        const allowed = u.allowedCollections || []
-        if (!allowed.includes('research-domains')) return true
-      }
-      return false
-    },
+    hidden: () => true,
   },
   access: {
     read: () => true,

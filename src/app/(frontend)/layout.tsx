@@ -32,11 +32,15 @@ function getFontImports(settings: any): string {
   if (settings?.typography?.bodyFont) {
     fonts.add(settings.typography.bodyFont)
   }
+  if (settings?.typography?.subHeadingFont) {
+    fonts.add(settings.typography.subHeadingFont)
+  }
   
   // Default fonts
+  fonts.add('DM Sans')
+  fonts.add('Playfair Display')
   fonts.add('Roboto')
   fonts.add('Raleway')
-  fonts.add('Ubuntu')
   
   const fontString = Array.from(fonts)
     .map(font => font.replace(/ /g, '+'))
@@ -88,16 +92,39 @@ export default async function RootLayout(props: { children: React.ReactNode }) {
           body {
             text-rendering: optimizeLegibility;
             -webkit-font-smoothing: antialiased;
+            font-size: var(--base-font-size, 16px);
             background-color: var(--background-color);
             background-image: var(--page-soft-gradient, none);
             background-attachment: fixed;
             background-size: cover;
           }
 
+          h1,
+          h2 {
+            font-family: var(--heading-font, 'Playfair Display', serif);
+            color: var(--heading-color);
+          }
+
+          h3,
+          h4,
+          .subtitle,
+          .label-text,
+          .section-label,
+          .about-v2-label-wrap .label-text {
+            font-family: var(--subheading-font, var(--default-font));
+            color: var(--subheading-color, var(--heading-color));
+          }
+
           .section {
-            padding-top: 84px;
-            padding-bottom: 84px;
+            padding-top: var(--section-spacing-y, 84px);
+            padding-bottom: var(--section-spacing-y, 84px);
             background-color: transparent;
+          }
+
+          .container,
+          .container-xl,
+          .container-fluid.container-xl {
+            max-width: var(--container-max-width, 1140px);
           }
 
           .cms-home-section > section,
@@ -119,11 +146,16 @@ export default async function RootLayout(props: { children: React.ReactNode }) {
             font-weight: 700;
           }
 
+          .section-title h2:before,
+          .section-title h2:after {
+            background: var(--primary-color) !important;
+          }
+
           .section-title p {
             max-width: 760px;
             margin-left: auto;
             margin-right: auto;
-            color: #607088;
+            color: var(--secondary-color);
           }
 
           .page-title.light-background {
@@ -195,22 +227,22 @@ export default async function RootLayout(props: { children: React.ReactNode }) {
 
           .facility-grid-v2 .facility-card:hover {
             transform: translateY(-10px);
-            box-shadow: 0 22px 38px rgba(14, 38, 73, 0.16);
-            border-color: color-mix(in srgb, var(--accent-color), transparent 58%);
+            box-shadow: 0 16px 28px rgba(14, 38, 73, 0.11);
+            border-color: color-mix(in srgb, var(--accent-color), transparent 72%);
           }
 
           .facility-grid-v2 .facility-media {
             position: relative;
             height: 190px;
             overflow: hidden;
-            background: color-mix(in srgb, var(--accent-color), black 26%);
+            background: color-mix(in srgb, var(--accent-color), black 14%);
           }
 
           .facility-grid-v2 .facility-media::after {
             content: '';
             position: absolute;
             inset: 0;
-            background: linear-gradient(180deg, rgba(11, 30, 58, 0.08), rgba(11, 30, 58, 0.32));
+            background: linear-gradient(180deg, rgba(11, 30, 58, 0.04), rgba(11, 30, 58, 0.18));
             pointer-events: none;
           }
 
@@ -223,7 +255,7 @@ export default async function RootLayout(props: { children: React.ReactNode }) {
           }
 
           .facility-grid-v2 .facility-card:hover .facility-media img {
-            transform: scale(1.08);
+            transform: scale(1.04);
           }
 
           .facility-grid-v2 .facility-icon,
@@ -267,7 +299,7 @@ export default async function RootLayout(props: { children: React.ReactNode }) {
           }
 
           .facility-grid-v2 .facility-card:hover .facility-content {
-            border-bottom-color: color-mix(in srgb, var(--accent-color), transparent 22%);
+            border-bottom-color: color-mix(in srgb, var(--accent-color), transparent 45%);
           }
 
           .facility-grid-v2 .facility-content h3 {
@@ -309,7 +341,7 @@ export default async function RootLayout(props: { children: React.ReactNode }) {
 
           .research-facilities-grid .facility-card:hover {
             transform: translateY(-8px);
-            box-shadow: 0 20px 48px -12px color-mix(in srgb, var(--facility-color), transparent 70%);
+            box-shadow: 0 14px 32px -10px color-mix(in srgb, var(--facility-color), transparent 78%);
             border-color: hsl(30 18% 88%);
           }
 
@@ -337,19 +369,19 @@ export default async function RootLayout(props: { children: React.ReactNode }) {
             position: absolute;
             inset: 0;
             background: var(--facility-color);
-            opacity: 0.35;
+            opacity: 0.2;
             transition: opacity 0.3s ease;
             z-index: 1;
             pointer-events: none;
           }
 
           .research-facilities-grid .facility-card:hover .facility-media::before {
-            opacity: 0.7;
+            opacity: 0.3;
           }
 
           .research-facilities-grid .facility-media::after {
             z-index: 1;
-            background: linear-gradient(to bottom, rgba(0, 0, 0, 0.15) 0%, rgba(0, 0, 0, 0.5) 100%);
+            background: linear-gradient(to bottom, rgba(0, 0, 0, 0.08) 0%, rgba(0, 0, 0, 0.3) 100%);
           }
 
           .research-facilities-grid .facility-icon,
@@ -841,7 +873,9 @@ export default async function RootLayout(props: { children: React.ReactNode }) {
           .btn-course,
           .btn-view,
           .btn-getstarted {
-            border-radius: 999px !important;
+            border-radius: var(--button-radius, 999px) !important;
+            padding: var(--button-padding-y, 0.65rem) var(--button-padding-x, 1.4rem);
+            font-size: var(--button-font-size, 0.98rem);
             font-weight: 600;
             letter-spacing: 0.01em;
             transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
@@ -858,17 +892,34 @@ export default async function RootLayout(props: { children: React.ReactNode }) {
           .about .about-image .btn.btn-primary,
           .about .about-content .btn.btn-primary,
           .image-gallery-block .btn.btn-primary {
-            background-color: var(--accent-color);
-            border-color: var(--accent-color);
-            color: var(--contrast-color);
+            background-color: var(--button-primary-bg, var(--secondary-color));
+            border-color: var(--button-primary-bg, var(--secondary-color));
+            color: var(--button-primary-text, var(--contrast-color));
           }
 
           .about .about-image .btn.btn-primary:hover,
           .about .about-content .btn.btn-primary:hover,
           .image-gallery-block .btn.btn-primary:hover {
-            background-color: color-mix(in srgb, var(--accent-color), black 15%);
-            border-color: color-mix(in srgb, var(--accent-color), black 15%);
-            color: var(--contrast-color);
+            background-color: var(--button-primary-hover-bg, var(--primary-color));
+            border-color: var(--button-primary-hover-bg, var(--primary-color));
+            color: var(--button-primary-text, var(--contrast-color));
+          }
+
+          .about.about-v2 .about-v2-mobile-cta {
+            margin-top: 1.25rem;
+            padding-top: 0.35rem;
+          }
+
+          .about.about-v2 .about-v2-mobile-cta .about-v2-mobile-cta-btn {
+            background-color: var(--button-primary-bg, var(--primary-color));
+            border-color: var(--button-primary-bg, var(--primary-color));
+            color: var(--button-primary-text, var(--contrast-color));
+          }
+
+          .about.about-v2 .about-v2-mobile-cta .about-v2-mobile-cta-btn:hover {
+            background-color: var(--button-primary-hover-bg, var(--secondary-color));
+            border-color: var(--button-primary-hover-bg, var(--secondary-color));
+            color: var(--button-primary-text, var(--contrast-color));
           }
 
           .navmenu a {
@@ -892,12 +943,30 @@ export default async function RootLayout(props: { children: React.ReactNode }) {
             padding: 0.45rem 0;
           }
 
+          .top-info-bar .container-fluid.container-xl {
+            max-width: 100% !important;
+            width: 100%;
+            padding-left: 5px !important;
+            padding-right: 5px !important;
+          }
+
           .top-info-bar .top-info-left,
           .top-info-bar .top-info-right {
             display: flex;
             align-items: center;
             flex-wrap: wrap;
             gap: 0.8rem;
+            flex: 1 1 0;
+            min-width: 0;
+          }
+
+          .top-info-bar .top-info-left {
+            justify-content: flex-start;
+          }
+
+          .top-info-bar .top-info-right {
+            justify-content: flex-end;
+            text-align: right;
           }
 
           .top-info-bar .top-info-link {
@@ -916,6 +985,14 @@ export default async function RootLayout(props: { children: React.ReactNode }) {
 
           .top-info-bar .top-info-link i {
             font-size: 0.72rem;
+            color: var(--primary-color);
+            width: 1.2rem;
+            height: 1.2rem;
+            border-radius: 999px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: color-mix(in srgb, var(--primary-color), transparent 82%);
           }
 
           .top-info-bar .top-info-location {
@@ -948,21 +1025,23 @@ export default async function RootLayout(props: { children: React.ReactNode }) {
             align-items: center;
             justify-content: center;
             text-decoration: none;
-            color: var(--secondary-foreground, #fff);
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: var(--primary-color);
+            background: color-mix(in srgb, var(--primary-color), transparent 84%);
+            border: 1px solid color-mix(in srgb, var(--primary-color), transparent 62%);
             transition: transform 0.2s ease, background-color 0.2s ease;
           }
 
           .top-info-bar .top-info-social-link:hover {
             transform: translateY(-1px);
-            background: color-mix(in srgb, var(--accent-color), transparent 60%);
+            background: var(--primary-color);
+            color: var(--button-primary-text, var(--contrast-color));
+            border-color: var(--primary-color);
           }
 
           #header.header-v2 {
-            background: #fff;
-            border-bottom: 1px solid hsl(30 20% 88%);
-            box-shadow: 0 6px 18px rgba(14, 28, 52, 0.07);
+            background: var(--header-bg, #fff);
+            border-bottom: 1px solid var(--header-border-color, hsl(30 20% 88%));
+            box-shadow: var(--header-shadow, 0 6px 18px rgba(14, 28, 52, 0.07));
             padding: 10px 0;
           }
 
@@ -985,7 +1064,7 @@ export default async function RootLayout(props: { children: React.ReactNode }) {
           #header.header-v2 .navmenu > ul > li > a:active,
           #header.header-v2 .navmenu > ul > li > a:link {
             position: relative;
-            color: hsl(210 40% 16%);
+            color: var(--header-text, hsl(210 40% 16%));
             font-weight: 500;
             padding: 0.45rem 0.2rem;
             font-size: 1.02rem;
@@ -1027,10 +1106,50 @@ export default async function RootLayout(props: { children: React.ReactNode }) {
           }
 
           #header.header-v2 .btn-getstarted {
-            border-radius: 0.95rem !important;
-            padding: 0.68rem 1.45rem;
+            border-radius: var(--button-radius, 0.95rem) !important;
+            padding: var(--button-padding-y, 0.68rem) var(--button-padding-x, 1.45rem);
             box-shadow: 0 10px 22px color-mix(in srgb, var(--accent-color), transparent 76%);
             margin-left: 22px;
+            background-color: var(--button-primary-bg, var(--secondary-color));
+            border-color: var(--button-primary-bg, var(--secondary-color));
+            color: var(--button-primary-text, var(--contrast-color));
+          }
+
+          #header.header-v2 .btn-getstarted:hover {
+            background-color: var(--button-primary-hover-bg, var(--primary-color));
+            border-color: var(--button-primary-hover-bg, var(--primary-color));
+            color: var(--button-primary-text, var(--contrast-color));
+          }
+
+          .footer {
+            background-color: var(--dark-mode-color, #0F1A24) !important;
+            color: var(--secondary-foreground, #ffffff);
+          }
+
+          .footer .footer-top {
+            border-top-color: color-mix(in srgb, var(--secondary-foreground, #ffffff), transparent 88%);
+          }
+
+          .footer .footer-about .logo span,
+          .footer h4 {
+            color: var(--secondary-foreground, #ffffff);
+          }
+
+          .footer .footer-about p,
+          .footer .footer-links ul a,
+          .footer .footer-contact p,
+          .footer .copyright p {
+            color: color-mix(in srgb, var(--secondary-foreground, #ffffff), transparent 16%);
+          }
+
+          .footer .footer-links ul a:hover,
+          .footer .social-links a:hover {
+            color: var(--primary-color);
+            border-color: var(--primary-color);
+          }
+
+          .footer .copyright {
+            background-color: color-mix(in srgb, var(--dark-mode-color, #0F1A24), #000 14%);
           }
 
           .navmenu .dropdown ul {
@@ -1048,7 +1167,7 @@ export default async function RootLayout(props: { children: React.ReactNode }) {
             margin: 1.25rem 0;
             padding: 0.85rem 1rem;
             border-left: 4px solid var(--accent-color, #0d6efd);
-            background: rgba(13, 110, 253, 0.06);
+            background: color-mix(in srgb, var(--accent-color, #0d6efd), transparent 92%);
             border-radius: 8px;
             font-style: italic;
           }
@@ -1081,8 +1200,28 @@ export default async function RootLayout(props: { children: React.ReactNode }) {
 
           @media (max-width: 991px) {
             .section {
-              padding-top: 64px;
-              padding-bottom: 64px;
+              padding-top: calc(var(--section-spacing-y, 84px) * 0.76);
+              padding-bottom: calc(var(--section-spacing-y, 84px) * 0.76);
+            }
+
+            .about.about-v2 .about-v2-content-col {
+              order: 1;
+            }
+
+            .about.about-v2 .about-v2-image-col {
+              order: 2;
+            }
+
+            .about.about-v2 .about-v2-content {
+              text-align: center;
+            }
+
+            .about.about-v2 .about-v2-label-wrap {
+              justify-content: center;
+            }
+
+            .about.about-v2 .about-v2-highlights {
+              justify-content: center;
             }
 
             .section-title {

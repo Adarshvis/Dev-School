@@ -19,17 +19,7 @@ export const Publications: CollectionConfig = {
     defaultColumns: ['title', 'publisher', 'year', 'type', 'createdBy', 'updatedAt'],
     group: 'Content Management',
     description: 'Manage lab publications - journal articles, conference papers, book chapters, etc.',
-    hidden: ({ user }) => {
-      const u = user as UserWithRole | null
-      if (!u) return true
-      if (u.role === 'author') {
-        const allowed = u.allowedCollections || []
-        if (!allowed.includes('publications')) {
-          return true
-        }
-      }
-      return false
-    },
+    hidden: () => true,
   },
   access: {
     read: ({ req }) => {

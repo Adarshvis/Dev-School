@@ -12,6 +12,7 @@ export const PublicationsPage: CollectionConfig = {
     defaultColumns: ['sectionName', 'sectionType', 'status', 'updatedAt'],
     group: 'Content Management',
     description: 'Manage publications page sections and configuration.',
+    hidden: () => true,
   },
   access: {
     read: () => true,

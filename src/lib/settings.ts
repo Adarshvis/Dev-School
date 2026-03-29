@@ -165,6 +165,9 @@ function mixWithWhite(rgb: { r: number; g: number; b: number }, amount: number) 
 // Only generates CSS if user has explicitly set custom theme values
 export function generateThemeCSS(settings: any) {
   const gradientConfigured = settings?.theme?.enableSoftGradientBackground !== undefined
+  const headerStyle = settings?.headerStyle || {}
+  const buttonStyle = settings?.buttonStyle || {}
+  const layoutSettings = settings?.layoutSettings || {}
 
   // Don't generate any CSS if theme settings haven't been configured
   // This preserves the original template styling as default
@@ -188,15 +191,21 @@ export function generateThemeCSS(settings: any) {
   }
   if (theme?.accentColor) {
     cssVars.push(`  --accent-color: ${theme.accentColor};`)
-    cssVars.push(`  --heading-color: ${theme.accentColor};`)
   }
-  const bodyTextColor = theme?.secondaryColor || theme?.textColor
+  const headingColor = theme?.primaryColor || '#F0690F'
+  const subheadingColor = theme?.secondaryColor || '#1C2E40'
+  cssVars.push(`  --heading-color: ${headingColor};`)
+  cssVars.push(`  --subheading-color: ${subheadingColor};`)
+
+  const bodyTextColor = theme?.textColor || '#5F7287'
   if (bodyTextColor) {
     cssVars.push(`  --default-color: ${bodyTextColor};`)
   }
   if (theme?.backgroundColor) {
     cssVars.push(`  --background-color: ${theme.backgroundColor};`)
   }
+  const surfaceColor = theme?.surfaceColor || '#ffffff'
+  cssVars.push(`  --surface-color: ${surfaceColor};`)
   if (theme?.darkModeColor) {
     cssVars.push(`  --dark-color: ${theme.darkModeColor};`)
     cssVars.push(`  --stats-block-bg: ${theme.darkModeColor};`)
@@ -207,6 +216,13 @@ export function generateThemeCSS(settings: any) {
     cssVars.push(`  --contrast-color: ${theme.primaryForegroundColor};`)
     cssVars.push(`  --on-primary: ${theme.primaryForegroundColor};`)
   }
+
+  const buttonPrimaryBg = theme?.primaryColor || '#F0690F'
+  const buttonPrimaryText = theme?.primaryForegroundColor || '#FFFFFF'
+  const buttonPrimaryHover = theme?.secondaryColor || '#1C2E40'
+  cssVars.push(`  --button-primary-bg: ${buttonPrimaryBg};`)
+  cssVars.push(`  --button-primary-text: ${buttonPrimaryText};`)
+  cssVars.push(`  --button-primary-hover-bg: ${buttonPrimaryHover};`)
   const secondaryForeground = theme?.secondaryForegroundColor || theme?.primaryForegroundColor
   if (secondaryForeground) {
     cssVars.push(`  --secondary-foreground: ${secondaryForeground};`)
@@ -240,11 +256,91 @@ export function generateThemeCSS(settings: any) {
   }
   
   // Typography - only if changed from defaults
-  if (typography?.headingFont && typography.headingFont !== 'Raleway') {
+  if (typography?.headingFont) {
     cssVars.push(`  --heading-font: "${typography.headingFont}", sans-serif;`)
   }
-  if (typography?.bodyFont && typography.bodyFont !== 'Roboto') {
+  if (typography?.subHeadingFont) {
+    cssVars.push(`  --subheading-font: "${typography.subHeadingFont}", sans-serif;`)
+  }
+  if (typography?.bodyFont) {
     cssVars.push(`  --default-font: "${typography.bodyFont}", sans-serif;`)
+  }
+  if (typography?.baseFontSize) {
+    cssVars.push(`  --base-font-size: ${typography.baseFontSize};`)
+  }
+
+  const sectionSpacingMap: Record<string, string> = {
+    compact: '64px',
+    normal: '84px',
+    spacious: '108px',
+  }
+  cssVars.push(`  --section-spacing-y: ${sectionSpacingMap[layoutSettings?.sectionSpacing] || sectionSpacingMap.normal};`)
+
+  const containerWidthMap: Record<string, string> = {
+    narrow: '960px',
+    default: '1140px',
+    wide: '1320px',
+    full: '100%',
+  }
+  cssVars.push(`  --container-max-width: ${containerWidthMap[layoutSettings?.containerWidth] || containerWidthMap.default};`)
+
+  const radiusMap: Record<string, string> = {
+    square: '0px',
+    slight: '8px',
+    rounded: '12px',
+    pill: '999px',
+  }
+  cssVars.push(`  --button-radius: ${radiusMap[buttonStyle?.borderRadius] || radiusMap.rounded};`)
+
+  const buttonSizeMap: Record<string, { py: string; px: string; fs: string }> = {
+    small: { py: '0.45rem', px: '1rem', fs: '0.9rem' },
+    medium: { py: '0.65rem', px: '1.4rem', fs: '0.98rem' },
+    large: { py: '0.8rem', px: '1.8rem', fs: '1.05rem' },
+  }
+  const buttonSize = buttonSizeMap[buttonStyle?.buttonSize] || buttonSizeMap.medium
+  cssVars.push(`  --button-padding-y: ${buttonSize.py};`)
+  cssVars.push(`  --button-padding-x: ${buttonSize.px};`)
+  cssVars.push(`  --button-font-size: ${buttonSize.fs};`)
+
+  const headerBackground = headerStyle?.headerBackground || 'white'
+  const defaultHeaderText = theme?.secondaryColor || '#1c2e40'
+  const headerColors: Record<string, { bg: string; text: string; border: string }> = {
+    white: {
+      bg: '#ffffff',
+      text: defaultHeaderText,
+      border: 'color-mix(in srgb, var(--default-color), transparent 84%)',
+    },
+    light: {
+      bg: 'color-mix(in srgb, var(--background-color), #fff 24%)',
+      text: defaultHeaderText,
+      border: 'color-mix(in srgb, var(--default-color), transparent 84%)',
+    },
+    dark: {
+      bg: theme?.darkModeColor || '#0f1a24',
+      text: theme?.primaryForegroundColor || '#ffffff',
+      border: 'transparent',
+    },
+    primary: {
+      bg: theme?.primaryColor || '#f0690f',
+      text: theme?.primaryForegroundColor || '#ffffff',
+      border: 'transparent',
+    },
+    transparent: {
+      bg: 'transparent',
+      text: defaultHeaderText,
+      border: 'transparent',
+    },
+  }
+  const headerTheme = headerColors[headerBackground] || headerColors.white
+  cssVars.push(`  --header-bg: ${headerTheme.bg};`)
+  cssVars.push(`  --header-text: ${headerTheme.text};`)
+  cssVars.push(`  --header-border-color: ${headerTheme.border};`)
+  cssVars.push(`  --header-shadow: ${headerStyle?.headerShadow === false ? 'none' : '0 6px 18px rgba(14, 28, 52, 0.07)'};`)
+
+  if (headerStyle?.headerType === 'fixed-transparent' || headerBackground === 'transparent') {
+    cssVars.push('  --header-bg: transparent;')
+    cssVars.push('  --header-border-color: transparent;')
+    cssVars.push('  --header-shadow: none;')
   }
   
   // Only return CSS if there are actual customizations

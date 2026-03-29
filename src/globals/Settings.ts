@@ -323,14 +323,14 @@ export const Settings: GlobalConfig = {
                   name: 'primaryColor',
                   defaultValue: '#F0690F',
                   admin: {
-                    description: 'Primary brand color',
+                    description: 'Primary color (used for headings and primary buttons)',
                   },
                 }),
                 colorPickerField({
                   name: 'secondaryColor',
                   defaultValue: '#1C2E40',
                   admin: {
-                    description: 'Secondary color',
+                    description: 'Secondary color (used for subheadings and labels)',
                   },
                 }),
                 colorPickerField({
@@ -392,8 +392,10 @@ export const Settings: GlobalConfig = {
                 {
                   name: 'headingFont',
                   type: 'select',
-                  defaultValue: 'Raleway',
+                  defaultValue: 'Playfair Display',
                   options: [
+                    { label: 'Playfair Display', value: 'Playfair Display' },
+                    { label: 'DM Sans', value: 'DM Sans' },
                     { label: 'Raleway', value: 'Raleway' },
                     { label: 'Roboto', value: 'Roboto' },
                     { label: 'Ubuntu', value: 'Ubuntu' },
@@ -408,10 +410,32 @@ export const Settings: GlobalConfig = {
                   },
                 },
                 {
+                  name: 'subHeadingFont',
+                  type: 'select',
+                  defaultValue: 'DM Sans',
+                  options: [
+                    { label: 'DM Sans', value: 'DM Sans' },
+                    { label: 'Playfair Display', value: 'Playfair Display' },
+                    { label: 'Poppins', value: 'Poppins' },
+                    { label: 'Montserrat', value: 'Montserrat' },
+                    { label: 'Raleway', value: 'Raleway' },
+                    { label: 'Roboto', value: 'Roboto' },
+                    { label: 'Open Sans', value: 'Open Sans' },
+                    { label: 'Lato', value: 'Lato' },
+                    { label: 'Inter', value: 'Inter' },
+                    { label: 'Nunito', value: 'Nunito' },
+                  ],
+                  admin: {
+                    description: 'Font family for subheadings and section labels',
+                  },
+                },
+                {
                   name: 'bodyFont',
                   type: 'select',
-                  defaultValue: 'Roboto',
+                  defaultValue: 'DM Sans',
                   options: [
+                    { label: 'DM Sans', value: 'DM Sans' },
+                    { label: 'Playfair Display', value: 'Playfair Display' },
                     { label: 'Roboto', value: 'Roboto' },
                     { label: 'Open Sans', value: 'Open Sans' },
                     { label: 'Lato', value: 'Lato' },

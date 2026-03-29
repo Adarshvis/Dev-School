@@ -12,8 +12,8 @@ type UserWithRole = {
 export const CoursesPage: CollectionConfig = {
   slug: 'courses-page',
   labels: {
-    singular: 'Courses Page',
-    plural: 'Courses Page',
+    singular: 'Facilites',
+    plural: 'Facilites',
   },
   admin: {
     useAsTitle: 'sectionName',

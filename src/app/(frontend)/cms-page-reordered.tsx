@@ -278,8 +278,12 @@ const OurStoryRenderer = ({ section }: { section: any }) => {
   })()
 
   const isImageLeft = ourStory.layout === 'image-left'
-  const contentColClass = isImageLeft ? 'col-lg-6 order-lg-2' : 'col-lg-6'
-  const imageColClass = isImageLeft ? 'col-lg-6 order-lg-1' : 'col-lg-6'
+  const contentColClass = isImageLeft
+    ? 'col-lg-6 order-lg-2 about-v2-content-col'
+    : 'col-lg-6 about-v2-content-col'
+  const imageColClass = isImageLeft
+    ? 'col-lg-6 order-lg-1 about-v2-image-col'
+    : 'col-lg-6 about-v2-image-col'
   const highlightItems = (
     (ourStory.timelinePoints || [])
       .map((item: any) => String(item?.title || item?.description || '').trim())
@@ -299,6 +303,9 @@ const OurStoryRenderer = ({ section }: { section: any }) => {
   const badgeSubtitle = String(ourStory?.missionVisionCards?.[1]?.description || '').trim()
   const quoteText = String(ourStory?.missionVisionCards?.[2]?.description || '').trim()
   const quoteAuthor = String(ourStory?.missionVisionCards?.[2]?.title || '').trim()
+  const ctaLink = ourStory.buttonLink || '/about'
+  const ctaText = ourStory.buttonText || 'Learn More About Us'
+  const hasCta = Boolean(ourStory.buttonText || ourStory.buttonLink)
   
   return (
     <section id="about" className="about about-v2 section">
@@ -358,16 +365,24 @@ const OurStoryRenderer = ({ section }: { section: any }) => {
                 </blockquote>
               )}
 
-              {(ourStory.buttonText || ourStory.buttonLink) && (
-                <div className="mt-3" data-aos="fade-up" data-aos-delay="260">
-                  <Link href={ourStory.buttonLink || '/about'} className="btn btn-primary">
-                    {ourStory.buttonText || 'Learn More About Us'}
+              {hasCta && (
+                <div className="mt-3 d-none d-lg-block" data-aos="fade-up" data-aos-delay="260">
+                  <Link href={ctaLink} className="btn btn-primary">
+                    {ctaText}
                   </Link>
                 </div>
               )}
             </div>
           </div>
         </div>
+
+        {hasCta && (
+          <div className="about-v2-mobile-cta d-block d-lg-none text-center mt-4" data-aos="fade-up" data-aos-delay="260">
+            <Link href={ctaLink} className="btn btn-primary about-v2-mobile-cta-btn">
+              {ctaText}
+            </Link>
+          </div>
+        )}
 
         {ourStory.coreValues && ourStory.coreValues.length > 0 && (
           <div className="row mt-5">

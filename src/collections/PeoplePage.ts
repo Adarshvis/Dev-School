@@ -20,12 +20,7 @@ export const PeoplePage: CollectionConfig = {
     defaultColumns: ['sectionName', 'sectionType', 'updatedAt'],
     group: 'Content Management',
     description: 'Manage people/instructors page sections.',
-    hidden: ({ user }) => {
-      const u = user as UserWithRole | null
-      if (!u) return true
-      if (u.role === 'author') return true  // Authors typically can't edit page layouts
-      return false
-    },
+    hidden: () => true,
   },
   access: {
     read: () => true,

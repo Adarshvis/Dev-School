@@ -457,6 +457,11 @@ const RichTextBlock: React.FC<any> = ({ content, width }) => {
 // Stats Block Component
 const StatsBlock: React.FC<any> = ({ title, description, stats, layout }) => {
   const fallbackIcons = ['bi-people', 'bi-book', 'bi-trophy', 'bi-star']
+  const normalizedTitle = String(title || '')
+    .trim()
+    .toLowerCase()
+    .replace(/\s+/g, ' ')
+  const showEyebrow = normalizedTitle !== 'by the numbers'
 
   return (
     <section
@@ -489,23 +494,25 @@ const StatsBlock: React.FC<any> = ({ title, description, stats, layout }) => {
       <div className="container">
         {(title || description) && (
           <div className="section-title text-center" data-aos="fade-up">
-            <div className="d-inline-flex align-items-center gap-2 mb-2">
-              <span style={{ width: '2rem', height: '2px', background: 'var(--primary-color, var(--accent-color))' }} />
-              <span
-                style={{
-                  fontSize: '0.72rem',
-                  letterSpacing: '0.14em',
-                  textTransform: 'uppercase',
-                  color: 'var(--primary-color, var(--accent-color))',
-                  fontWeight: 700,
-                }}
-              >
-                By The Numbers
-              </span>
-              <span style={{ width: '2rem', height: '2px', background: 'var(--primary-color, var(--accent-color))' }} />
-            </div>
+            {showEyebrow && (
+              <div className="d-inline-flex align-items-center gap-2 mb-2">
+                <span style={{ width: '2rem', height: '2px', background: 'var(--primary-color, var(--accent-color))' }} />
+                <span
+                  style={{
+                    fontSize: '0.72rem',
+                    letterSpacing: '0.14em',
+                    textTransform: 'uppercase',
+                    color: 'var(--primary-color, var(--accent-color))',
+                    fontWeight: 700,
+                  }}
+                >
+                  By The Numbers
+                </span>
+                <span style={{ width: '2rem', height: '2px', background: 'var(--primary-color, var(--accent-color))' }} />
+              </div>
+            )}
 
-            {title && <h2 style={{ color: 'var(--secondary-foreground, #fff)' }}>{title}</h2>}
+            {title && <h2 style={{ color: 'var(--heading-color)' }}>{title}</h2>}
             {description && (
               <p style={{ color: 'color-mix(in srgb, var(--secondary-foreground, #fff), transparent 30%)' }}>
                 {description}
