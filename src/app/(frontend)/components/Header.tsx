@@ -146,13 +146,13 @@ export default async function Header() {
                   }}
                 />
                 {settings?.siteName ? (
-                  <h1 className="sitename ms-2 mb-0" style={{ fontSize: '26px', color: siteNameColor }}>
+                  <h1 className="sitename mb-0" style={{ fontSize: '26px', fontWeight: 700, color: siteNameColor }}>
                     {settings.siteName}
                   </h1>
                 ) : null}
               </>
             ) : (
-              <h1 className="sitename" style={{ fontSize: '30px', color: siteNameColor }}>
+              <h1 className="sitename" style={{ fontSize: '30px', fontWeight: 700, color: siteNameColor }}>
                 {settings?.siteName || 'Learner'}
               </h1>
             )}

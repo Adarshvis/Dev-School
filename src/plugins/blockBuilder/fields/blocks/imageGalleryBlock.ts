@@ -27,6 +27,7 @@ export const imageGalleryBlock: Block = {
         { label: 'Carousel/Slider', value: 'carousel' },
         { label: 'Masonry', value: 'masonry' },
         { label: 'Lightbox Grid', value: 'lightbox' },
+        { label: 'Animated Strip (Right to Left)', value: 'animatedStrip' },
       ],
     },
     {
@@ -34,12 +35,59 @@ export const imageGalleryBlock: Block = {
       type: 'array',
       required: true,
       minRows: 1,
+      labels: {
+        singular: 'Media Item',
+        plural: 'Media Items',
+      },
       fields: [
+        {
+          name: 'mediaType',
+          type: 'select',
+          required: true,
+          defaultValue: 'image',
+          options: [
+            { label: 'Image', value: 'image' },
+            { label: 'Video', value: 'video' },
+          ],
+        },
         {
           name: 'image',
           type: 'upload',
           relationTo: 'media',
           required: true,
+          admin: {
+            condition: (data, siblingData) => siblingData?.mediaType !== 'video',
+          },
+        },
+        {
+          name: 'videoSource',
+          type: 'select',
+          required: true,
+          defaultValue: 'upload',
+          options: [
+            { label: 'Upload Video', value: 'upload' },
+            { label: 'YouTube URL', value: 'youtube' },
+          ],
+          admin: {
+            condition: (data, siblingData) => siblingData?.mediaType === 'video',
+          },
+        },
+        {
+          name: 'videoUpload',
+          type: 'upload',
+          relationTo: 'media',
+          admin: {
+            condition: (data, siblingData) => siblingData?.mediaType === 'video' && siblingData?.videoSource !== 'youtube',
+            description: 'Select a locally uploaded video from Media.',
+          },
+        },
+        {
+          name: 'youtubeUrl',
+          type: 'text',
+          admin: {
+            condition: (data, siblingData) => siblingData?.mediaType === 'video' && siblingData?.videoSource === 'youtube',
+            description: 'Paste full YouTube URL (watch or youtu.be).',
+          },
         },
         {
           name: 'caption',
@@ -86,7 +134,7 @@ export const imageGalleryBlock: Block = {
       type: 'checkbox',
       defaultValue: false,
       admin: {
-        description: 'When enabled, frontend shows only first 4 images with a View More button',
+        description: 'When enabled, frontend shows only first 4 media items with a View More button',
       },
     },
     {

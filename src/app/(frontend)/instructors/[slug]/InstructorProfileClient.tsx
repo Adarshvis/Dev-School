@@ -72,7 +72,6 @@ export default function InstructorProfileClient({
                   </div>
                   <h3>{person.name}</h3>
                   {person.specialty && <p className="specialty mb-2" style={{ color: '#011e2c' }}>{person.specialty}</p>}
-                  {person.description && <p className="text-muted small">{person.description}</p>}
                   
                   {/* Category Badge */}
                   {blockTitle && (

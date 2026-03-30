@@ -518,6 +518,61 @@ export default async function RootLayout(props: { children: React.ReactNode }) {
             display: grid;
             grid-template-columns: repeat(1, minmax(0, 1fr));
             gap: 1.25rem;
+             align-items: start;
+          }
+
+          .gallery-v2 .gallery-v2-marquee {
+            position: relative;
+            overflow-x: auto;
+            overflow-y: hidden;
+            width: 100%;
+            padding: 0.2rem 0;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+            touch-action: pan-x;
+            cursor: grab;
+            mask-image: linear-gradient(to right, transparent 0, #000 5%, #000 95%, transparent 100%);
+          }
+
+          .gallery-v2 .gallery-v2-marquee:active {
+            cursor: grabbing;
+          }
+
+          .gallery-v2 .gallery-v2-marquee::-webkit-scrollbar {
+            display: none;
+          }
+
+          .gallery-v2 .gallery-v2-marquee-track {
+            display: flex;
+            align-items: stretch;
+            gap: 1rem;
+            width: max-content;
+            animation: gallery-v2-marquee-scroll 52s linear infinite;
+            will-change: transform;
+          }
+
+          .gallery-v2 .gallery-v2-marquee:hover .gallery-v2-marquee-track,
+          .gallery-v2 .gallery-v2-marquee:focus-within .gallery-v2-marquee-track,
+          .gallery-v2 .gallery-v2-marquee:active .gallery-v2-marquee-track {
+            animation-play-state: paused;
+          }
+
+          .gallery-v2 .gallery-v2-marquee-item {
+            flex: 0 0 clamp(220px, 30vw, 360px);
+            min-width: 0;
+          }
+
+          .gallery-v2 .gallery-v2-card.gallery-v2-card-marquee {
+            aspect-ratio: 5 / 4;
+          }
+
+          @keyframes gallery-v2-marquee-scroll {
+            from {
+              transform: translate3d(0, 0, 0);
+            }
+            to {
+              transform: translate3d(-50%, 0, 0);
+            }
           }
 
           .gallery-v2 .gallery-v2-item {
@@ -532,6 +587,7 @@ export default async function RootLayout(props: { children: React.ReactNode }) {
             box-shadow: 0 10px 26px rgba(0, 0, 0, 0.12);
             transition: transform 0.34s ease, box-shadow 0.34s ease;
             height: 100%;
+            aspect-ratio: 4 / 5;
           }
 
           .gallery-v2 .gallery-v2-card:hover {
@@ -539,8 +595,11 @@ export default async function RootLayout(props: { children: React.ReactNode }) {
             box-shadow: 0 18px 38px color-mix(in srgb, var(--heading-color), transparent 76%);
           }
 
-          .gallery-v2 .gallery-v2-card img {
+          .gallery-v2 .gallery-v2-card img,
+          .gallery-v2 .gallery-v2-card video,
+          .gallery-v2 .gallery-v2-card iframe {
             width: 100%;
+            display: block;
             height: 100%;
             min-height: 230px;
             object-fit: cover;
@@ -561,6 +620,7 @@ export default async function RootLayout(props: { children: React.ReactNode }) {
             opacity: 0;
             transform: translateY(8px);
             transition: opacity 0.3s ease, transform 0.3s ease, background 0.3s ease;
+            pointer-events: none;
           }
 
           .gallery-v2 .gallery-v2-card:hover .gallery-v2-overlay {
@@ -614,6 +674,7 @@ export default async function RootLayout(props: { children: React.ReactNode }) {
             opacity: 0;
             transition: opacity 0.3s ease;
             z-index: 2;
+             pointer-events: none;
           }
 
           .gallery-v2 .gallery-v2-card:hover .gallery-v2-camera {
@@ -955,7 +1016,8 @@ export default async function RootLayout(props: { children: React.ReactNode }) {
 
           .about .about-image .btn.btn-primary,
           .about .about-content .btn.btn-primary,
-          .image-gallery-block .btn.btn-primary {
+          .image-gallery-block .btn.btn-primary,
+          .featured-instructors .btn.btn-primary {
             background-color: var(--button-primary-bg, var(--secondary-color));
             border-color: var(--button-primary-bg, var(--secondary-color));
             color: var(--button-primary-text, var(--contrast-color));
@@ -963,7 +1025,8 @@ export default async function RootLayout(props: { children: React.ReactNode }) {
 
           .about .about-image .btn.btn-primary:hover,
           .about .about-content .btn.btn-primary:hover,
-          .image-gallery-block .btn.btn-primary:hover {
+          .image-gallery-block .btn.btn-primary:hover,
+          .featured-instructors .btn.btn-primary:hover {
             background-color: var(--button-primary-hover-bg, var(--primary-color));
             border-color: var(--button-primary-hover-bg, var(--primary-color));
             color: var(--button-primary-text, var(--contrast-color));
@@ -1115,11 +1178,15 @@ export default async function RootLayout(props: { children: React.ReactNode }) {
           }
 
           #header.header-v2 .logo {
-            gap: 0.55rem;
+            gap: 0.35rem;
+          }
+
+          #header.header-v2 .logo .site-logo {
+            margin-right: 0;
           }
 
           #header.header-v2 .navmenu > ul > li {
-            padding: 10px 12px;
+            padding: 8px 12px;
           }
 
           #header.header-v2 .navmenu > ul > li > a,
@@ -1130,7 +1197,7 @@ export default async function RootLayout(props: { children: React.ReactNode }) {
             position: relative;
             color: var(--header-text, hsl(210 40% 16%));
             font-weight: 500;
-            padding: 0.45rem 0.2rem;
+            padding: 0.32rem 0.2rem;
             font-size: 1.02rem;
           }
 
@@ -1150,7 +1217,7 @@ export default async function RootLayout(props: { children: React.ReactNode }) {
             position: absolute;
             left: 0;
             right: 0;
-            bottom: -8px;
+            bottom: -3px;
             height: 2px;
             border-radius: 999px;
             background: var(--accent-color);

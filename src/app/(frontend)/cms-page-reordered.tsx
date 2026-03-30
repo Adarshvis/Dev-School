@@ -414,6 +414,11 @@ const OurStoryRenderer = ({ section }: { section: any }) => {
 const FeaturedInstructorsRenderer = ({ section }: { section: any }) => {
   const data = section?.featuredInstructors
   if (!data) return null
+  const sectionButtonText = String(data?.buttonText || 'View All Facilities').trim() || 'View All Facilities'
+  const sectionButtonHref = String(data?.buttonLink || '/facilities').trim() || '/facilities'
+  const sectionButtonExternal = isExternalHref(sectionButtonHref)
+  const showSectionButton = data?.showButton !== false
+  const openSectionButtonInNewTab = !!data?.buttonNewTab
   
   return (
     <section id="featured-instructors" className="featured-instructors section">
@@ -512,6 +517,29 @@ const FeaturedInstructorsRenderer = ({ section }: { section: any }) => {
               </div>
           )})}
         </div>
+        {showSectionButton ? (
+          <div className="text-center mt-4" data-aos="fade-up" data-aos-delay="180">
+            {sectionButtonExternal ? (
+              <a
+                href={sectionButtonHref}
+                className="btn btn-primary facility-btn"
+                target={openSectionButtonInNewTab ? '_blank' : undefined}
+                rel={openSectionButtonInNewTab ? 'noopener noreferrer' : undefined}
+              >
+                {sectionButtonText}
+              </a>
+            ) : (
+              <Link
+                href={sectionButtonHref}
+                className="btn btn-primary facility-btn"
+                target={openSectionButtonInNewTab ? '_blank' : undefined}
+                rel={openSectionButtonInNewTab ? 'noopener noreferrer' : undefined}
+              >
+                {sectionButtonText}
+              </Link>
+            )}
+          </div>
+        ) : null}
       </div>
     </section>
   )

@@ -385,9 +385,92 @@ const ImageGalleryBlock: React.FC<any> = ({
     : (images || [])
 
   const viewMoreHref = String(viewMoreLink || '/gallery').trim() || '/gallery'
+  const isAnimatedStrip = String(galleryType || '') === 'animatedStrip'
+  const marqueeItems = isAnimatedStrip
+    ? [...galleryImages, ...galleryImages]
+    : []
+
   const getSpanClass = (index: number): string => {
     void index
     return ''
+  }
+
+  const getMediaUrl = (value: any): string => {
+    if (!value) return ''
+    return typeof value === 'object' ? (value.url || '') : String(value)
+  }
+
+  const getYouTubeEmbedUrl = (url: string): string => {
+    const raw = String(url || '').trim()
+    if (!raw) return ''
+
+    const match = raw.match(/(?:youtube\.com\/(?:[^/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?/\s]{11})/)
+    const id = match ? match[1] : ''
+    return id ? `https://www.youtube.com/embed/${id}?rel=0&modestbranding=1` : ''
+  }
+
+  const renderGalleryMedia = (item: any, index: number, isCarousel: boolean): React.ReactNode => {
+    const mediaType = String(item?.mediaType || (item?.videoUpload || item?.youtubeUrl ? 'video' : 'image'))
+
+    if (mediaType === 'video') {
+      const videoSource = String(item?.videoSource || (item?.youtubeUrl ? 'youtube' : 'upload'))
+
+      if (videoSource === 'youtube') {
+        const embedUrl = getYouTubeEmbedUrl(item?.youtubeUrl || '')
+        if (embedUrl) {
+          return (
+            <iframe
+              src={embedUrl}
+              title={item?.caption || `Gallery video ${index + 1}`}
+              frameBorder="0"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+              allowFullScreen
+              className={isCarousel ? 'd-block w-100' : 'img-fluid'}
+              style={
+                isCarousel
+                  ? { height: '500px', border: 'none' }
+                  : { width: '100%', height: '100%', border: 'none', display: 'block' }
+              }
+            />
+          )
+        }
+      }
+
+      const videoUrl = getMediaUrl(item?.videoUpload)
+      if (videoUrl) {
+        return (
+          <video
+            controls
+            preload="metadata"
+            className={isCarousel ? 'd-block w-100' : 'img-fluid'}
+            style={
+              isCarousel
+                ? { maxHeight: '500px', objectFit: 'cover' }
+                : { width: '100%', height: '100%', objectFit: 'cover', display: 'block' }
+            }
+          >
+            <source src={videoUrl} />
+            Your browser does not support the video tag.
+          </video>
+        )
+      }
+    }
+
+    const imageUrl = getMediaUrl(item?.image)
+    if (!imageUrl) return null
+
+    return (
+      <img
+        src={imageUrl}
+        alt={item?.alt || item?.caption || 'Gallery image'}
+        className={isCarousel ? 'd-block w-100' : 'img-fluid'}
+        style={
+          isCarousel
+            ? { maxHeight: '500px', objectFit: 'cover' }
+            : { width: '100%', height: '100%', objectFit: 'cover', display: 'block' }
+        }
+      />
+    )
   }
 
   return (
@@ -418,12 +501,7 @@ const ImageGalleryBlock: React.FC<any> = ({
             <div className="carousel-inner rounded">
               {galleryImages?.map((item: any, index: number) => (
                 <div key={index} className={`carousel-item ${index === 0 ? 'active' : ''}`}>
-                  <img
-                    src={typeof item.image === 'object' ? item.image.url : item.image}
-                    alt={item.alt || item.caption || 'Gallery image'}
-                    className="d-block w-100"
-                    style={{ maxHeight: '500px', objectFit: 'cover' }}
-                  />
+                  {renderGalleryMedia(item, index, true)}
                   {item.caption && (
                     <div className="carousel-caption d-none d-md-block">
                       <p className="mb-0">{item.caption}</p>
@@ -441,6 +519,32 @@ const ImageGalleryBlock: React.FC<any> = ({
               <span className="visually-hidden">Next</span>
             </button>
           </div>
+        ) : isAnimatedStrip ? (
+          <div className="gallery-v2-marquee" data-aos="fade-up" data-aos-delay="100">
+            <div className="gallery-v2-marquee-track">
+              {marqueeItems?.map((item: any, index: number) => (
+                <div key={`marquee-${index}`} className="gallery-v2-marquee-item">
+                  <div className="gallery-item gallery-v2-card gallery-v2-card-marquee">
+                    {renderGalleryMedia(item, index, false)}
+                    <div className="gallery-v2-overlay">
+                      <div className="gallery-v2-overlay-content">
+                        <div>
+                          <span className="gallery-v2-overlay-line" aria-hidden="true" />
+                          <span className="gallery-v2-overlay-label">{item.caption || item.alt || `Photo ${index + 1}`}</span>
+                        </div>
+                        <span className="gallery-v2-zoom" aria-hidden="true">
+                          <i className={`bi ${String(item?.mediaType || '').toLowerCase() === 'video' ? 'bi-play-circle' : 'bi-search'}`} />
+                        </span>
+                      </div>
+                    </div>
+                    <span className="gallery-v2-camera" aria-hidden="true">
+                      <i className={`bi ${String(item?.mediaType || '').toLowerCase() === 'video' ? 'bi-camera-video' : 'bi-camera'}`} />
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
         ) : (
           <div className="gallery-v2-grid" data-aos="fade-up" data-aos-delay="100">
             {galleryImages?.map((item: any, index: number) => (
@@ -451,11 +555,7 @@ const ImageGalleryBlock: React.FC<any> = ({
                 data-aos-delay={Math.min(100 + (index * 80), 520)}
               >
                 <div className="gallery-item gallery-v2-card">
-                  <img
-                    src={typeof item.image === 'object' ? item.image.url : item.image}
-                    alt={item.alt || item.caption || 'Gallery image'}
-                    className="img-fluid"
-                  />
+                  {renderGalleryMedia(item, index, false)}
                   <div className="gallery-v2-overlay">
                     <div className="gallery-v2-overlay-content">
                       <div>
@@ -463,12 +563,12 @@ const ImageGalleryBlock: React.FC<any> = ({
                         <span className="gallery-v2-overlay-label">{item.caption || item.alt || `Photo ${index + 1}`}</span>
                       </div>
                       <span className="gallery-v2-zoom" aria-hidden="true">
-                        <i className="bi bi-search" />
+                        <i className={`bi ${String(item?.mediaType || '').toLowerCase() === 'video' ? 'bi-play-circle' : 'bi-search'}`} />
                       </span>
                     </div>
                   </div>
                   <span className="gallery-v2-camera" aria-hidden="true">
-                    <i className="bi bi-camera" />
+                    <i className={`bi ${String(item?.mediaType || '').toLowerCase() === 'video' ? 'bi-camera-video' : 'bi-camera'}`} />
                   </span>
                 </div>
               </div>

@@ -55,12 +55,16 @@ export function HeroSectionRenderer({ hero }: { hero: any }) {
   if (layoutType === 'slider-fullwidth' && hero.fullWidthSlider) {
     // Use configured max height or default to 85vh
     const maxSliderHeight = hero.fullWidthSlider.height || '85vh'
+    const showIndicators = hero.fullWidthSlider.showIndicators !== false
+    const showArrows = hero.fullWidthSlider.showArrows !== false
+    const pauseOnHover = hero.fullWidthSlider.pauseOnHover !== false
     
     return (
       <div id="fullWidthHeroCarousel" 
         className="carousel slide pointer-event" 
         data-bs-ride="carousel" 
         data-bs-interval={hero.fullWidthSlider.interval ? hero.fullWidthSlider.interval * 1000 : 5000} 
+        data-bs-pause={pauseOnHover ? 'hover' : 'false'}
         style={{ 
           width: '100vw',
           maxWidth: '100vw',
@@ -70,19 +74,21 @@ export function HeroSectionRenderer({ hero }: { hero: any }) {
           padding: 0,
           position: 'relative'
         }}>
-        <div className="carousel-indicators">
-          {hero.fullWidthSlider.slides?.map((_: any, index: number) => (
-            <button
-              key={index}
-              type="button"
-              data-bs-target="#fullWidthHeroCarousel"
-              data-bs-slide-to={index}
-              className={index === 0 ? 'active' : ''}
-              aria-current={index === 0 ? 'true' : 'false'}
-              aria-label={`Slide ${index + 1}`}
-            ></button>
-          ))}
-        </div>
+        {showIndicators ? (
+          <div className="carousel-indicators">
+            {hero.fullWidthSlider.slides?.map((_: any, index: number) => (
+              <button
+                key={index}
+                type="button"
+                data-bs-target="#fullWidthHeroCarousel"
+                data-bs-slide-to={index}
+                className={index === 0 ? 'active' : ''}
+                aria-current={index === 0 ? 'true' : 'false'}
+                aria-label={`Slide ${index + 1}`}
+              ></button>
+            ))}
+          </div>
+        ) : null}
         <div className="carousel-inner">
           {hero.fullWidthSlider.slides?.map((slide: any, index: number) => (
             <div key={index} className={`carousel-item ${index === 0 ? 'active' : ''}`}>
@@ -234,14 +240,18 @@ export function HeroSectionRenderer({ hero }: { hero: any }) {
             </div>
           ))}
         </div>
-        <button className="carousel-control-prev" type="button" data-bs-target="#fullWidthHeroCarousel" data-bs-slide="prev">
-          <span className="carousel-control-prev-icon" aria-hidden="true"></span>
-          <span className="visually-hidden">Previous</span>
-        </button>
-        <button className="carousel-control-next" type="button" data-bs-target="#fullWidthHeroCarousel" data-bs-slide="next">
-          <span className="carousel-control-next-icon" aria-hidden="true"></span>
-          <span className="visually-hidden">Next</span>
-        </button>
+        {showArrows ? (
+          <>
+            <button className="carousel-control-prev" type="button" data-bs-target="#fullWidthHeroCarousel" data-bs-slide="prev">
+              <span className="carousel-control-prev-icon" aria-hidden="true"></span>
+              <span className="visually-hidden">Previous</span>
+            </button>
+            <button className="carousel-control-next" type="button" data-bs-target="#fullWidthHeroCarousel" data-bs-slide="next">
+              <span className="carousel-control-next-icon" aria-hidden="true"></span>
+              <span className="visually-hidden">Next</span>
+            </button>
+          </>
+        ) : null}
       </div>
     )
   }
@@ -302,20 +312,28 @@ export function HeroSectionRenderer({ hero }: { hero: any }) {
               <div className="col-lg-6">
                 <div className="hero-image">
                   {hero.heroImages && hero.heroImages.length > 0 ? (
-                    <div id="heroCarousel" className="carousel slide main-image pointer-event" data-bs-ride="carousel">
-                      <div className="carousel-indicators">
-                        {hero.heroImages.map((_: any, index: number) => (
-                          <button
-                            key={index}
-                            type="button"
-                            data-bs-target="#heroCarousel"
-                            data-bs-slide-to={index}
-                            className={index === 0 ? 'active' : ''}
-                            aria-current={index === 0 ? 'true' : 'false'}
-                            aria-label={`Slide ${index + 1}`}
-                          ></button>
-                        ))}
-                      </div>
+                    <div
+                      id="heroCarousel"
+                      className="carousel slide main-image pointer-event"
+                      data-bs-ride="carousel"
+                      data-bs-interval={hero?.textSliderSettings?.interval ? hero.textSliderSettings.interval * 1000 : 5000}
+                      data-bs-pause={hero?.textSliderSettings?.pauseOnHover === false ? 'false' : 'hover'}
+                    >
+                      {hero?.textSliderSettings?.showIndicators !== false ? (
+                        <div className="carousel-indicators">
+                          {hero.heroImages.map((_: any, index: number) => (
+                            <button
+                              key={index}
+                              type="button"
+                              data-bs-target="#heroCarousel"
+                              data-bs-slide-to={index}
+                              className={index === 0 ? 'active' : ''}
+                              aria-current={index === 0 ? 'true' : 'false'}
+                              aria-label={`Slide ${index + 1}`}
+                            ></button>
+                          ))}
+                        </div>
+                      ) : null}
                       <div className="carousel-inner">
                         {hero.heroImages.map((item: any, index: number) => (
                           <div key={index} className={`carousel-item ${index === 0 ? 'active' : ''}`}>
@@ -433,6 +451,18 @@ export function HeroSectionRenderer({ hero }: { hero: any }) {
                           </div>
                         ))}
                       </div>
+                      {hero?.textSliderSettings?.showArrows !== false ? (
+                        <>
+                          <button className="carousel-control-prev" type="button" data-bs-target="#heroCarousel" data-bs-slide="prev">
+                            <span className="carousel-control-prev-icon" aria-hidden="true"></span>
+                            <span className="visually-hidden">Previous</span>
+                          </button>
+                          <button className="carousel-control-next" type="button" data-bs-target="#heroCarousel" data-bs-slide="next">
+                            <span className="carousel-control-next-icon" aria-hidden="true"></span>
+                            <span className="visually-hidden">Next</span>
+                          </button>
+                        </>
+                      ) : null}
                     </div>
                   ) : (
                     <div className="main-image">

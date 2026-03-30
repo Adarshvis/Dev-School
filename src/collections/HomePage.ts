@@ -350,6 +350,44 @@ export const HomePage: CollectionConfig = {
           ],
         },
         {
+          name: 'textSliderSettings',
+          type: 'group',
+          label: 'Text Slider Controls',
+          admin: {
+            condition: (data, siblingData) => siblingData?.layoutType === 'text-slider',
+            description: 'Control dots, arrows, and pause behavior for the 50/50 hero carousel.',
+          },
+          fields: [
+            {
+              name: 'showIndicators',
+              type: 'checkbox',
+              label: 'Show Dots (Indicators)',
+              defaultValue: true,
+            },
+            {
+              name: 'showArrows',
+              type: 'checkbox',
+              label: 'Show Left/Right Arrows',
+              defaultValue: true,
+            },
+            {
+              name: 'pauseOnHover',
+              type: 'checkbox',
+              label: 'Pause on Hover',
+              defaultValue: true,
+            },
+            {
+              name: 'interval',
+              type: 'number',
+              label: 'Slide Interval (seconds)',
+              defaultValue: 5,
+              admin: {
+                description: 'Time between automatic slide transitions.',
+              },
+            },
+          ],
+        },
+        {
           name: 'stats',
           type: 'array',
           label: 'Statistics',
@@ -525,6 +563,24 @@ export const HomePage: CollectionConfig = {
               admin: {
                 description: 'Time between automatic slide transitions',
               },
+            },
+            {
+              name: 'showIndicators',
+              type: 'checkbox',
+              label: 'Show Dots (Indicators)',
+              defaultValue: true,
+            },
+            {
+              name: 'showArrows',
+              type: 'checkbox',
+              label: 'Show Left/Right Arrows',
+              defaultValue: true,
+            },
+            {
+              name: 'pauseOnHover',
+              type: 'checkbox',
+              label: 'Pause on Hover',
+              defaultValue: true,
             },
             {
               name: 'slides',
@@ -2139,6 +2195,40 @@ export const HomePage: CollectionConfig = {
           name: 'description',
           type: 'textarea',
           required: true,
+        },
+        {
+          name: 'showButton',
+          type: 'checkbox',
+          defaultValue: true,
+          admin: {
+            description: 'Show one CTA button below all facility cards',
+          },
+        },
+        {
+          name: 'buttonText',
+          type: 'text',
+          defaultValue: 'View All Facilities',
+          admin: {
+            condition: (_data, siblingData) => siblingData?.showButton !== false,
+          },
+        },
+        {
+          name: 'buttonLink',
+          type: 'text',
+          defaultValue: '/facilities',
+          admin: {
+            condition: (_data, siblingData) => siblingData?.showButton !== false,
+            description: 'Redirect URL for the section button',
+          },
+        },
+        {
+          name: 'buttonNewTab',
+          type: 'checkbox',
+          defaultValue: false,
+          admin: {
+            condition: (_data, siblingData) => siblingData?.showButton !== false,
+            description: 'Open the section button link in a new tab',
+          },
         },
         {
           name: 'instructors',
