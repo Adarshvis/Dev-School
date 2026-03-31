@@ -551,6 +551,217 @@ export const Settings: GlobalConfig = {
           ],
         },
         {
+          label: 'Announcement Popup',
+          fields: [
+            {
+              name: 'announcementPopup',
+              type: 'group',
+              fields: [
+                {
+                  name: 'enabled',
+                  type: 'checkbox',
+                  defaultValue: false,
+                  admin: {
+                    description: 'Enable popup banner on frontend.',
+                  },
+                },
+                {
+                  name: 'showOn',
+                  type: 'select',
+                  defaultValue: 'home',
+                  options: [
+                    { label: 'Home Page Only', value: 'home' },
+                    { label: 'All Pages', value: 'all' },
+                  ],
+                  admin: {
+                    condition: (data, siblingData) => siblingData?.enabled === true,
+                    description: 'Choose where popup should appear.',
+                  },
+                },
+                {
+                  name: 'campaignKey',
+                  type: 'text',
+                  admin: {
+                    condition: (data, siblingData) => siblingData?.enabled === true,
+                    description: 'Optional key to reset dismissal when campaign changes (e.g., admission-2026).',
+                  },
+                },
+                {
+                  name: 'title',
+                  type: 'text',
+                  defaultValue: 'Admissions Open 2026-27',
+                  admin: {
+                    condition: (data, siblingData) => siblingData?.enabled === true,
+                  },
+                },
+                {
+                  name: 'subtitle',
+                  type: 'textarea',
+                  admin: {
+                    condition: (data, siblingData) => siblingData?.enabled === true,
+                    description: 'Optional short text below title.',
+                  },
+                },
+                {
+                  name: 'mediaType',
+                  type: 'select',
+                  defaultValue: 'image',
+                  options: [
+                    { label: 'Image', value: 'image' },
+                    { label: 'Video', value: 'video' },
+                  ],
+                  admin: {
+                    condition: (data, siblingData) => siblingData?.enabled === true,
+                  },
+                },
+                {
+                  name: 'image',
+                  type: 'upload',
+                  relationTo: 'media' as const,
+                  admin: {
+                    condition: (data, siblingData) => siblingData?.enabled === true && siblingData?.mediaType === 'image',
+                  },
+                },
+                {
+                  name: 'videoType',
+                  type: 'select',
+                  defaultValue: 'youtube',
+                  options: [
+                    { label: 'YouTube URL', value: 'youtube' },
+                    { label: 'Uploaded Video', value: 'upload' },
+                  ],
+                  admin: {
+                    condition: (data, siblingData) => siblingData?.enabled === true && siblingData?.mediaType === 'video',
+                  },
+                },
+                {
+                  name: 'videoUrl',
+                  type: 'text',
+                  admin: {
+                    condition: (data, siblingData) =>
+                      siblingData?.enabled === true &&
+                      siblingData?.mediaType === 'video' &&
+                      siblingData?.videoType === 'youtube',
+                    description: 'Paste full YouTube URL.',
+                  },
+                },
+                {
+                  name: 'videoFile',
+                  type: 'upload',
+                  relationTo: 'media' as const,
+                  admin: {
+                    condition: (data, siblingData) =>
+                      siblingData?.enabled === true &&
+                      siblingData?.mediaType === 'video' &&
+                      siblingData?.videoType === 'upload',
+                  },
+                },
+                {
+                  name: 'modalSize',
+                  type: 'select',
+                  defaultValue: 'comfortable',
+                  options: [
+                    { label: 'Compact', value: 'compact' },
+                    { label: 'Comfortable', value: 'comfortable' },
+                    { label: 'Large', value: 'large' },
+                  ],
+                  admin: {
+                    condition: (data, siblingData) => siblingData?.enabled === true,
+                    description: 'Popup size preset for desktop.',
+                  },
+                },
+                {
+                  name: 'delaySeconds',
+                  type: 'number',
+                  defaultValue: 0,
+                  min: 0,
+                  max: 30,
+                  admin: {
+                    condition: (data, siblingData) => siblingData?.enabled === true,
+                    description: 'Delay before showing popup after page load.',
+                    step: 1,
+                  },
+                },
+                {
+                  name: 'frequency',
+                  type: 'select',
+                  defaultValue: 'once-per-session',
+                  options: [
+                    { label: 'Every Visit', value: 'every-visit' },
+                    { label: 'Once Per Session', value: 'once-per-session' },
+                    { label: 'Once Per Day', value: 'once-per-day' },
+                  ],
+                  admin: {
+                    condition: (data, siblingData) => siblingData?.enabled === true,
+                  },
+                },
+                {
+                  name: 'closeOnBackdrop',
+                  type: 'checkbox',
+                  defaultValue: true,
+                  admin: {
+                    condition: (data, siblingData) => siblingData?.enabled === true,
+                    description: 'Allow closing popup by clicking outside.',
+                  },
+                },
+                {
+                  name: 'startAt',
+                  type: 'date',
+                  admin: {
+                    condition: (data, siblingData) => siblingData?.enabled === true,
+                    date: {
+                      pickerAppearance: 'dayAndTime',
+                    },
+                    description: 'Optional schedule start date/time.',
+                  },
+                },
+                {
+                  name: 'endAt',
+                  type: 'date',
+                  admin: {
+                    condition: (data, siblingData) => siblingData?.enabled === true,
+                    date: {
+                      pickerAppearance: 'dayAndTime',
+                    },
+                    description: 'Optional schedule end date/time.',
+                  },
+                },
+                {
+                  name: 'showCta',
+                  type: 'checkbox',
+                  defaultValue: false,
+                  admin: {
+                    condition: (data, siblingData) => siblingData?.enabled === true,
+                  },
+                },
+                {
+                  name: 'ctaText',
+                  type: 'text',
+                  defaultValue: 'Learn More',
+                  admin: {
+                    condition: (data, siblingData) => siblingData?.enabled === true && siblingData?.showCta === true,
+                  },
+                },
+                {
+                  name: 'ctaLink',
+                  type: 'text',
+                  admin: {
+                    condition: (data, siblingData) => siblingData?.enabled === true && siblingData?.showCta === true,
+                  },
+                },
+                {
+                  name: 'ctaNewTab',
+                  type: 'checkbox',
+                  defaultValue: false,
+                  admin: {
+                    condition: (data, siblingData) => siblingData?.enabled === true && siblingData?.showCta === true,
+                  },
+                },
+              ],
+            },
+          ],
+        },
+        {
           label: 'Footer',
           fields: [
             {

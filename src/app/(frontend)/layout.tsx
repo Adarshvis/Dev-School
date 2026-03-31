@@ -2,6 +2,7 @@ import React from 'react'
 import Header from './components/Header'
 import Footer from './components/Footer'
 import ScrollHandler from './components/ScrollHandler'
+import AnnouncementPopup from './components/AnnouncementPopup'
 import { getSettings, generateThemeCSS } from '@/lib/settings'
 
 export async function generateMetadata() {
@@ -53,6 +54,7 @@ function getFontImports(settings: any): string {
 export default async function RootLayout(props: { children: React.ReactNode }) {
   const { children } = props
   const settings = await getSettings()
+  const announcementPopup = (settings as any)?.announcementPopup || null
   
   // Generate theme CSS from settings
   const themeCSS = generateThemeCSS(settings)
@@ -1070,13 +1072,6 @@ export default async function RootLayout(props: { children: React.ReactNode }) {
             padding: 0.45rem 0;
           }
 
-          .top-info-bar .container-fluid.container-xl {
-            max-width: 100% !important;
-            width: 100%;
-            padding-left: 5px !important;
-            padding-right: 5px !important;
-          }
-
           .top-info-bar .top-info-left,
           .top-info-bar .top-info-right {
             display: flex;
@@ -1089,6 +1084,7 @@ export default async function RootLayout(props: { children: React.ReactNode }) {
 
           .top-info-bar .top-info-left {
             justify-content: flex-start;
+            padding-left: 14px;
           }
 
           .top-info-bar .top-info-right {
@@ -1367,6 +1363,7 @@ export default async function RootLayout(props: { children: React.ReactNode }) {
       </head>
       <body className="index-page">
         <ScrollHandler />
+        <AnnouncementPopup popup={announcementPopup} version={String((settings as any)?.updatedAt || '')} />
         <Header />
         <main className="main">{children}</main>
         <Footer />
