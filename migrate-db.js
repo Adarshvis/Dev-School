@@ -1,9 +1,23 @@
 const { MongoClient } = require('mongodb');
-const fs = require('fs');
-const path = require('path');
+require('dotenv').config();
 
-const OLD_DB_URI = 'mongodb+srv://adarshsharma1552004_db_user:Adarsh%402004@cluster1.5u4qjdu.mongodb.net/?appName=Cluster1';
-const NEW_DB_URI = 'mongodb+srv://adarshsharma1552004_db_user:oN9OIy7suRUzxb9w@devschool.t9lkktt.mongodb.net/?appName=devschool';
+const OLD_DB_URI =
+  process.env.MIGRATE_OLD_DB_URI ||
+  process.env.OLD_DB_URI ||
+  process.env.SOURCE_DATABASE_URI;
+
+const NEW_DB_URI =
+  process.env.MIGRATE_NEW_DB_URI ||
+  process.env.NEW_DB_URI ||
+  process.env.TARGET_DATABASE_URI ||
+  process.env.DATABASE_URI;
+
+if (!OLD_DB_URI || !NEW_DB_URI) {
+  console.error('Missing required env vars for migration.');
+  console.error('Set MIGRATE_OLD_DB_URI and MIGRATE_NEW_DB_URI (preferred),');
+  console.error('or OLD_DB_URI / NEW_DB_URI.');
+  process.exit(1);
+}
 
 async function migrateDatabase() {
   let oldClient, newClient;

@@ -133,10 +133,25 @@ export const WorkWithUs: CollectionConfig = {
       },
     },
     {
+      name: 'problemDomainsTitle',
+      type: 'text',
+      defaultValue: 'Problem Domains',
+      admin: {
+        description: 'Section title shown above the problem domains accordion',
+      },
+    },
+    {
+      name: 'problemDomainsSubtitle',
+      type: 'textarea',
+      admin: {
+        description: 'Optional subtitle shown below the problem domains title',
+      },
+    },
+    {
       name: 'problemDomains',
       type: 'array',
       admin: {
-        description: 'Expandable problem domains/research areas (only for Research Internship)',
+        description: 'Expandable problem domains  (only for Job Posting)',
       },
       fields: [
         {

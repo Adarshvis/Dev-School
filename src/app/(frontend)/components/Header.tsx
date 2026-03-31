@@ -19,6 +19,9 @@ export default async function Header() {
   const headerBackground = headerStyle?.headerBackground || 'white'
   const headerShadow = headerStyle?.headerShadow !== false
   const siteNameColor = (settings as any)?.siteNameColor || undefined
+  const logoWidth = Number((settings as any)?.logoWidth) > 0 ? Number((settings as any)?.logoWidth) : 52
+  const logoHeight = Number((settings as any)?.logoHeight) > 0 ? Number((settings as any)?.logoHeight) : 52
+  const siteNameFontSize = Number((settings as any)?.siteNameFontSize) > 0 ? Number((settings as any)?.siteNameFontSize) : 26
 
   // Build header classes based on settings
   const headerClasses = [
@@ -138,21 +141,22 @@ export default async function Header() {
                   alt={settings?.siteName || 'Learner'}
                   className="site-logo"
                   style={{
-                    height: '52px',
-                    maxHeight: '52px',
-                    width: 'auto',
+                    height: `${logoHeight}px`,
+                    maxHeight: `${logoHeight}px`,
+                    width: `${logoWidth}px`,
+                    maxWidth: `${logoWidth}px`,
                     objectFit: 'contain',
                     display: 'block'
                   }}
                 />
                 {settings?.siteName ? (
-                  <h1 className="sitename mb-0" style={{ fontSize: '26px', fontWeight: 700, color: siteNameColor }}>
+                  <h1 className="sitename mb-0" style={{ fontSize: `${siteNameFontSize}px`, fontWeight: 700, color: siteNameColor }}>
                     {settings.siteName}
                   </h1>
                 ) : null}
               </>
             ) : (
-              <h1 className="sitename" style={{ fontSize: '30px', fontWeight: 700, color: siteNameColor }}>
+              <h1 className="sitename" style={{ fontSize: `${siteNameFontSize}px`, fontWeight: 700, color: siteNameColor }}>
                 {settings?.siteName || 'Learner'}
               </h1>
             )}

@@ -46,28 +46,7 @@ async function getRecentPosts(): Promise<BlogPost[]> {
   }
 }
 
-async function isBlogPageActive(): Promise<boolean> {
-  try {
-    const payload = await getPayload({ config })
-    const settings = await payload.findGlobal({
-      slug: 'settings',
-    })
-    return (settings as any).blogPageActive ?? true
-  } catch (error) {
-    console.error('Error fetching blog page status:', error)
-    return true
-  }
-}
-
 export default async function RecentBlogPosts() {
-  // Check if blog page is active
-  const blogActive = await isBlogPageActive()
-  
-  // Don't render section if blog page is inactive
-  if (!blogActive) {
-    return null
-  }
-
   const posts = await getRecentPosts();
 
   // Show section even if no posts, with a message

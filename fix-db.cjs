@@ -1,6 +1,17 @@
 const { MongoClient } = require('mongodb')
+require('dotenv').config()
 
-const uri = "mongodb+srv://adarshsharma1552004_db_user:Adarsh%402004@cluster1.5u4qjdu.mongodb.net/?appName=Cluster1"
+const uri =
+  process.env.FIX_DB_URI ||
+  process.env.DATABASE_URI ||
+  process.env.MONGODB_URI
+
+if (!uri) {
+  console.error('Missing DB URI. Set FIX_DB_URI, DATABASE_URI, or MONGODB_URI in .env')
+  process.exit(1)
+}
+
+const dbName = process.env.FIX_DB_NAME || 'test'
 
 async function fixFooterText() {
   const client = new MongoClient(uri)
@@ -9,7 +20,7 @@ async function fixFooterText() {
     await client.connect()
     console.log('Connected to MongoDB')
     
-    const db = client.db('test')
+    const db = client.db(dbName)
     const result = await db.collection('globals').updateOne(
       { globalType: 'settings' },
       {

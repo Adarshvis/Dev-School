@@ -92,6 +92,32 @@ export const Settings: GlobalConfig = {
               label: 'Site Logo',
             },
             {
+              name: 'logoWidth',
+              type: 'number',
+              label: 'Logo Width (px)',
+              defaultValue: 52,
+              admin: {
+                condition: (data) => data.useLogo === true,
+                description: 'Set logo width in pixels.',
+                step: 1,
+              },
+              min: 20,
+              max: 400,
+            },
+            {
+              name: 'logoHeight',
+              type: 'number',
+              label: 'Logo Height (px)',
+              defaultValue: 52,
+              admin: {
+                condition: (data) => data.useLogo === true,
+                description: 'Set logo height in pixels.',
+                step: 1,
+              },
+              min: 20,
+              max: 300,
+            },
+            {
               name: 'siteName',
               type: 'text',
               required: false,
@@ -100,6 +126,18 @@ export const Settings: GlobalConfig = {
                 description: 'Optional name text to show in header (works with logo too)',
               },
               defaultValue: 'Learner',
+            },
+            {
+              name: 'siteNameFontSize',
+              type: 'number',
+              label: 'Site Name Font Size (px)',
+              defaultValue: 26,
+              admin: {
+                description: 'Set header site name font size in pixels.',
+                step: 1,
+              },
+              min: 12,
+              max: 96,
             },
             colorPickerField({
               name: 'siteNameColor',
@@ -246,68 +284,6 @@ export const Settings: GlobalConfig = {
             {
               name: 'googleAnalyticsId',
               type: 'text',
-            },
-          ],
-        },
-        {
-          label: 'Page Visibility',
-          description: 'Control which pages are visible on the website',
-          fields: [
-            {
-              name: 'aboutPageActive',
-              type: 'checkbox',
-              defaultValue: true,
-              admin: {
-                description: 'Show/hide About page from website and navigation',
-              },
-            },
-            {
-              name: 'coursesPageActive',
-              type: 'checkbox',
-              defaultValue: true,
-              admin: {
-                description: 'Show/hide Courses page from website and navigation',
-              },
-            },
-            {
-              name: 'peoplePageActive',
-              type: 'checkbox',
-              defaultValue: true,
-              admin: {
-                description: 'Show/hide People page from website and navigation',
-              },
-            },
-            {
-              name: 'newsPageActive',
-              type: 'checkbox',
-              defaultValue: true,
-              admin: {
-                description: 'Show/hide News page from website and navigation',
-              },
-            },
-            {
-              name: 'blogPageActive',
-              type: 'checkbox',
-              defaultValue: true,
-              admin: {
-                description: 'Show/hide Blog page from website and navigation',
-              },
-            },
-            {
-              name: 'contactPageActive',
-              type: 'checkbox',
-              defaultValue: true,
-              admin: {
-                description: 'Show/hide Contact page from website and navigation',
-              },
-            },
-            {
-              name: 'enrollPageActive',
-              type: 'checkbox',
-              defaultValue: true,
-              admin: {
-                description: 'Show/hide Enroll page from website and navigation',
-              },
             },
           ],
         },

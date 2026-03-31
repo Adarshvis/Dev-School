@@ -16,6 +16,8 @@ interface WorkWithUsData {
   category?: string
   applyButtonText?: string
   applyButtonLink?: string
+  problemDomainsTitle?: string
+  problemDomainsSubtitle?: string
   problemDomains?: Array<{
     title: string
     description?: string
@@ -90,7 +92,8 @@ export default async function WorkWithUsDetail({ params }: { params: Promise<{ s
           {/* Problem Domains Accordion */}
           {item.problemDomains && item.problemDomains.length > 0 && (
             <div className="privacy-content mt-5" data-aos="fade-up">
-              <h2 className="mb-4">Problem Domains</h2>
+              <h2 className="mb-3">{item.problemDomainsTitle || 'Problem Domains'}</h2>
+              {item.problemDomainsSubtitle ? <p className="mb-4">{item.problemDomainsSubtitle}</p> : null}
               <div className="accordion" id="problemDomainsAccordion">
                 {item.problemDomains.map((domain: any, index: number) => (
                   <div className="accordion-item" key={index}>
