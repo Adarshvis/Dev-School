@@ -5,6 +5,7 @@ import { ctaBlock } from '@/plugins/blockBuilder/fields/blocks/ctaBlock'
 import { customCodeBlock } from '@/plugins/blockBuilder/fields/blocks/customCodeBlock'
 import { faqBlock } from '@/plugins/blockBuilder/fields/blocks/faqBlock'
 import { formBlock } from '@/plugins/blockBuilder/fields/blocks/formBlock'
+import { formBuilderBlock } from '@/plugins/blockBuilder/fields/blocks/formBuilderBlock'
 import { imageGalleryBlock } from '@/plugins/blockBuilder/fields/blocks/imageGalleryBlock'
 import { mapBlock } from '@/plugins/blockBuilder/fields/blocks/mapBlock'
 import { peopleBlock } from '@/plugins/blockBuilder/fields/blocks/peopleBlock'
@@ -30,6 +31,7 @@ export const contentBlocksField: any = {
     statsBlock,
     faqBlock,
     formBlock,
+    formBuilderBlock,
     countdownBlock,
     socialFeedBlock,
     customCodeBlock,

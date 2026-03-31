@@ -120,17 +120,19 @@ export default async function DynamicPage({ params }: PageProps) {
   if (reservedRoutes.includes(normalizedSlug)) {
     notFound()
   }
-  
+
+  let page: any = null
+
   try {
-    const page = await findPublishedPageBySlug(slug, 3) as any
-    
-    if (!page) {
-      notFound()
-    }
-    
-    return <DynamicPageRenderer page={page} />
+    page = await findPublishedPageBySlug(slug, 3)
   } catch (error) {
     console.error('Error fetching page:', error)
     notFound()
   }
+
+  if (!page) {
+    notFound()
+  }
+
+  return <DynamicPageRenderer page={page} />
 }

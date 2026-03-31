@@ -6,7 +6,7 @@ export const peopleBlock: Block = {
     singular: 'People Block',
     plural: 'People Blocks',
   },
-  imageURL: '/assets/img/blocks/people-block.png',
+  imageURL: '/assets/img/person/testimonial-1.webp',
   fields: [
     {
       name: 'title',

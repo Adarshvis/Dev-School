@@ -224,6 +224,89 @@ export default async function RootLayout(props: { children: React.ReactNode }) {
             color: var(--secondary-color);
           }
 
+          .form-builder-block .form-builder-surface {
+            background: color-mix(in srgb, var(--background-color), #ffffff 22%);
+            border: 1px solid color-mix(in srgb, var(--heading-color), transparent 84%);
+            border-radius: 16px;
+            padding: clamp(16px, 2vw, 28px);
+            box-shadow: 0 12px 28px color-mix(in srgb, var(--heading-color), transparent 90%);
+          }
+
+          .form-builder-block .form-builder-label {
+            font-weight: 600;
+            color: var(--heading-color);
+            margin-bottom: 0.45rem;
+          }
+
+          .form-builder-block .form-builder-help {
+            color: var(--secondary-color);
+          }
+
+          .form-builder-block .form-control,
+          .form-builder-block .form-select {
+            min-height: 48px;
+            border-radius: 12px;
+            border-color: color-mix(in srgb, var(--heading-color), transparent 82%);
+            background: color-mix(in srgb, var(--background-color), #ffffff 42%);
+          }
+
+          .form-builder-block input[type='file'].form-control {
+            padding: 0;
+            min-height: 52px;
+            line-height: 52px;
+          }
+
+          .form-builder-block .form-control:focus,
+          .form-builder-block .form-select:focus {
+            border-color: color-mix(in srgb, var(--primary-color), transparent 35%);
+            box-shadow: 0 0 0 0.2rem color-mix(in srgb, var(--primary-color), transparent 78%);
+          }
+
+          .form-builder-block input[type='file']::file-selector-button {
+            border: none;
+            border-right: 1px solid color-mix(in srgb, var(--heading-color), transparent 86%);
+            background: color-mix(in srgb, var(--primary-color), transparent 88%);
+            color: var(--heading-color);
+            height: 52px;
+            line-height: 52px;
+            display: inline-flex;
+            align-items: center;
+            font-weight: 600;
+            padding: 0 1rem;
+            margin-right: 0.65rem;
+            border-radius: 11px 0 0 11px;
+          }
+
+          .form-builder-block input[type='file']::-webkit-file-upload-button {
+            border: none;
+            border-right: 1px solid color-mix(in srgb, var(--heading-color), transparent 86%);
+            background: color-mix(in srgb, var(--primary-color), transparent 88%);
+            color: var(--heading-color);
+            height: 52px;
+            line-height: 52px;
+            display: inline-flex;
+            align-items: center;
+            font-weight: 600;
+            padding: 0 1rem;
+            margin-right: 0.65rem;
+            border-radius: 11px 0 0 11px;
+          }
+
+          .form-builder-block .form-builder-submit-btn {
+            background: var(--primary-color) !important;
+            border-color: var(--primary-color) !important;
+            color: var(--contrast-color) !important;
+            min-height: 48px;
+            border-radius: 12px;
+            font-weight: 700;
+          }
+
+          .form-builder-block .form-builder-submit-btn:hover,
+          .form-builder-block .form-builder-submit-btn:focus {
+            background: color-mix(in srgb, var(--primary-color), #000 10%) !important;
+            border-color: color-mix(in srgb, var(--primary-color), #000 10%) !important;
+          }
+
           .page-title.light-background {
             background-color: color-mix(in srgb, white 10%, var(--background-color));
           }

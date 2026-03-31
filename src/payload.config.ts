@@ -1,13 +1,7 @@
 // storage-adapter-import-placeholder
 import { mongooseAdapter } from '@payloadcms/db-mongodb'
 import { lexicalEditor, FixedToolbarFeature, InlineToolbarFeature, HeadingFeature, BoldFeature, ItalicFeature, UnderlineFeature, StrikethroughFeature, SubscriptFeature, SuperscriptFeature, AlignFeature, IndentFeature, UnorderedListFeature, OrderedListFeature, ChecklistFeature, LinkFeature, BlockquoteFeature, HorizontalRuleFeature, InlineCodeFeature } from '@payloadcms/richtext-lexical'
-import {
-  TextColorFeature,
-  TextFontFamilyFeature,
-  TextLetterSpacingFeature,
-  TextLineHeightFeature,
-  TextSizeFeature,
-} from 'payload-lexical-typography'
+import { formBuilderPlugin } from '@payloadcms/plugin-form-builder'
 import { buildConfig } from 'payload'
 import sharp from 'sharp'
 
@@ -34,6 +28,81 @@ import { Settings } from './globals/Settings.ts'
 import { Navigation } from './globals/Navigation.ts'
 import { blockBuilderPlugin } from './plugins/blockBuilder/index.ts'
 import { sectionReorderPlugin } from './plugins/sectionReorder/index.ts'
+
+const imageUploadField = {
+  slug: 'imageUpload',
+  labels: {
+    singular: 'Image Upload',
+    plural: 'Image Upload Fields',
+  },
+  fields: [
+    {
+      name: 'name',
+      type: 'text',
+      required: true,
+    },
+    {
+      name: 'label',
+      type: 'text',
+      required: true,
+      defaultValue: 'Upload Image',
+    },
+    {
+      name: 'required',
+      type: 'checkbox',
+      defaultValue: false,
+    },
+    {
+      name: 'helpText',
+      type: 'text',
+      required: false,
+    },
+  ],
+}
+
+const documentUploadField = {
+  slug: 'documentUpload',
+  labels: {
+    singular: 'Document Upload',
+    plural: 'Document Upload Fields',
+  },
+  fields: [
+    {
+      name: 'name',
+      type: 'text',
+      required: true,
+    },
+    {
+      name: 'label',
+      type: 'text',
+      required: true,
+      defaultValue: 'Upload Document',
+    },
+    {
+      name: 'required',
+      type: 'checkbox',
+      defaultValue: false,
+    },
+    {
+      name: 'helpText',
+      type: 'text',
+      required: false,
+    },
+  ],
+}
+
+const isProduction = process.env.NODE_ENV === 'production'
+const isProductionBuildPhase = process.env.NEXT_PHASE === 'phase-production-build'
+
+if (isProduction && !isProductionBuildPhase) {
+  if (process.env.NODE_TLS_REJECT_UNAUTHORIZED === '0') {
+    throw new Error('Refusing to start in production with NODE_TLS_REJECT_UNAUTHORIZED=0')
+  }
+
+  if (!process.env.PAYLOAD_SECRET) {
+    throw new Error('PAYLOAD_SECRET must be set in production')
+  }
+}
 
 export default buildConfig({
   admin: {
@@ -65,21 +134,6 @@ export default buildConfig({
       ...defaultFeatures,
       FixedToolbarFeature(),
       InlineToolbarFeature(),
-      TextColorFeature({
-        colorPicker: true,
-      }),
-      TextSizeFeature({
-        customSize: false,
-      }),
-      TextLetterSpacingFeature({
-        customSpacing: false,
-      }),
-      TextLineHeightFeature({
-        customLineHeight: false,
-      }),
-      TextFontFamilyFeature({
-        customFontFamily: false,
-      }),
     ],
   }),
   secret: process.env.PAYLOAD_SECRET || '',
@@ -92,6 +146,26 @@ export default buildConfig({
   sharp,
   plugins: [
     // storage-adapter-placeholder
+    formBuilderPlugin({
+      fields: {
+        payment: false,
+        imageUpload: imageUploadField as any,
+        documentUpload: documentUploadField as any,
+      },
+      formOverrides: {
+        fields: ({ defaultFields }) =>
+          defaultFields.map((field: any) => {
+            if (field?.name === 'title' && field?.type === 'text') {
+              return {
+                ...field,
+                required: false,
+              }
+            }
+            return field
+          }),
+      },
+      redirectRelationships: ['pages'],
+    }),
     sectionReorderPlugin({
       collections: [
         'home-page',

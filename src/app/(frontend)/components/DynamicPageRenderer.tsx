@@ -844,33 +844,28 @@ export default function DynamicPageRenderer({ page }: DynamicPageRendererProps) 
     <>
       {/* Page Title Section */}
       {page.showPageTitle !== false && (
-        <div className="page-title">
-          <div className="heading">
-            <div className="container">
-              <div className="row d-flex justify-content-center text-center">
-                <div className="col-lg-8">
-                  <h1>{page.title}</h1>
-                  {page.breadcrumbs?.length ? (
-                    <p className="mb-0">
-                      {page.breadcrumbs.map((crumb, index) => (
-                        <span key={index}>
-                          {crumb.link ? (
-                            <Link href={crumb.link}>{crumb.label}</Link>
-                          ) : (
-                            <span className="active">{crumb.label}</span>
-                          )}
-                          {index < page.breadcrumbs!.length - 1 && ' / '}
-                        </span>
-                      ))}
-                    </p>
-                  ) : (
-                    <p className="mb-0">
-                      <Link href="/">Home</Link> / <span className="active">{page.title}</span>
-                    </p>
-                  )}
-                </div>
-              </div>
-            </div>
+        <div className="page-title light-background">
+          <div className="container d-lg-flex justify-content-between align-items-center">
+            <h1 className="mb-2 mb-lg-0">{page.title}</h1>
+            <nav className="breadcrumbs">
+              <ol>
+                {page.breadcrumbs?.length ? (
+                  page.breadcrumbs.map((crumb, index) => {
+                    const isLast = index === page.breadcrumbs!.length - 1
+                    return (
+                      <li key={index} className={isLast ? 'current' : undefined}>
+                        {!isLast && crumb.link ? <Link href={crumb.link}>{crumb.label}</Link> : crumb.label}
+                      </li>
+                    )
+                  })
+                ) : (
+                  <>
+                    <li><Link href="/">Home</Link></li>
+                    <li className="current">{page.title}</li>
+                  </>
+                )}
+              </ol>
+            </nav>
           </div>
         </div>
       )}

@@ -131,14 +131,12 @@ export const Users: CollectionConfig = {
         position: 'sidebar',
       },
       access: {
-        // Admins can change any role, users can change their own role to admin (for initial setup)
+        // Only admins can change roles.
         update: ({ req, id }) => {
           if (!req) return false
           const u = req.user as UserWithRole | null
-          // If no role is set, treat as admin (backward compatibility)
-          if (!u?.role || u?.role === 'admin') return true
-          // Allow users to update their own role (for initial admin setup)
-          return u?.id === id
+          if (!u) return false
+          return !u.role || u.role === 'admin' || u.role === 'superadmin'
         },
       },
     },

@@ -90,17 +90,12 @@ const getPersonProfileHref = (person: any): string => {
 
 export const BlockRenderer: React.FC<BlockRendererProps> = ({ blocks }) => {
   if (!blocks || blocks.length === 0) {
-    console.log('BlockRenderer: No blocks provided')
     return null
   }
-
-  console.log('BlockRenderer: Rendering', blocks.length, 'blocks:', blocks.map(b => b.blockType))
 
   return (
     <>
       {blocks.map((block, index) => {
-        console.log(`Rendering block ${index}:`, block.blockType, block)
-        
         switch (block.blockType) {
           case 'cardGrid':
             return <CardGridBlock key={index} {...block} />
@@ -120,6 +115,8 @@ export const BlockRenderer: React.FC<BlockRendererProps> = ({ blocks }) => {
             return <FAQBlock key={index} {...block} />
           case 'form':
             return <FormBlock key={index} {...block} />
+          case 'formBuilder':
+            return <FormBuilderBlock key={index} {...block} />
           case 'countdown':
             return <CountdownBlock key={index} {...block} />
           case 'socialFeed':
@@ -320,21 +317,16 @@ const VideoBlock: React.FC<any> = ({ videoType, videoUrl, videoFile, title, desc
 
   const getEmbedUrl = () => {
     if (videoType === 'youtube') {
-      const embedUrl = getYouTubeEmbedUrl(videoUrl)
-      console.log('YouTube Embed URL:', embedUrl)
-      return embedUrl
+      return getYouTubeEmbedUrl(videoUrl)
     }
     if (videoType === 'vimeo') {
       return getVimeoEmbedUrl(videoUrl)
     }
-    console.log('External/Other video URL:', videoUrl)
     return videoUrl
   }
 
   const containerClass = width === 'full' ? 'container-fluid' : width === 'wide' ? 'container-lg' : 'container'
   const aspectClass = aspectRatio?.replace(':', '-') || '16-9'
-  
-  console.log('VideoBlock render:', { videoType, videoUrl, title, aspectRatio, width })
 
   return (
     <section className="video-block section">
@@ -923,6 +915,382 @@ const FormBlock: React.FC<any> = ({ formType, title, description, submitButtonTe
                 {submitButtonText || 'Submit'}
               </button>
             </form>
+          </div>
+        </div>
+      </div>
+    </section>
+  )
+}
+
+const resolveRelationId = (value: any): string => {
+  if (!value) return ''
+  if (typeof value === 'string') return value
+  if (typeof value === 'number') return String(value)
+  if (typeof value === 'object') {
+    if (value.id) return String(value.id)
+    if (value._id) return String(value._id)
+  }
+  return ''
+}
+
+const FormBuilderBlock: React.FC<any> = ({ title, description, form, submitButtonText }) => {
+  const [formDoc, setFormDoc] = React.useState<any>(typeof form === 'object' ? form : null)
+  const [isLoading, setIsLoading] = React.useState<boolean>(false)
+  const [error, setError] = React.useState<string>('')
+  const [success, setSuccess] = React.useState<boolean>(false)
+  const [values, setValues] = React.useState<Record<string, any>>({})
+  const [uploadingFields, setUploadingFields] = React.useState<Record<string, boolean>>({})
+
+  const formId = resolveRelationId(form)
+
+  React.useEffect(() => {
+    let cancelled = false
+
+    if (typeof form === 'object' && form) {
+      setFormDoc(form)
+      return
+    }
+
+    if (!formId) {
+      setFormDoc(null)
+      return
+    }
+
+    const loadForm = async () => {
+      setIsLoading(true)
+      setError('')
+
+      try {
+        const response = await fetch(`/api/forms/${formId}`)
+        if (!response.ok) {
+          throw new Error('Failed to load selected form.')
+        }
+
+        const data = await response.json()
+        if (!cancelled) {
+          setFormDoc(data)
+        }
+      } catch (err: any) {
+        if (!cancelled) {
+          setError(err?.message || 'Unable to load form.')
+        }
+      } finally {
+        if (!cancelled) {
+          setIsLoading(false)
+        }
+      }
+    }
+
+    loadForm()
+
+    return () => {
+      cancelled = true
+    }
+  }, [form, formId])
+
+  const formFields = Array.isArray(formDoc?.fields) ? formDoc.fields : []
+
+  const onChangeValue = (name: string, nextValue: any) => {
+    setValues((prev) => ({ ...prev, [name]: nextValue }))
+  }
+
+  const uploadFileToMedia = async (fieldName: string, file: File): Promise<string> => {
+    const data = new FormData()
+    data.append('file', file)
+    data.append('alt', `${fieldName}-${file.name}`)
+
+    const response = await fetch('/api/media', {
+      method: 'POST',
+      body: data,
+    })
+
+    if (!response.ok) {
+      const failureText = await response.text().catch(() => '')
+      throw new Error(failureText || 'File upload failed. Please try again.')
+    }
+
+    const payload = await response.json()
+    const doc = payload?.doc || payload
+    const fileUrl = String(doc?.url || '').trim()
+
+    if (!fileUrl) {
+      throw new Error('Uploaded file URL was not returned by server.')
+    }
+
+    return fileUrl
+  }
+
+  const onFileSelect = async (fieldName: string, file: File | null) => {
+    if (!file) {
+      onChangeValue(fieldName, '')
+      return
+    }
+
+    setError('')
+    setUploadingFields((prev) => ({ ...prev, [fieldName]: true }))
+
+    try {
+      const uploadedUrl = await uploadFileToMedia(fieldName, file)
+      onChangeValue(fieldName, uploadedUrl)
+    } catch (err: any) {
+      setError(err?.message || 'File upload failed. Please try again.')
+    } finally {
+      setUploadingFields((prev) => ({ ...prev, [fieldName]: false }))
+    }
+  }
+
+  const onSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault()
+
+    if (!formId) {
+      setError('Please select a form in this block first.')
+      return
+    }
+
+    if (Object.values(uploadingFields).some(Boolean)) {
+      setError('Please wait for all file uploads to finish before submitting.')
+      return
+    }
+
+    const missingRequiredUpload = formFields.find((field: any) => {
+      const blockType = String(field?.blockType || '').trim()
+      const name = String(field?.name || '').trim()
+      if (!name) return false
+      if (blockType !== 'imageUpload' && blockType !== 'documentUpload') return false
+      if (!field?.required) return false
+      return !String(values[name] || '').trim()
+    })
+
+    if (missingRequiredUpload) {
+      setError(`Please upload ${String(missingRequiredUpload?.label || missingRequiredUpload?.name || 'required file')}.`)
+      return
+    }
+
+    setError('')
+
+    try {
+      const response = await fetch('/api/form-submissions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          form: formId,
+          submissionData: values,
+        }),
+      })
+
+      if (!response.ok) {
+        throw new Error('Submission failed. Please try again.')
+      }
+
+      setSuccess(true)
+
+      const redirectUrl = String(formDoc?.confirmationRedirect?.url || formDoc?.redirect || '').trim()
+      if (redirectUrl) {
+        window.location.href = redirectUrl
+      }
+    } catch (err: any) {
+      setError(err?.message || 'Submission failed. Please try again.')
+    }
+  }
+
+  const renderField = (field: any, index: number) => {
+    const key = `${field?.name || field?.blockType || 'field'}-${index}`
+    const blockType = String(field?.blockType || '').trim()
+    const name = String(field?.name || '').trim()
+    const label = String(field?.label || name || 'Field').trim()
+    const required = Boolean(field?.required)
+    const options = Array.isArray(field?.options) ? field.options : []
+    const fullWidthTypes = new Set(['message', 'textarea', 'radio'])
+    const fieldColClass = fullWidthTypes.has(blockType) ? 'col-12' : 'col-12 col-md-6'
+
+    if (blockType === 'message') {
+      const messageHtml = lexicalToHtml(field?.message)
+      if (!messageHtml) return null
+      return <div key={key} className={`${fieldColClass} form-builder-field`} dangerouslySetInnerHTML={{ __html: messageHtml }} />
+    }
+
+    if (!name) return null
+
+    if (blockType === 'imageUpload' || blockType === 'documentUpload') {
+      const accept =
+        blockType === 'imageUpload'
+          ? '.jpg,.jpeg,.png,image/jpeg,image/png'
+          : '.pdf,.doc,.docx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+
+      const uploadedUrl = String(values[name] || '').trim()
+
+      return (
+        <div key={key} className={`${fieldColClass} form-builder-field`}>
+          <label className="form-label form-builder-label">{label}</label>
+          {field?.helpText ? <div className="form-text mb-1 form-builder-help">{String(field.helpText)}</div> : null}
+          <input
+            className="form-control"
+            type="file"
+            accept={accept}
+            required={required && !uploadedUrl}
+            onChange={(e) => onFileSelect(name, e.target.files?.[0] || null)}
+          />
+          {uploadingFields[name] ? <div className="form-text mt-1 form-builder-help">Uploading...</div> : null}
+          {!uploadingFields[name] && uploadedUrl ? (
+            <div className="form-text mt-1 text-success form-builder-help">File uploaded successfully.</div>
+          ) : null}
+        </div>
+      )
+    }
+
+    if (blockType === 'textarea') {
+      return (
+        <div key={key} className={`${fieldColClass} form-builder-field`}>
+          <label className="form-label form-builder-label">{label}</label>
+          <textarea
+            className="form-control"
+            rows={4}
+            required={required}
+            placeholder={String(field?.placeholder || '')}
+            value={String(values[name] || '')}
+            onChange={(e) => onChangeValue(name, e.target.value)}
+          />
+        </div>
+      )
+    }
+
+    if (blockType === 'select' || blockType === 'country' || blockType === 'state') {
+      return (
+        <div key={key} className={`${fieldColClass} form-builder-field`}>
+          <label className="form-label form-builder-label">{label}</label>
+          <select
+            className="form-select"
+            required={required}
+            value={String(values[name] || '')}
+            onChange={(e) => onChangeValue(name, e.target.value)}
+          >
+            <option value="">Select an option</option>
+            {options.map((option: any, optionIndex: number) => {
+              const optionValue = String(option?.value || '')
+              const optionLabel = String(option?.label || optionValue)
+              return (
+                <option key={`${key}-opt-${optionIndex}`} value={optionValue}>
+                  {optionLabel}
+                </option>
+              )
+            })}
+          </select>
+        </div>
+      )
+    }
+
+    if (blockType === 'radio') {
+      return (
+        <fieldset key={key} className={`${fieldColClass} form-builder-field`}>
+          <legend className="form-label form-builder-label fs-6">{label}</legend>
+          {options.map((option: any, optionIndex: number) => {
+            const optionValue = String(option?.value || '')
+            const optionLabel = String(option?.label || optionValue)
+            return (
+              <div className="form-check" key={`${key}-radio-${optionIndex}`}>
+                <input
+                  className="form-check-input"
+                  type="radio"
+                  id={`${key}-${optionIndex}`}
+                  name={name}
+                  value={optionValue}
+                  checked={String(values[name] || '') === optionValue}
+                  onChange={(e) => onChangeValue(name, e.target.value)}
+                  required={required}
+                />
+                <label className="form-check-label" htmlFor={`${key}-${optionIndex}`}>
+                  {optionLabel}
+                </label>
+              </div>
+            )
+          })}
+        </fieldset>
+      )
+    }
+
+    if (blockType === 'checkbox') {
+      return (
+        <div key={key} className={`${fieldColClass} form-builder-field form-check`}>
+          <input
+            className="form-check-input"
+            type="checkbox"
+            id={key}
+            checked={Boolean(values[name])}
+            onChange={(e) => onChangeValue(name, e.target.checked)}
+            required={required}
+          />
+          <label className="form-check-label" htmlFor={key}>
+            {label}
+          </label>
+        </div>
+      )
+    }
+
+    const inputType =
+      blockType === 'email'
+        ? 'email'
+        : blockType === 'number'
+          ? 'number'
+          : blockType === 'date'
+            ? 'date'
+            : 'text'
+
+    return (
+      <div key={key} className={`${fieldColClass} form-builder-field`}>
+        <label className="form-label form-builder-label">{label}</label>
+        <input
+          className="form-control"
+          type={inputType}
+          required={required}
+          placeholder={String(field?.placeholder || '')}
+          value={String(values[name] || '')}
+          onChange={(e) => onChangeValue(name, e.target.value)}
+        />
+      </div>
+    )
+  }
+
+  return (
+    <section className="form-builder-block section">
+      <div className="container">
+        {(title || description) && (
+          <div className="section-title" data-aos="fade-up">
+            {title && <h2>{title}</h2>}
+            {description && <p>{description}</p>}
+          </div>
+        )}
+
+        <div className="row justify-content-center">
+          <div className="col-lg-8 col-md-10">
+            {isLoading ? <div className="alert alert-info">Loading form...</div> : null}
+            {error ? <div className="alert alert-danger">{error}</div> : null}
+
+            {!isLoading && !error && !formId ? (
+              <div className="alert alert-warning mb-0">Select a form in this block to render it.</div>
+            ) : null}
+
+            {!isLoading && !error && formId && success ? (
+              <div className="alert alert-success mb-0">
+                {String(formDoc?.confirmationMessage || 'Thank you for your submission!')}
+              </div>
+            ) : null}
+
+            {!isLoading && !error && formId && !success ? (
+              <div className="form-builder-surface" data-aos="fade-up" data-aos-delay="100">
+              <form className="form-builder-form" onSubmit={onSubmit}>
+                <div className="row g-3">
+                  {formFields.map((field: any, index: number) => renderField(field, index))}
+                  <div className="col-12">
+                    <button type="submit" className="btn w-100 form-builder-submit-btn">
+                      {String(submitButtonText || formDoc?.submitButtonLabel || 'Submit')}
+                    </button>
+                  </div>
+                </div>
+              </form>
+              </div>
+            ) : null}
           </div>
         </div>
       </div>

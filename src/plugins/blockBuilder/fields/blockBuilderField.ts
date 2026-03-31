@@ -8,6 +8,7 @@ import { richTextBlock } from './blocks/richTextBlock.ts'
 import { statsBlock } from './blocks/statsBlock.ts'
 import { faqBlock } from './blocks/faqBlock.ts'
 import { formBlock } from './blocks/formBlock.ts'
+import { formBuilderBlock } from './blocks/formBuilderBlock.ts'
 import { countdownBlock } from './blocks/countdownBlock.ts'
 import { socialFeedBlock } from './blocks/socialFeedBlock.ts'
 import { customCodeBlock } from './blocks/customCodeBlock.ts'
@@ -31,6 +32,7 @@ export const blockBuilderField = (
     statsBlock,
     faqBlock,
     formBlock,
+    formBuilderBlock,
     countdownBlock,
     socialFeedBlock,
     customCodeBlock,
@@ -53,6 +55,19 @@ export const blockBuilderField = (
     type: 'blocks',
     label: 'Content Blocks',
     blocks: blocks,
+    hooks: {
+      beforeValidate: [
+        ({ value }) => {
+          if (!Array.isArray(value)) return value
+
+          return value.filter((item) => {
+            if (!item || typeof item !== 'object') return false
+            const blockType = (item as { blockType?: unknown }).blockType
+            return typeof blockType === 'string' && blockType.trim().length > 0
+          })
+        },
+      ],
+    },
     admin: {
       description: 'Add flexible content blocks to build your page',
       initCollapsed: true,

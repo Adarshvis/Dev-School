@@ -1,5 +1,6 @@
 {
   "npm.packageManager": "pnpm",
+  "terminal.integrated.cwd": "C:/Users/Admin/Desktop/Dev-school/Dev-School",
   "editor.defaultFormatter": "esbenp.prettier-vscode",
   "[typescript]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode",
