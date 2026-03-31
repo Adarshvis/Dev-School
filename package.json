@@ -5,7 +5,7 @@
   "license": "MIT",
   "scripts": {
     "build": "cross-env NODE_OPTIONS=\"--no-deprecation --max-old-space-size=8000\" next build",
-    "dev": "cross-env NODE_OPTIONS=--no-deprecation next dev",
+    "dev": "cross-env NODE_OPTIONS=--no-deprecation node scripts/next-with-env-port.cjs dev",
     "devsafe": "rm -rf .next && cross-env NODE_OPTIONS=--no-deprecation next dev",
     "generate:importmap": "cross-env NODE_OPTIONS=--no-deprecation payload generate:importmap",
     "generate:types": "cross-env NODE_OPTIONS=--no-deprecation payload generate:types",
@@ -24,7 +24,7 @@
     "seed:blogposts": "cross-env NODE_OPTIONS=--no-deprecation tsx scripts/seed-blog-posts.ts",
     "seed:contact": "cross-env NODE_OPTIONS=--no-deprecation tsx scripts/seedContactPage.ts",
     "seed:enroll": "cross-env NODE_OPTIONS=--no-deprecation tsx scripts/seedEnrollPage.ts",
-    "start": "cross-env NODE_OPTIONS=\"--no-deprecation --max-old-space-size=1200\" next start",
+    "start": "cross-env NODE_OPTIONS=\"--no-deprecation --max-old-space-size=1200\" node scripts/next-with-env-port.cjs start",
     "test": "pnpm run test:int && pnpm run test:e2e",
     "test:e2e": "cross-env NODE_OPTIONS=\"--no-deprecation --no-experimental-strip-types\" pnpm exec playwright test",
     "test:int": "cross-env NODE_OPTIONS=--no-deprecation vitest run --config ./vitest.config.mts"

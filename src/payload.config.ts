@@ -29,6 +29,105 @@ import { Navigation } from './globals/Navigation.ts'
 import { blockBuilderPlugin } from './plugins/blockBuilder/index.ts'
 import { sectionReorderPlugin } from './plugins/sectionReorder/index.ts'
 
+type RevalidationSpec = {
+  tags: string[]
+  paths: string[]
+}
+
+const collectionRevalidationSpecs: Record<string, RevalidationSpec> = {
+  'home-page': { tags: ['page-content', 'page-homepage'], paths: ['/', '/home'] },
+  'about-page': { tags: ['page-content', 'page-about'], paths: ['/about'] },
+  'courses-page': { tags: ['page-content', 'page-courses'], paths: ['/courses'] },
+  'people-page': { tags: ['page-content', 'page-people'], paths: ['/people'] },
+  'instructors-page': { tags: ['page-content', 'page-instructors'], paths: ['/instructors'] },
+  'news-page': { tags: ['page-content', 'page-news'], paths: ['/news'] },
+  'contact-page': { tags: ['page-content', 'page-contact'], paths: ['/contact'] },
+  'blog-page': { tags: ['page-content', 'page-blog'], paths: ['/blog'] },
+  'blog-details-page': { tags: ['page-content', 'page-blog-details'], paths: ['/blog-details'] },
+  'publications-page': { tags: ['page-content', 'page-publications'], paths: ['/publications'] },
+  pages: { tags: ['page-content'], paths: ['/'] },
+  'blog-posts': { tags: ['page-content', 'page-blog'], paths: ['/blog', '/blog-details'] },
+  news: { tags: ['page-content', 'page-news'], paths: ['/news'] },
+  publications: { tags: ['page-content', 'page-publications'], paths: ['/publications'] },
+  'research-domains': { tags: ['page-content'], paths: ['/research-domains'] },
+  'work-with-us': { tags: ['page-content'], paths: ['/work-with-us'] },
+}
+
+const globalRevalidationSpecs: Record<string, RevalidationSpec> = {
+  settings: { tags: ['settings', 'navigation', 'page-content'], paths: ['/'] },
+  navigation: { tags: ['navigation', 'settings', 'page-content'], paths: ['/'] },
+  'apply-now': { tags: ['page-content'], paths: ['/enroll'] },
+}
+
+async function runNextRevalidation(spec: RevalidationSpec) {
+  try {
+    const { revalidatePath, revalidateTag } = await import('next/cache')
+
+    for (const tag of new Set(spec.tags)) {
+      revalidateTag(tag)
+    }
+
+    // Revalidate app shell to refresh shared layout/header/footer data.
+    revalidatePath('/', 'layout')
+
+    for (const path of new Set(spec.paths)) {
+      revalidatePath(path)
+    }
+  } catch (error) {
+    console.error('Content cache revalidation failed:', error)
+  }
+}
+
+function withCollectionRevalidation<T extends { slug?: string; hooks?: any }>(collection: T): T {
+  const slug = collection?.slug
+  const spec = slug ? collectionRevalidationSpecs[slug] : undefined
+
+  if (!spec) return collection
+
+  const hooks = collection.hooks || {}
+
+  return {
+    ...collection,
+    hooks: {
+      ...hooks,
+      afterChange: [
+        ...(hooks.afterChange || []),
+        async () => {
+          await runNextRevalidation(spec)
+        },
+      ],
+      afterDelete: [
+        ...(hooks.afterDelete || []),
+        async () => {
+          await runNextRevalidation(spec)
+        },
+      ],
+    },
+  }
+}
+
+function withGlobalRevalidation<T extends { slug?: string; hooks?: any }>(globalConfig: T): T {
+  const slug = globalConfig?.slug
+  const spec = slug ? globalRevalidationSpecs[slug] : undefined
+
+  if (!spec) return globalConfig
+
+  const hooks = globalConfig.hooks || {}
+
+  return {
+    ...globalConfig,
+    hooks: {
+      ...hooks,
+      afterChange: [
+        ...(hooks.afterChange || []),
+        async () => {
+          await runNextRevalidation(spec)
+        },
+      ],
+    },
+  }
+}
+
 const imageUploadField = {
   slug: 'imageUpload',
   labels: {
@@ -104,31 +203,35 @@ if (isProduction && !isProductionBuildPhase) {
   }
 }
 
+const configuredCollections = [
+  Users,
+  Media,
+  Pages,
+  HomePage,
+  AboutPage,
+  PeoplePage,
+  Instructors,
+  CoursesPage,
+  InstructorsPage,
+  News,
+  NewsPage,
+  ResearchDomains,
+  WorkWithUs,
+  BlogPosts,
+  ContactPage,
+  Publications,
+  PublicationsPage,
+  Invitations,
+].map(withCollectionRevalidation)
+
+const configuredGlobals = [Settings, Navigation, EnrollPage].map(withGlobalRevalidation)
+
 export default buildConfig({
   admin: {
     user: Users.slug,
   },
-  collections: [
-    Users, 
-    Media, 
-    Pages,
-    HomePage,
-    AboutPage,
-    PeoplePage,
-    Instructors,
-    CoursesPage,
-    InstructorsPage,
-    News,
-    NewsPage,
-    ResearchDomains,
-    WorkWithUs,
-    BlogPosts,
-    ContactPage,
-    Publications,
-    PublicationsPage,
-    Invitations,
-  ],
-  globals: [Settings, Navigation, EnrollPage],
+  collections: configuredCollections,
+  globals: configuredGlobals,
   editor: lexicalEditor({
     features: ({ defaultFeatures }) => [
       ...defaultFeatures,

@@ -49,7 +49,8 @@ async function withPayloadRetry<T>(operation: (payload: any) => Promise<T>): Pro
   }
 }
 
-// Cache settings for 5 minutes in production (300 seconds)
+// Cache settings for 1 minute in production as a fallback.
+// Real-time invalidation is triggered from Payload global hooks.
 const getCachedSettings = unstable_cache(
   async () => {
     try {
@@ -64,7 +65,7 @@ const getCachedSettings = unstable_cache(
     }
   },
   ['settings'],
-  { revalidate: 300, tags: ['settings'] }
+  { revalidate: 60, tags: ['settings'] }
 )
 
 export async function getSettings() {
@@ -89,7 +90,8 @@ export async function getSettings() {
   }
 }
 
-// Cache navigation for 5 minutes in production (300 seconds)
+// Cache navigation for 1 minute in production as a fallback.
+// Real-time invalidation is triggered from Payload global hooks.
 const getCachedNavigation = unstable_cache(
   async () => {
     const navigation = await withPayloadRetry(async (payload) => payload.findGlobal({
@@ -99,7 +101,7 @@ const getCachedNavigation = unstable_cache(
     return navigation
   },
   ['navigation'],
-  { revalidate: 300, tags: ['navigation'] }
+  { revalidate: 60, tags: ['navigation'] }
 )
 
 export async function getNavigation() {
