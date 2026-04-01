@@ -6886,6 +6886,12 @@ section,
   position: relative;
 }
 
+.blog-details .article-wrapper.no-toc {
+  grid-template-columns: 1fr;
+  max-width: 980px;
+  margin: 0 auto;
+}
+
 @media (max-width: 992px) {
   .blog-details .article-wrapper {
     grid-template-columns: 1fr;
@@ -8662,6 +8668,7 @@ section,
   box-shadow: 0 8px 30px 0 color-mix(in srgb, var(--heading-color), transparent 90%);
   transition: transform 0.4s ease, box-shadow 0.4s ease;
   text-decoration: none;
+  height: 100%;
 }
 
 .featured-news .news-banner:hover {
@@ -8702,6 +8709,9 @@ section,
 
 .featured-news .banner-info {
   padding: 35px 30px;
+  display: flex;
+  flex-direction: column;
+  min-height: 320px;
 }
 
 .featured-news .banner-info .news-header {
@@ -8714,6 +8724,10 @@ section,
   margin-bottom: 15px;
   color: var(--heading-color);
   line-height: 1.3;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 .featured-news .banner-info .news-header .news-meta {
@@ -8739,6 +8753,10 @@ section,
   color: color-mix(in srgb, var(--default-color), transparent 25%);
   margin-bottom: 25px;
   line-height: 1.7;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 .featured-news .banner-info .discover-btn {
@@ -8750,6 +8768,8 @@ section,
   font-weight: 600;
   transition: all 0.3s ease;
   box-shadow: 0 4px 15px 0 color-mix(in srgb, var(--accent-color), transparent 70%);
+  margin-top: auto;
+  align-self: flex-start;
 }
 
 .featured-news .news-banner:hover .discover-btn {
@@ -8763,6 +8783,14 @@ section,
   align-items: center;
 }
 
+.featured-news .news-grid .row {
+  width: 100%;
+}
+
+.featured-news .news-grid .row > [class*='col-'] {
+  display: flex;
+}
+
 .featured-news .news-item {
   display: flex;
   align-items: center;
@@ -8773,6 +8801,8 @@ section,
   border: 1px solid color-mix(in srgb, var(--heading-color), transparent 90%);
   cursor: pointer;
   text-decoration: none;
+  width: 100%;
+  min-height: 148px;
 }
 
 .featured-news .news-item:hover {
@@ -8811,6 +8841,10 @@ section,
   margin-bottom: 8px;
   color: var(--heading-color);
   line-height: 1.4;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 .featured-news .news-item .item-content p {
@@ -8818,6 +8852,10 @@ section,
   font-size: 0.9rem;
   margin-bottom: 10px;
   line-height: 1.5;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 .featured-news .news-item .item-content .meta-info {

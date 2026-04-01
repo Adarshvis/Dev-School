@@ -676,6 +676,14 @@ export default async function RootLayout(props: { children: React.ReactNode }) {
             aspect-ratio: 4 / 5;
           }
 
+          .gallery-v2 .gallery-v2-open {
+            width: 100%;
+            text-align: left;
+            padding: 0;
+            background: transparent;
+            cursor: zoom-in;
+          }
+
           .gallery-v2 .gallery-v2-card:hover {
             transform: translateY(-7px);
             box-shadow: 0 18px 38px color-mix(in srgb, var(--heading-color), transparent 76%);
@@ -777,6 +785,110 @@ export default async function RootLayout(props: { children: React.ReactNode }) {
             background: var(--accent-color);
             border-color: var(--accent-color);
             color: var(--contrast-color);
+          }
+
+          .media-lightbox {
+            position: fixed;
+            inset: 0;
+            z-index: 20000;
+            background: rgba(7, 10, 18, 0.86);
+            backdrop-filter: blur(6px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: clamp(16px, 2vw, 28px);
+          }
+
+          .media-lightbox-inner {
+            position: relative;
+            width: min(1120px, calc(100vw - 40px));
+            max-height: calc(100vh - 44px);
+            display: flex;
+            flex-direction: column;
+            gap: 0.8rem;
+          }
+
+          .media-lightbox-stage {
+            background: rgba(9, 13, 24, 0.95);
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.16);
+            overflow: hidden;
+          }
+
+          .media-lightbox-media {
+            width: 100%;
+            max-height: calc(100vh - 160px);
+            display: block;
+            object-fit: contain;
+            background: #06080f;
+          }
+
+          .media-lightbox-meta {
+            display: flex;
+            gap: 0.9rem;
+            align-items: center;
+            justify-content: space-between;
+            color: #f4f7ff;
+            padding: 0.1rem 0.25rem;
+          }
+
+          .media-lightbox-index {
+            font-size: 0.84rem;
+            opacity: 0.88;
+          }
+
+          .media-lightbox-caption {
+            font-size: 0.96rem;
+            font-weight: 500;
+            text-align: right;
+            max-width: 78%;
+          }
+
+          .media-lightbox-close,
+          .media-lightbox-nav {
+            position: fixed;
+            border: 0;
+            background: rgba(255, 255, 255, 0.16);
+            color: #fff;
+            width: 44px;
+            height: 44px;
+            border-radius: 999px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(4px);
+            z-index: 20010;
+            cursor: pointer;
+          }
+
+          .media-lightbox-close {
+            top: 18px;
+            right: 18px;
+          }
+
+          .media-lightbox-nav {
+            top: 50%;
+            transform: translateY(-50%);
+          }
+
+          .media-lightbox-nav-prev {
+            left: 18px;
+          }
+
+          .media-lightbox-nav-next {
+            right: 18px;
+          }
+
+          @media (max-width: 767.98px) {
+            .media-lightbox-nav {
+              width: 40px;
+              height: 40px;
+            }
+
+            .media-lightbox-caption {
+              max-width: 70%;
+              font-size: 0.88rem;
+            }
           }
 
           .gallery-v2-page .gallery-v2-grid {

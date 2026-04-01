@@ -1,4 +1,22 @@
 import type { CollectionConfig } from 'payload'
+import {
+  lexicalEditor,
+  FixedToolbarFeature,
+  InlineToolbarFeature,
+  HeadingFeature,
+  AlignFeature,
+  IndentFeature,
+  UnorderedListFeature,
+  OrderedListFeature,
+  ChecklistFeature,
+  LinkFeature,
+  BlockquoteFeature,
+  HorizontalRuleFeature,
+  InlineCodeFeature,
+  SubscriptFeature,
+  SuperscriptFeature,
+} from '@payloadcms/richtext-lexical'
+import { TextColorFeature, TextSizeFeature, TextFontFamilyFeature } from 'payload-lexical-typography'
 
 // Type for user with role field
 type UserWithRole = {
@@ -76,13 +94,14 @@ export const News: CollectionConfig = {
       hooks: {
         beforeValidate: [
           ({ value, data }) => {
-            if (!value && data?.title) {
-              return data.title
-                .toLowerCase()
-                .replace(/[^a-z0-9]+/g, '-')
-                .replace(/(^-|-$)/g, '')
-            }
-            return value
+            const source = String(value || data?.title || '')
+            if (!source) return value
+
+            return source
+              .trim()
+              .toLowerCase()
+              .replace(/[^a-z0-9]+/g, '-')
+              .replace(/(^-|-$)/g, '')
           },
         ],
       },
@@ -124,79 +143,41 @@ export const News: CollectionConfig = {
       },
     },
     {
-      name: 'authorType',
-      type: 'select',
-      required: true,
-      defaultValue: 'manual',
-      options: [
-        { label: 'Manual Entry', value: 'manual' },
-        { label: 'Select from Instructors', value: 'instructor' },
-      ],
-      admin: {
-        description: 'Choose how to add author information',
-      },
-    },
-    // Manual Author Fields
-    {
-      name: 'authorName',
-      type: 'text',
-      admin: {
-        condition: (data) => data.authorType === 'manual',
-        description: 'Author full name',
-      },
-      required: true,
-      hooks: {
-        beforeValidate: [
-          ({ value, data }) => {
-            if (data?.authorType === 'manual' && !value) {
-              throw new Error('Author name is required when using manual entry')
-            }
-            return value
-          },
-        ],
-      },
-    },
-    {
-      name: 'authorImage',
-      type: 'upload',
-      relationTo: 'media',
-      admin: {
-        condition: (data) => data.authorType === 'manual',
-        description: 'Author profile photo',
-      },
-    },
-    {
-      name: 'authorRole',
-      type: 'text',
-      admin: {
-        condition: (data) => data.authorType === 'manual',
-        description: 'Author job title/role (e.g., "News Editor")',
-      },
-    },
-    // Person Relationship Field
-    {
-      name: 'instructor',
-      type: 'relationship',
-      relationTo: 'instructors' as any,
-      admin: {
-        condition: (data) => data.authorType === 'instructor',
-        description: 'Select a person as the author',
-      },
-      required: true,
-      hooks: {
-        beforeValidate: [
-          ({ value, data }) => {
-            if (data?.authorType === 'instructor' && !value) {
-              throw new Error('Please select a person')
-            }
-            return value
-          },
-        ],
-      },
-    },
-    {
       name: 'content',
       type: 'richText',
+      editor: lexicalEditor({
+        features: ({ defaultFeatures }) => [
+          ...defaultFeatures,
+          FixedToolbarFeature(),
+          InlineToolbarFeature(),
+          TextColorFeature({
+            colors: ['#111827', '#1f2937', '#374151', '#ef4444', '#f59e0b', '#10b981', '#3b82f6'],
+            colorPicker: true,
+          }),
+          TextSizeFeature({
+            customSize: false,
+          }),
+          TextFontFamilyFeature({
+            customFontFamily: false,
+          }),
+          HeadingFeature({
+            enabledHeadingSizes: ['h1', 'h2', 'h3', 'h4'],
+          }),
+          AlignFeature(),
+          IndentFeature(),
+          UnorderedListFeature(),
+          OrderedListFeature(),
+          ChecklistFeature(),
+          LinkFeature({
+            enabledCollections: ['pages'],
+          }),
+          BlockquoteFeature(),
+          HorizontalRuleFeature(),
+          InlineCodeFeature(),
+          SubscriptFeature(),
+          SuperscriptFeature(),
+        ],
+      }),
       required: true,
       admin: {
         description: 'Main news article content (rich text editor with blocks)',
@@ -241,14 +222,6 @@ export const News: CollectionConfig = {
       defaultValue: false,
       admin: {
         description: 'Mark as featured news (displayed prominently on news page)',
-      },
-    },
-    {
-      name: 'commentCount',
-      type: 'number',
-      defaultValue: 0,
-      admin: {
-        description: 'Number of comments (for display purposes)',
       },
     },
     {

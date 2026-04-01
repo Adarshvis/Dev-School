@@ -5,6 +5,7 @@ import Link from 'next/link'
 import FlexibleRowBlock from './blocks/FlexibleRowBlock'
 import CountUpValue from './CountUpValue'
 import { lexicalToHtml } from '@/lib/lexicalToHtml'
+import MediaLightbox, { type MediaLightboxItem } from './MediaLightbox'
 
 interface BlockRendererProps {
   blocks?: any[]
@@ -371,6 +372,9 @@ const ImageGalleryBlock: React.FC<any> = ({
   viewMoreButtonText,
   viewMoreLink,
 }) => {
+  const [lightboxItems, setLightboxItems] = React.useState<MediaLightboxItem[]>([])
+  const [activeLightboxIndex, setActiveLightboxIndex] = React.useState(0)
+
   const shouldShowViewMore = !!showViewMoreButton
   const galleryImages = shouldShowViewMore && galleryType !== 'carousel'
     ? (images || []).slice(0, 4)
@@ -399,6 +403,77 @@ const ImageGalleryBlock: React.FC<any> = ({
     const match = raw.match(/(?:youtube\.com\/(?:[^/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?/\s]{11})/)
     const id = match ? match[1] : ''
     return id ? `https://www.youtube.com/embed/${id}?rel=0&modestbranding=1` : ''
+  }
+
+  const getYouTubeWatchUrl = (url: string): string => {
+    const raw = String(url || '').trim()
+    if (!raw) return ''
+
+    const match = raw.match(/(?:youtube\.com\/(?:[^/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?/\s]{11})/)
+    const id = match ? match[1] : ''
+    return id ? `https://www.youtube.com/watch?v=${id}` : ''
+  }
+
+  const toLightboxItem = (item: any, index: number): MediaLightboxItem | null => {
+    const mediaType = String(item?.mediaType || (item?.videoUpload || item?.youtubeUrl ? 'video' : 'image')).toLowerCase()
+
+    if (mediaType === 'video') {
+      const videoSource = String(item?.videoSource || (item?.youtubeUrl ? 'youtube' : 'upload')).toLowerCase()
+
+      if (videoSource === 'youtube') {
+        const watchUrl = getYouTubeWatchUrl(item?.youtubeUrl || '')
+        if (!watchUrl) return null
+        return {
+          type: 'video',
+          src: watchUrl,
+          caption: item?.caption,
+          alt: item?.alt || `Gallery video ${index + 1}`,
+        }
+      }
+
+      const videoUrl = getMediaUrl(item?.videoUpload)
+      if (!videoUrl) return null
+
+      return {
+        type: 'video',
+        src: videoUrl,
+        caption: item?.caption,
+        alt: item?.alt || `Gallery video ${index + 1}`,
+      }
+    }
+
+    const imageUrl = getMediaUrl(item?.image)
+    if (!imageUrl) return null
+
+    return {
+      type: 'image',
+      src: imageUrl,
+      caption: item?.caption,
+      alt: item?.alt || `Gallery image ${index + 1}`,
+    }
+  }
+
+  const openLightbox = (items: MediaLightboxItem[], index: number) => {
+    if (!items.length) return
+    setLightboxItems(items)
+    setActiveLightboxIndex(Math.max(0, index))
+  }
+
+  const closeLightbox = () => {
+    setLightboxItems([])
+    setActiveLightboxIndex(0)
+  }
+
+  const normalizedLightboxItems = galleryImages
+    .map((item: any, index: number) => toLightboxItem(item, index))
+    .filter((item): item is MediaLightboxItem => Boolean(item))
+
+  const getNormalizedIndex = (item: any, index: number): number => {
+    const candidate = toLightboxItem(item, index)
+    if (!candidate) return 0
+
+    const foundIndex = normalizedLightboxItems.findIndex((entry) => entry.src === candidate.src && entry.type === candidate.type)
+    return Math.max(0, foundIndex)
   }
 
   const renderGalleryMedia = (item: any, index: number, isCarousel: boolean): React.ReactNode => {
@@ -516,7 +591,12 @@ const ImageGalleryBlock: React.FC<any> = ({
             <div className="gallery-v2-marquee-track">
               {marqueeItems?.map((item: any, index: number) => (
                 <div key={`marquee-${index}`} className="gallery-v2-marquee-item">
-                  <div className="gallery-item gallery-v2-card gallery-v2-card-marquee">
+                  <button
+                    type="button"
+                    className="gallery-item gallery-v2-card gallery-v2-card-marquee gallery-v2-open"
+                    onClick={() => openLightbox(normalizedLightboxItems, getNormalizedIndex(item, index))}
+                    aria-label={`Open ${String(item?.mediaType || '').toLowerCase() === 'video' ? 'video' : 'image'} ${index + 1}`}
+                  >
                     {renderGalleryMedia(item, index, false)}
                     <div className="gallery-v2-overlay">
                       <div className="gallery-v2-overlay-content">
@@ -532,7 +612,7 @@ const ImageGalleryBlock: React.FC<any> = ({
                     <span className="gallery-v2-camera" aria-hidden="true">
                       <i className={`bi ${String(item?.mediaType || '').toLowerCase() === 'video' ? 'bi-camera-video' : 'bi-camera'}`} />
                     </span>
-                  </div>
+                  </button>
                 </div>
               ))}
             </div>
@@ -546,7 +626,12 @@ const ImageGalleryBlock: React.FC<any> = ({
                 data-aos="fade-up"
                 data-aos-delay={Math.min(100 + (index * 80), 520)}
               >
-                <div className="gallery-item gallery-v2-card">
+                <button
+                  type="button"
+                  className="gallery-item gallery-v2-card gallery-v2-open"
+                  onClick={() => openLightbox(normalizedLightboxItems, getNormalizedIndex(item, index))}
+                  aria-label={`Open ${String(item?.mediaType || '').toLowerCase() === 'video' ? 'video' : 'image'} ${index + 1}`}
+                >
                   {renderGalleryMedia(item, index, false)}
                   <div className="gallery-v2-overlay">
                     <div className="gallery-v2-overlay-content">
@@ -562,7 +647,7 @@ const ImageGalleryBlock: React.FC<any> = ({
                   <span className="gallery-v2-camera" aria-hidden="true">
                     <i className={`bi ${String(item?.mediaType || '').toLowerCase() === 'video' ? 'bi-camera-video' : 'bi-camera'}`} />
                   </span>
-                </div>
+                </button>
               </div>
             ))}
           </div>
@@ -576,6 +661,10 @@ const ImageGalleryBlock: React.FC<any> = ({
             </Link>
           </div>
         )}
+
+        {lightboxItems.length > 0 ? (
+          <MediaLightbox items={lightboxItems} initialIndex={activeLightboxIndex} onClose={closeLightbox} />
+        ) : null}
       </div>
     </section>
   )

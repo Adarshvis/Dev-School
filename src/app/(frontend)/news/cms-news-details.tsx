@@ -221,18 +221,7 @@ export default function CMSNewsDetailsPage({ slug }: CMSNewsDetailsPageProps) {
             )}
 
             {/* Article Wrapper */}
-            <div className="article-wrapper">
-              {/* Table of Contents - Optional Sidebar */}
-              <aside className="table-of-contents" data-aos="fade-left">
-                <h3>Table of Contents</h3>
-                <nav>
-                  <ul>
-                    <li><a href="#introduction" className="active">Introduction</a></li>
-                    <li><a href="#content">Full Story</a></li>
-                  </ul>
-                </nav>
-              </aside>
-
+            <div className="article-wrapper no-toc">
               {/* Article Content */}
               <div className="article-content">
                 {/* Introduction Section */}
@@ -252,40 +241,6 @@ export default function CMSNewsDetailsPage({ slug }: CMSNewsDetailsPageProps) {
 
             {/* Article Footer */}
             <div className="article-footer" data-aos="fade-up">
-              {/* Share Buttons */}
-              <div className="share-article">
-                <h4>Share this article</h4>
-                <div className="share-buttons">
-                  <a 
-                    href={`https://twitter.com/intent/tweet?url=${typeof window !== 'undefined' ? encodeURIComponent(window.location.href) : ''}&text=${encodeURIComponent(article.title)}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="share-button twitter"
-                  >
-                    <i className="bi bi-twitter-x"></i>
-                    <span>Share on X</span>
-                  </a>
-                  <a 
-                    href={`https://www.facebook.com/sharer/sharer.php?u=${typeof window !== 'undefined' ? encodeURIComponent(window.location.href) : ''}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="share-button facebook"
-                  >
-                    <i className="bi bi-facebook"></i>
-                    <span>Share on Facebook</span>
-                  </a>
-                  <a 
-                    href={`https://www.linkedin.com/sharing/share-offsite/?url=${typeof window !== 'undefined' ? encodeURIComponent(window.location.href) : ''}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="share-button linkedin"
-                  >
-                    <i className="bi bi-linkedin"></i>
-                    <span>Share on LinkedIn</span>
-                  </a>
-                </div>
-              </div>
-
               {/* Tags */}
               {article.tags && article.tags.length > 0 && (
                 <div className="article-tags">

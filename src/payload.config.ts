@@ -1,6 +1,7 @@
 // storage-adapter-import-placeholder
 import { mongooseAdapter } from '@payloadcms/db-mongodb'
 import { lexicalEditor, FixedToolbarFeature, InlineToolbarFeature, HeadingFeature, BoldFeature, ItalicFeature, UnderlineFeature, StrikethroughFeature, SubscriptFeature, SuperscriptFeature, AlignFeature, IndentFeature, UnorderedListFeature, OrderedListFeature, ChecklistFeature, LinkFeature, BlockquoteFeature, HorizontalRuleFeature, InlineCodeFeature } from '@payloadcms/richtext-lexical'
+import { TextColorFeature, TextSizeFeature, TextFontFamilyFeature } from 'payload-lexical-typography'
 import { formBuilderPlugin } from '@payloadcms/plugin-form-builder'
 import { buildConfig } from 'payload'
 import sharp from 'sharp'
@@ -237,6 +238,16 @@ export default buildConfig({
       ...defaultFeatures,
       FixedToolbarFeature(),
       InlineToolbarFeature(),
+      TextColorFeature({
+        colors: ['#111827', '#1f2937', '#374151', '#ef4444', '#f59e0b', '#10b981', '#3b82f6'],
+        colorPicker: true,
+      }),
+      TextSizeFeature({
+        customSize: false,
+      }),
+      TextFontFamilyFeature({
+        customFontFamily: false,
+      }),
     ],
   }),
   secret: process.env.PAYLOAD_SECRET || '',
