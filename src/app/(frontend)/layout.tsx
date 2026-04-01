@@ -555,6 +555,7 @@ export default async function RootLayout(props: { children: React.ReactNode }) {
 
           .research-facilities-grid .facility-content {
             padding: 1.25rem 1.35rem 1.5rem;
+            border-bottom: 0;
           }
 
           .research-facilities-grid .instructor-info h5 {
