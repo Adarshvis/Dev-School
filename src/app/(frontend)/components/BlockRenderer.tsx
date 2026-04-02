@@ -466,13 +466,13 @@ const ImageGalleryBlock: React.FC<any> = ({
 
   const normalizedLightboxItems = galleryImages
     .map((item: any, index: number) => toLightboxItem(item, index))
-    .filter((item): item is MediaLightboxItem => Boolean(item))
+    .filter((item: MediaLightboxItem | null): item is MediaLightboxItem => Boolean(item))
 
   const getNormalizedIndex = (item: any, index: number): number => {
     const candidate = toLightboxItem(item, index)
     if (!candidate) return 0
 
-    const foundIndex = normalizedLightboxItems.findIndex((entry) => entry.src === candidate.src && entry.type === candidate.type)
+    const foundIndex = normalizedLightboxItems.findIndex((entry: MediaLightboxItem) => entry.src === candidate.src && entry.type === candidate.type)
     return Math.max(0, foundIndex)
   }
 

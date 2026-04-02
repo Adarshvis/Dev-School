@@ -169,7 +169,7 @@ export const News: CollectionConfig = {
           OrderedListFeature(),
           ChecklistFeature(),
           LinkFeature({
-            enabledCollections: ['pages'],
+            enabledCollections: ['pages' as any],
           }),
           BlockquoteFeature(),
           HorizontalRuleFeature(),
