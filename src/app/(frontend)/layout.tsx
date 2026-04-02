@@ -960,6 +960,119 @@ export default async function RootLayout(props: { children: React.ReactNode }) {
             box-shadow: 0 10px 26px rgba(14, 33, 61, 0.18);
           }
 
+          .about.about-v2 .about-v2-floating .about-v2-floating-icon {
+            width: 1.4rem;
+            height: 1.4rem;
+            color: var(--accent-color);
+            margin-bottom: 0.3rem;
+          }
+
+          .about.about-v2 .about-v2-floating .about-v2-floating-icon svg {
+            width: 100%;
+            height: 100%;
+          }
+
+          .about.about-v2 .about-v2-mission-cards {
+            margin-top: 1.25rem;
+          }
+
+          .about.about-v2 .about-v2-mission-card {
+            position: relative;
+            background: var(--surface-color);
+            border: 1px solid color-mix(in srgb, var(--default-color), transparent 86%);
+            border-radius: 0.9rem;
+            padding: 1.05rem 1.1rem;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+            display: flex;
+            align-items: flex-start;
+            gap: 0.9rem;
+            cursor: pointer;
+            overflow: hidden;
+            transition: transform 0.28s ease, box-shadow 0.28s ease;
+          }
+
+          .about.about-v2 .about-v2-mission-card::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0.45rem;
+            bottom: 0.45rem;
+            width: 5px;
+            border-radius: 0 8px 8px 0;
+            background: color-mix(in srgb, var(--accent-color), black 12%);
+            opacity: 0.95;
+          }
+
+          .about.about-v2 .about-v2-mission-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 14px 28px rgba(0, 0, 0, 0.12);
+          }
+
+          .about.about-v2 .about-v2-mission-card:active,
+          .about.about-v2 .about-v2-mission-card:focus-visible {
+            animation: about-v2-card-float-soft 420ms ease-out;
+          }
+
+          .about.about-v2 .about-v2-mission-card:focus-visible {
+            outline: 2px solid color-mix(in srgb, var(--accent-color), transparent 45%);
+            outline-offset: 2px;
+          }
+
+          .about.about-v2 .about-v2-mission-card-icon {
+            width: 3rem;
+            height: 3rem;
+            min-width: 3rem;
+            min-height: 3rem;
+            border-radius: 0.8rem;
+            background: color-mix(in srgb, var(--accent-color), transparent 90%);
+            color: var(--accent-color);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+          }
+
+          .about.about-v2 .about-v2-mission-card-icon svg {
+            width: 1.45rem;
+            height: 1.45rem;
+          }
+
+          .about.about-v2 .about-v2-mission-card-content {
+            min-width: 0;
+          }
+
+          .about.about-v2 .about-v2-mission-card h4 {
+            margin: 0 0 0.3rem;
+            font-size: 1.85rem;
+            line-height: 1.15;
+            color: var(--heading-color);
+          }
+
+          .about.about-v2 .about-v2-mission-card p {
+            margin: 0;
+            font-size: 1.02rem;
+            color: color-mix(in srgb, var(--default-color), transparent 16%);
+            line-height: 1.45;
+            display: -webkit-box;
+            -webkit-line-clamp: 4;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+          }
+
+          @keyframes about-v2-card-float-soft {
+            0% {
+              transform: translateY(0);
+              box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+            }
+            35% {
+              transform: translateY(-7px);
+              box-shadow: 0 18px 34px rgba(0, 0, 0, 0.14);
+            }
+            100% {
+              transform: translateY(-2px);
+              box-shadow: 0 12px 24px rgba(0, 0, 0, 0.11);
+            }
+          }
+
           .about.about-v2 .about-v2-floating-top {
             top: -1rem;
             left: -1rem;
@@ -1230,18 +1343,18 @@ export default async function RootLayout(props: { children: React.ReactNode }) {
             color: var(--button-primary-text, var(--contrast-color));
           }
 
-          .about.about-v2 .about-v2-mobile-cta {
-            margin-top: 1.25rem;
+          .about.about-v2 .about-v2-end-cta {
+            margin-top: 1.35rem;
             padding-top: 0.35rem;
           }
 
-          .about.about-v2 .about-v2-mobile-cta .about-v2-mobile-cta-btn {
+          .about.about-v2 .about-v2-end-cta .about-v2-end-cta-btn {
             background-color: var(--button-primary-bg, var(--primary-color));
             border-color: var(--button-primary-bg, var(--primary-color));
             color: var(--button-primary-text, var(--contrast-color));
           }
 
-          .about.about-v2 .about-v2-mobile-cta .about-v2-mobile-cta-btn:hover {
+          .about.about-v2 .about-v2-end-cta .about-v2-end-cta-btn:hover {
             background-color: var(--button-primary-hover-bg, var(--secondary-color));
             border-color: var(--button-primary-hover-bg, var(--secondary-color));
             color: var(--button-primary-text, var(--contrast-color));

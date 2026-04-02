@@ -1,7 +1,39 @@
 import * as React from 'react'
 import Link from 'next/link'
+import { HandHeart, BookOpen, Binoculars, Handshake, Scale, Rocket, Telescope, Gavel, Target, Lightbulb } from 'lucide-react'
 import { getPageContent } from '../../../lib/payload'
 import { BlockRenderer } from '../components/BlockRenderer'
+
+const getCoreValueIcon = (value: any): React.ReactNode => {
+  const title = String(value?.title || '').trim().toLowerCase()
+  const rawIcon = String(value?.icon || '').trim().toLowerCase()
+
+  if (title === 'care' || rawIcon.includes('hand-heart')) return <HandHeart aria-hidden="true" strokeWidth={1.8} />
+  if (title === 'learning' || rawIcon.includes('book-open')) return <BookOpen aria-hidden="true" strokeWidth={1.8} />
+  if (title === 'curious' || rawIcon.includes('binoculars')) return <Binoculars aria-hidden="true" strokeWidth={1.8} />
+  if (title.includes('collaboration') || rawIcon.includes('handshake')) return <Handshake aria-hidden="true" strokeWidth={1.8} />
+  if (title === 'integrity' || rawIcon.includes('scale-balanced')) return <Scale aria-hidden="true" strokeWidth={1.8} />
+
+  return <BookOpen aria-hidden="true" strokeWidth={1.8} />
+}
+
+const getMissionVisionIcon = (card: any): React.ReactNode => {
+  const title = String(card?.title || '').trim().toLowerCase()
+  const rawIcon = String(card?.icon || '').trim().toLowerCase()
+
+  if (rawIcon.includes('rocket')) return <Rocket aria-hidden="true" strokeWidth={1.8} />
+  if (rawIcon.includes('telescope')) return <Telescope aria-hidden="true" strokeWidth={1.8} />
+  if (rawIcon.includes('gavel')) return <Gavel aria-hidden="true" strokeWidth={1.8} />
+  if (rawIcon.includes('target')) return <Target aria-hidden="true" strokeWidth={1.8} />
+  if (rawIcon.includes('lightbulb')) return <Lightbulb aria-hidden="true" strokeWidth={1.8} />
+  if (rawIcon.includes('book-open')) return <BookOpen aria-hidden="true" strokeWidth={1.8} />
+
+  if (title.includes('mission')) return <Rocket aria-hidden="true" strokeWidth={1.8} />
+  if (title.includes('vision')) return <Telescope aria-hidden="true" strokeWidth={1.8} />
+  if (title.includes('motto')) return <Gavel aria-hidden="true" strokeWidth={1.8} />
+
+  return <Target aria-hidden="true" strokeWidth={1.8} />
+}
 
 export default async function CMSAboutPage({ isHomePage = false }: { isHomePage?: boolean } = {}) {
   try {
@@ -204,6 +236,7 @@ export default async function CMSAboutPage({ isHomePage = false }: { isHomePage?
                       <div className="mission-vision" data-aos="fade-up" data-aos-delay="400">
                         {ourStorySection.ourStory.missionVisionCards.map((card: any, index: number) => (
                           <div key={index} className={index === 0 ? 'mission' : 'vision'}>
+                            <div className="mission-vision-icon">{getMissionVisionIcon(card)}</div>
                             <h3>{card.title}</h3>
                             <p>{card.description}</p>
                           </div>
@@ -219,12 +252,12 @@ export default async function CMSAboutPage({ isHomePage = false }: { isHomePage?
                   <div className="col-lg-12">
                     <div className="core-values" data-aos="fade-up" data-aos-delay="500">
                       <h3 className="text-center mb-4">Core Values</h3>
-                      <div className="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4">
+                      <div className="row row-cols-1 row-cols-md-2 row-cols-lg-5 g-4">
                         {ourStorySection.ourStory.coreValues.map((value: any, index: number) => (
                           <div key={index} className="col">
                             <div className="value-card">
                               <div className="value-icon">
-                                <i className={`bi ${value.icon}`}></i>
+                                {getCoreValueIcon(value)}
                               </div>
                               <h4>{value.title}</h4>
                               <p>{value.description}</p>

@@ -1,5 +1,6 @@
 import * as React from 'react'
 import Link from 'next/link'
+import { HandHeart, BookOpen, Binoculars, Handshake, Scale, Rocket, Telescope, Gavel, Target, Lightbulb } from 'lucide-react'
 import { getPageContent } from '../../lib/payload'
 import TestimonialsSlider from './components/TestimonialsSlider'
 import { BlockRenderer } from './components/BlockRenderer'
@@ -118,6 +119,37 @@ const getHomePersonProfileHref = (person: any): string => {
   }
 
   return '/people'
+}
+
+const getCoreValueIcon = (value: any): React.ReactNode => {
+  const title = String(value?.title || '').trim().toLowerCase()
+  const rawIcon = String(value?.icon || '').trim().toLowerCase()
+
+  if (title === 'care' || rawIcon.includes('hand-heart')) return <HandHeart aria-hidden="true" strokeWidth={1.8} />
+  if (title.includes('learning') || rawIcon.includes('book-open')) return <BookOpen aria-hidden="true" strokeWidth={1.8} />
+  if (title.includes('curious') || rawIcon.includes('binoculars')) return <Binoculars aria-hidden="true" strokeWidth={1.8} />
+  if (title.includes('collaboration') || rawIcon.includes('handshake')) return <Handshake aria-hidden="true" strokeWidth={1.8} />
+  if (title === 'integrity' || rawIcon.includes('scale-balanced')) return <Scale aria-hidden="true" strokeWidth={1.8} />
+
+  return <BookOpen aria-hidden="true" strokeWidth={1.8} />
+}
+
+const getMissionVisionIcon = (card: any): React.ReactNode => {
+  const title = String(card?.title || '').trim().toLowerCase()
+  const rawIcon = String(card?.icon || '').trim().toLowerCase()
+
+  if (rawIcon.includes('rocket')) return <Rocket aria-hidden="true" strokeWidth={1.8} />
+  if (rawIcon.includes('telescope')) return <Telescope aria-hidden="true" strokeWidth={1.8} />
+  if (rawIcon.includes('gavel')) return <Gavel aria-hidden="true" strokeWidth={1.8} />
+  if (rawIcon.includes('target')) return <Target aria-hidden="true" strokeWidth={1.8} />
+  if (rawIcon.includes('lightbulb')) return <Lightbulb aria-hidden="true" strokeWidth={1.8} />
+  if (rawIcon.includes('book-open')) return <BookOpen aria-hidden="true" strokeWidth={1.8} />
+
+  if (title.includes('mission')) return <Rocket aria-hidden="true" strokeWidth={1.8} />
+  if (title.includes('vision')) return <Telescope aria-hidden="true" strokeWidth={1.8} />
+  if (title.includes('motto')) return <Gavel aria-hidden="true" strokeWidth={1.8} />
+
+  return <Target aria-hidden="true" strokeWidth={1.8} />
 }
 
 // Section renderer components
@@ -290,19 +322,9 @@ const OurStoryRenderer = ({ section }: { section: any }) => {
       .filter(Boolean)
       .slice(0, 4)
   )
-  const fallbackHighlights = (
-    (ourStory.coreValues || [])
-      .map((item: any) => String(item?.title || '').trim())
-      .filter(Boolean)
-      .slice(0, 4)
-  )
-  const highlights = highlightItems.length > 0 ? highlightItems : fallbackHighlights
-  const statCardTitle = String(ourStory?.missionVisionCards?.[0]?.title || '').trim()
-  const statCardSubtitle = String(ourStory?.missionVisionCards?.[0]?.description || '').trim()
-  const badgeTitle = String(ourStory?.missionVisionCards?.[1]?.title || '').trim()
-  const badgeSubtitle = String(ourStory?.missionVisionCards?.[1]?.description || '').trim()
-  const quoteText = String(ourStory?.missionVisionCards?.[2]?.description || '').trim()
-  const quoteAuthor = String(ourStory?.missionVisionCards?.[2]?.title || '').trim()
+  const highlights = highlightItems
+  const missionVisionCards = Array.isArray(ourStory?.missionVisionCards) ? ourStory.missionVisionCards.filter(Boolean) : []
+  const cardColumnClass = missionVisionCards.length >= 3 ? 'col-12 col-md-6 col-lg-4' : 'col-12 col-md-6'
   const ctaLink = ourStory.buttonLink || '/about'
   const ctaText = ourStory.buttonText || 'Learn More About Us'
   const hasCta = Boolean(ourStory.buttonText || ourStory.buttonLink)
@@ -310,27 +332,13 @@ const OurStoryRenderer = ({ section }: { section: any }) => {
   return (
     <section id="about" className="about about-v2 section">
       <div className="container" data-aos="fade-up" data-aos-delay="100">
-        <div className="row align-items-center g-5 g-xl-6">
+        <div className="row align-items-start g-5 g-xl-6">
           <div className={imageColClass}>
             <div className="about-image about-v2-media" data-aos="zoom-in" data-aos-delay="250">
               <div className="about-v2-frame"></div>
               <div className="about-v2-main-media">
                 {mediaPanelContent}
               </div>
-
-              {(statCardTitle || statCardSubtitle) && (
-                <div className="about-v2-floating about-v2-floating-top">
-                  {statCardTitle && <div className="value">{statCardTitle}</div>}
-                  {statCardSubtitle && <div className="label">{statCardSubtitle}</div>}
-                </div>
-              )}
-
-              {(badgeTitle || badgeSubtitle) && (
-                <div className="about-v2-floating about-v2-floating-bottom">
-                  {badgeTitle && <div className="title">{badgeTitle}</div>}
-                  {badgeSubtitle && <div className="subtitle">{badgeSubtitle}</div>}
-                </div>
-              )}
             </div>
           </div>
 
@@ -358,29 +366,25 @@ const OurStoryRenderer = ({ section }: { section: any }) => {
                 </div>
               )}
 
-              {quoteText && (
-                <blockquote className="about-v2-quote">
-                  <p>&quot;{quoteText}&quot;</p>
-                  {quoteAuthor && <footer>- {quoteAuthor}</footer>}
-                </blockquote>
-              )}
-
-              {hasCta && (
-                <div className="mt-3 d-none d-lg-block" data-aos="fade-up" data-aos-delay="260">
-                  <Link href={ctaLink} className="btn btn-primary">
-                    {ctaText}
-                  </Link>
-                </div>
-              )}
             </div>
           </div>
         </div>
 
-        {hasCta && (
-          <div className="about-v2-mobile-cta d-block d-lg-none text-center mt-4" data-aos="fade-up" data-aos-delay="260">
-            <Link href={ctaLink} className="btn btn-primary about-v2-mobile-cta-btn">
-              {ctaText}
-            </Link>
+        {missionVisionCards.length > 0 && (
+          <div className="about-v2-mission-cards" data-aos="fade-up" data-aos-delay="260">
+            <div className="row g-3 g-lg-4">
+              {missionVisionCards.map((card: any, index: number) => (
+                <div key={index} className={cardColumnClass}>
+                  <div className="about-v2-mission-card h-100" tabIndex={0}>
+                    <div className="about-v2-mission-card-icon">{getMissionVisionIcon(card)}</div>
+                    <div className="about-v2-mission-card-content">
+                      {card?.title ? <h4>{card.title}</h4> : null}
+                      {card?.description ? <p>{card.description}</p> : null}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
         )}
 
@@ -389,12 +393,12 @@ const OurStoryRenderer = ({ section }: { section: any }) => {
             <div className="col-lg-12">
               <div className="core-values" data-aos="fade-up" data-aos-delay="500">
                 <h3 className="text-center mb-4">Core Values</h3>
-                <div className="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4">
+                <div className="row row-cols-1 row-cols-md-2 row-cols-lg-5 g-4">
                   {ourStory.coreValues.map((value: any, index: number) => (
                     <div key={index} className="col">
                       <div className="value-card">
                         <div className="value-icon">
-                          <i className={`bi ${value.icon}`}></i>
+                          {getCoreValueIcon(value)}
                         </div>
                         {value.title && <h4>{value.title}</h4>}
                         {value.description && <p>{value.description}</p>}
@@ -404,6 +408,14 @@ const OurStoryRenderer = ({ section }: { section: any }) => {
                 </div>
               </div>
             </div>
+          </div>
+        )}
+
+        {hasCta && (
+          <div className="about-v2-end-cta text-center mt-4" data-aos="fade-up" data-aos-delay="260">
+            <Link href={ctaLink} className="btn btn-primary about-v2-end-cta-btn">
+              {ctaText}
+            </Link>
           </div>
         )}
       </div>

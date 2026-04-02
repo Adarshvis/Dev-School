@@ -2883,6 +2883,20 @@ section,
   box-shadow: 0 5px 25px rgba(0, 0, 0, 0.05);
 }
 
+.about .about-image .mission-vision .mission .mission-vision-icon,
+.about .about-image .mission-vision .vision .mission-vision-icon {
+  width: 2rem;
+  height: 2rem;
+  color: var(--accent-color);
+  margin-bottom: 0.5rem;
+}
+
+.about .about-image .mission-vision .mission .mission-vision-icon svg,
+.about .about-image .mission-vision .vision .mission-vision-icon svg {
+  width: 100%;
+  height: 100%;
+}
+
 .about .about-image .mission-vision .mission h3,
 .about .about-image .mission-vision .vision h3 {
   font-size: 1rem;
@@ -6213,6 +6227,11 @@ section,
 
 .blog-hero .blog-item.featured .post-title {
   font-size: 2rem;
+}
+.about .core-values .value-card .value-icon svg {
+  width: 2rem;
+  height: 2rem;
+  stroke: currentColor;
 }
 
 @media (max-width: 768px) {

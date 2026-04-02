@@ -231,8 +231,20 @@ export const AboutPage: CollectionConfig = {
           type: 'array',
           label: 'Mission & Vision Cards',
           minRows: 2,
-          maxRows: 2,
+          maxRows: 3,
           fields: [
+            {
+              name: 'icon',
+              type: 'select',
+              options: [
+                { label: 'Rocket', value: 'rocket' },
+                { label: 'Telescope', value: 'telescope' },
+                { label: 'Gavel (Motto)', value: 'gavel' },
+                { label: 'Target', value: 'target' },
+                { label: 'Lightbulb', value: 'lightbulb' },
+                { label: 'Book Open', value: 'book-open' },
+              ],
+            },
             {
               name: 'title',
               type: 'text',
@@ -258,6 +270,11 @@ export const AboutPage: CollectionConfig = {
               type: 'select',
               required: true,
               options: [
+                { label: 'Hand Heart (Care)', value: 'hand-heart' },
+                { label: 'Book Open (Learning)', value: 'book-open' },
+                { label: 'Binoculars (Curious)', value: 'binoculars' },
+                { label: 'Handshake (Collaboration)', value: 'handshake' },
+                { label: 'Scale Balanced (Integrity)', value: 'scale-balanced' },
                 { label: 'Book (Academic Excellence)', value: 'bi-book' },
                 { label: 'People (Community)', value: 'bi-people' },
                 { label: 'Lightbulb (Innovation)', value: 'bi-lightbulb' },

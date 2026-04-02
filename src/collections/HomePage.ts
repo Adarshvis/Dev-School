@@ -1924,11 +1924,23 @@ export const HomePage: CollectionConfig = {
           name: 'missionVisionCards',
           type: 'array',
           label: 'Mission & Vision Cards',
-          maxRows: 2,
+          maxRows: 3,
           admin: {
-            description: 'Add up to 2 cards for Mission & Vision',
+            description: 'Add up to 3 cards for Motto, Vision, and Mission',
           },
           fields: [
+            {
+              name: 'icon',
+              type: 'select',
+              options: [
+                { label: 'Rocket', value: 'rocket' },
+                { label: 'Telescope', value: 'telescope' },
+                { label: 'Gavel (Motto)', value: 'gavel' },
+                { label: 'Target', value: 'target' },
+                { label: 'Lightbulb', value: 'lightbulb' },
+                { label: 'Book Open', value: 'book-open' },
+              ],
+            },
             {
               name: 'title',
               type: 'text',
@@ -1946,15 +1958,20 @@ export const HomePage: CollectionConfig = {
           name: 'coreValues',
           type: 'array',
           label: 'Core Values',
-          maxRows: 4,
+          maxRows: 5,
           admin: {
-            description: 'Add up to 4 core values',
+            description: 'Add up to 5 core values',
           },
           fields: [
             {
               name: 'icon',
               type: 'select',
               options: [
+                { label: 'Hand Heart (Care)', value: 'hand-heart' },
+                { label: 'Book Open (Learning)', value: 'book-open' },
+                { label: 'Binoculars (Curious)', value: 'binoculars' },
+                { label: 'Handshake (Collaboration)', value: 'handshake' },
+                { label: 'Scale Balanced (Integrity)', value: 'scale-balanced' },
                 { label: 'Book (Academic Excellence)', value: 'bi-book' },
                 { label: 'People (Community)', value: 'bi-people' },
                 { label: 'Lightbulb (Innovation)', value: 'bi-lightbulb' },
