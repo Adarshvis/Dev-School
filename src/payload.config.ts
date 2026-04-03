@@ -239,8 +239,19 @@ export default buildConfig({
       FixedToolbarFeature(),
       InlineToolbarFeature(),
       TextColorFeature({
-        colors: ['#111827', '#1f2937', '#374151', '#ef4444', '#f59e0b', '#10b981', '#3b82f6'],
-        colorPicker: true,
+        colors: [
+          // Neutrals
+          '#000000', '#1a1a1a', '#374151', '#6b7280', '#9ca3af', '#d1d5db', '#ffffff',
+          // Brand / accent
+          '#ef4444', '#f97316', '#f59e0b', '#eab308',
+          '#22c55e', '#10b981', '#14b8a6',
+          '#3b82f6', '#6366f1', '#8b5cf6', '#ec4899',
+          // Dark shades
+          '#111827', '#1f2937', '#0f172a', '#042f2e',
+          // School-specific
+          '#04415f', '#2d6a4f', '#b45309', '#7c3aed',
+        ],
+        colorPicker: false,
       }),
       TextSizeFeature({
         customSize: false,

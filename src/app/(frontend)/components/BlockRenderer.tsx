@@ -2,6 +2,7 @@
 
 import React from 'react'
 import Link from 'next/link'
+import * as LucideIcons from 'lucide-react'
 import FlexibleRowBlock from './blocks/FlexibleRowBlock'
 import CountUpValue from './CountUpValue'
 import { lexicalToHtml } from '@/lib/lexicalToHtml'
@@ -141,8 +142,23 @@ export const BlockRenderer: React.FC<BlockRendererProps> = ({ blocks }) => {
   )
 }
 
-const CardGridBlock: React.FC<any> = ({ title, description, columns, cards }) => {
+const CardGridBlock: React.FC<any> = ({ title, description, descriptionRich, columns, cardAlignment, cards }) => {
   if (!Array.isArray(cards) || cards.length === 0) return null
+
+  const textAlign = (cardAlignment as 'left' | 'center' | 'right') || 'left'
+
+  // Convert a textColor to a CSS filter so uploaded SVG/PNG icons match the text color.
+  // `<img>` tags ignore CSS `color`, so we use filter instead.
+  const getIconFilter = (color: string): string | undefined => {
+    if (!color) return undefined
+    const c = color.toLowerCase().replace(/\s/g, '')
+    // White variants → invert black to white
+    if (c === '#fff' || c === '#ffffff' || c === 'white' || c === 'rgb(255,255,255)') return 'brightness(0) invert(1)'
+    // Dark / black variants → darken to black
+    if (c === '#000' || c === '#000000' || c === 'black' || c === 'rgb(0,0,0)') return 'brightness(0)'
+    // For other colors: sepia + hue-rotate approximation (best-effort)
+    return 'brightness(0) saturate(100%)'
+  }
 
   const columnClass =
     columns === '2'
@@ -151,13 +167,19 @@ const CardGridBlock: React.FC<any> = ({ title, description, columns, cards }) =>
         ? 'col-xl-3 col-lg-4 col-md-6'
         : 'col-lg-4 col-md-6'
 
+  const blockDescHtml = descriptionRich
+    ? lexicalToHtml(descriptionRich)
+    : description
+      ? `<p>${String(description).replace(/\n/g, '</p><p>')}</p>`
+      : ''
+
   return (
     <section className="cards-section section">
       <div className="container">
-        {(title || description) && (
+        {(title || blockDescHtml) && (
           <div className="section-title text-center mb-3" data-aos="fade-up">
             {title && <h2>{title}</h2>}
-            {description && <p>{description}</p>}
+            {blockDescHtml && <div className="rich-text-content" dangerouslySetInnerHTML={{ __html: blockDescHtml }} />}
           </div>
         )}
 
@@ -167,15 +189,50 @@ const CardGridBlock: React.FC<any> = ({ title, description, columns, cards }) =>
               card?.image && typeof card.image === 'object' ? card.image.url : card?.image
             const linkText = String(card?.linkText || '').trim() || 'Learn More'
             const href = String(card?.link || '').trim()
+            const bgColor = String(card?.backgroundColor || '').trim()
+            const txtColor = String(card?.textColor || '').trim()
+            const descHtml = card?.descriptionRich
+              ? lexicalToHtml(card.descriptionRich)
+              : card?.description
+                ? `<p>${String(card.description).replace(/\n/g, '</p><p>')}</p>`
+                : ''
+
+            const cardStyle: React.CSSProperties = {}
+            if (bgColor) cardStyle.backgroundColor = bgColor
+            if (txtColor) cardStyle.color = txtColor
 
             return (
               <div key={index} className={columnClass}>
-                <div className="card h-100" data-aos="fade-up" data-aos-delay={Math.min(index * 80, 320)}>
+                <div
+                  className="card h-100"
+                  style={cardStyle}
+                  data-aos="fade-up"
+                  data-aos-delay={Math.min(index * 80, 320)}
+                >
                   {imageUrl ? <img src={imageUrl} className="card-img-top" alt={card?.title || `Card ${index + 1}`} /> : null}
-                  <div className="card-body d-flex flex-column">
-                    {card?.icon ? <i className={`bi ${card.icon} card-icon mb-3`} aria-hidden="true"></i> : null}
-                    {card?.title ? <h5 className="card-title">{card.title}</h5> : null}
-                    {card?.description ? <p className="card-text">{card.description}</p> : null}
+                  <div className="card-body d-flex flex-column" style={{ textAlign }}>
+                    <div className="d-flex align-items-center gap-2 mb-3" style={{ justifyContent: textAlign === 'center' ? 'center' : textAlign === 'right' ? 'flex-end' : 'flex-start' }}>
+                      {card?.iconType === 'upload' && card?.customIcon ? (
+                        (() => {
+                          const iconUrl = typeof card.customIcon === 'object' ? card.customIcon?.url : card.customIcon
+                          const iconFilter = getIconFilter(txtColor)
+                          return iconUrl
+                            ? <img src={iconUrl} alt="" aria-hidden="true" className="card-icon flex-shrink-0" style={{ width: 28, height: 28, objectFit: 'contain', filter: iconFilter }} />
+                            : null
+                        })()
+                      ) : card?.iconType !== 'bootstrap' && card?.lucideIcon ? (
+                        (() => {
+                          const LucideIcon = (LucideIcons as any)[card.lucideIcon] as React.FC<any> | undefined
+                          return LucideIcon
+                            ? <LucideIcon size={28} className="card-icon flex-shrink-0" style={txtColor ? { color: txtColor } : undefined} aria-hidden="true" />
+                            : null
+                        })()
+                      ) : card?.icon ? (
+                        <i className={`bi ${card.icon} card-icon flex-shrink-0`} style={txtColor ? { color: txtColor } : undefined} aria-hidden="true"></i>
+                      ) : null}
+                      {card?.title ? <h5 className="card-title mb-0">{card.title}</h5> : null}
+                    </div>
+                    {descHtml ? <div className="card-text rich-text-content" dangerouslySetInnerHTML={{ __html: descHtml }} /> : null}
                     {href ? (
                       <div className="mt-auto pt-2">
                         {isExternalHref(href) ? (

@@ -192,7 +192,7 @@ export const Navigation: GlobalConfig = {
                   label: 'Submenu Items',
                   admin: {
                     description: 'Add dropdown/submenu items under this menu item',
-                    condition: (data, siblingData) => siblingData?.linkType === 'dropdown' || siblingData?.linkType === 'internal',
+                    condition: (data, siblingData) => siblingData?.linkType !== 'anchor',
                   },
                   fields: [
                     {

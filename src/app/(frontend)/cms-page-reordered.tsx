@@ -366,6 +366,14 @@ const OurStoryRenderer = ({ section }: { section: any }) => {
                 </div>
               )}
 
+              {hasCta && (
+                <div className="about-v2-end-cta mt-4" data-aos="fade-up" data-aos-delay="260">
+                  <Link href={ctaLink} className="btn btn-primary about-v2-end-cta-btn">
+                    {ctaText}
+                  </Link>
+                </div>
+              )}
+
             </div>
           </div>
         </div>
@@ -411,13 +419,6 @@ const OurStoryRenderer = ({ section }: { section: any }) => {
           </div>
         )}
 
-        {hasCta && (
-          <div className="about-v2-end-cta text-center mt-4" data-aos="fade-up" data-aos-delay="260">
-            <Link href={ctaLink} className="btn btn-primary about-v2-end-cta-btn">
-              {ctaText}
-            </Link>
-          </div>
-        )}
       </div>
     </section>
   )

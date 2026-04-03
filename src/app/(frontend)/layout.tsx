@@ -76,6 +76,9 @@ export default async function RootLayout(props: { children: React.ReactNode }) {
         {/* Main CSS File - This contains the template styling */}
         <link href="/assets/css/main.css" rel="stylesheet" />
         
+        {/* Hero layout styles (fullscreen overlay, etc.) */}
+        <link href="/assets/css/hero-layouts.css" rel="stylesheet" />
+        
         {/* Dynamic Theme CSS from CMS */}
         {themeCSS && <style dangerouslySetInnerHTML={{ __html: themeCSS }} />}
         

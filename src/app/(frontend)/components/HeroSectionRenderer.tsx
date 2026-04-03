@@ -1,4 +1,6 @@
+import React from 'react'
 import { MediaItemRenderer } from './MediaRenderers'
+import HeroOverlayMode from './HeroOverlayMode'
 
 export function HeroSectionRenderer({ hero }: { hero: any }) {
   const layoutType = hero.layoutType || 'text-slider'
@@ -11,9 +13,7 @@ export function HeroSectionRenderer({ hero }: { hero: any }) {
         maxWidth: '100%',
         height: '100vh',
         position: 'relative',
-        margin: '0 calc(-50vw + 50%)',
-        marginTop: 0,
-        marginBottom: 0,
+        margin: 0,
         padding: 0,
         overflow: 'hidden'
       }}>
@@ -66,11 +66,9 @@ export function HeroSectionRenderer({ hero }: { hero: any }) {
         data-bs-interval={hero.fullWidthSlider.interval ? hero.fullWidthSlider.interval * 1000 : 5000} 
         data-bs-pause={pauseOnHover ? 'hover' : 'false'}
         style={{ 
-          width: '100vw',
-          maxWidth: '100vw',
-          margin: '0 calc(-50vw + 50%)',
-          marginTop: 0,
-          marginBottom: 0,
+          width: '100%',
+          maxWidth: '100%',
+          margin: 0,
           padding: 0,
           position: 'relative'
         }}>
@@ -252,6 +250,316 @@ export function HeroSectionRenderer({ hero }: { hero: any }) {
             </button>
           </>
         ) : null}
+      </div>
+    )
+  }
+
+  // FULLSCREEN OVERLAY LAYOUT (ADNOC Style) — multi-slide carousel
+  if (layoutType === 'fullscreen-overlay' && hero.fullscreenOverlay) {
+    const fso = hero.fullscreenOverlay
+    const slides: any[] = Array.isArray(fso.slides) && fso.slides.length > 0 ? fso.slides : []
+
+    const heroHeight = fso.height || '90vh'
+    const showIndicators = fso.showIndicators !== false
+    const showArrows = fso.showArrows === true
+    const pauseOnHover = fso.pauseOnHover !== false
+    const interval = typeof fso.interval === 'number' ? fso.interval * 1000 : 5000
+
+    const textVertPos: string = fso.textVerticalPosition || 'bottom'
+    const textHAlign: string = fso.textHorizontalAlign || 'left'
+    const textMaxWidth = fso.textMaxWidth || 700
+    const padX = fso.textPaddingX ?? 60
+    const padY = fso.textPaddingY ?? 60
+
+    const alignItemsMap: Record<string, string> = { top: 'flex-start', middle: 'center', bottom: 'flex-end' }
+    const alignItems = alignItemsMap[textVertPos] || 'flex-end'
+    const flexAlign = textHAlign === 'center' ? 'center' : textHAlign === 'right' ? 'flex-end' : 'flex-start'
+
+    const textContentStyle: React.CSSProperties = {
+      position: 'absolute',
+      inset: 0,
+      zIndex: 3,
+      width: '100%',
+      height: '100%',
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: flexAlign,
+      justifyContent: alignItems,
+      padding:
+        textVertPos === 'top'
+          ? `${padY}px ${padX}px 0`
+          : textVertPos === 'bottom'
+          ? `0 ${padX}px ${padY}px`
+          : `0 ${padX}px`,
+      textAlign: textHAlign as 'left' | 'center' | 'right',
+    }
+
+    return (
+      <div
+        className="hero-fullscreen-overlay"
+        style={{ position: 'relative', width: '100%', height: heroHeight, overflow: 'hidden' }}
+      >
+        <HeroOverlayMode />
+
+        {slides.length === 0 ? (
+          /* Fallback when no slides configured yet */
+          <div style={{ width: '100%', height: '100%', background: '#1a1a2e', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <p style={{ color: '#fff', opacity: 0.5 }}>Add slides in the admin to populate this hero.</p>
+          </div>
+        ) : (
+          <div
+            id="fsoCarousel"
+            className="carousel slide carousel-fade"
+            data-bs-ride={interval > 0 ? 'carousel' : undefined}
+            data-bs-interval={interval > 0 ? interval : undefined}
+            data-bs-pause={pauseOnHover ? 'hover' : 'false'}
+            style={{
+              position: 'absolute',
+              inset: 0,
+              height: '100%',
+              ['--fso-interval' as string]: `${(interval > 0 ? interval : 5000) / 1000}s`,
+            }}
+          >
+            {/* Dots */}
+            {showIndicators && slides.length > 1 && (
+              <div className="carousel-indicators">
+                {slides.map((_: any, i: number) => (
+                  <button
+                    key={i}
+                    type="button"
+                    data-bs-target="#fsoCarousel"
+                    data-bs-slide-to={i}
+                    className={i === 0 ? 'active' : ''}
+                    aria-current={i === 0 ? 'true' : 'false'}
+                    aria-label={`Slide ${i + 1}`}
+                  />
+                ))}
+              </div>
+            )}
+
+            <div className="carousel-inner" style={{ height: '100%' }}>
+              {slides.map((slide: any, i: number) => {
+                const mediaType: string = slide.backgroundMediaType || 'image'
+                const isVideo = mediaType === 'video'
+                const videoSource: string = slide.videoSourceType || 'upload'
+                const isYouTube = isVideo && videoSource === 'youtube'
+
+                // Image URL (used for image slides, and as poster for video slides)
+                const bgImageUrl =
+                  slide.backgroundImage && typeof slide.backgroundImage === 'object'
+                    ? (slide.backgroundImage as any).url
+                    : typeof slide.backgroundImage === 'string'
+                    ? slide.backgroundImage
+                    : null
+
+                // Local video URL
+                const bgVideoUrl =
+                  slide.backgroundVideo && typeof slide.backgroundVideo === 'object'
+                    ? (slide.backgroundVideo as any).url
+                    : typeof slide.backgroundVideo === 'string'
+                    ? slide.backgroundVideo
+                    : null
+
+                // Poster for video
+                const posterUrl =
+                  slide.videoPoster && typeof slide.videoPoster === 'object'
+                    ? (slide.videoPoster as any).url
+                    : typeof slide.videoPoster === 'string'
+                    ? slide.videoPoster
+                    : bgImageUrl || undefined
+
+                // YouTube embed ID extraction
+                const youtubeId = extractYouTubeId(slide.youtubeUrl || '')
+
+                const overlayRgba = hexToRgba(
+                  slide.overlayColor || '#000000',
+                  typeof slide.overlayOpacity === 'number' ? slide.overlayOpacity / 100 : 0.4,
+                )
+
+                const btnOpacity = typeof slide.buttonOpacity === 'number' ? slide.buttonOpacity / 100 : 1
+                const btnBorderColor = slide.buttonBorderColor || slide.buttonBgColor || '#ffffff'
+
+                return (
+                  <div
+                    key={i}
+                    className={`carousel-item${i === 0 ? ' active' : ''}`}
+                    style={{ height: '100%' }}
+                  >
+                    {/* IMAGE background */}
+                    {!isVideo && bgImageUrl && (
+                      <div className="fso-bg-media" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', zIndex: 0 }}>
+                        <img
+                          src={bgImageUrl}
+                          alt=""
+                          aria-hidden="true"
+                          style={{
+                            width: '100%',
+                            height: '100%',
+                            objectFit: 'cover',
+                            objectPosition: slide.backgroundPosition || 'center',
+                            display: 'block',
+                          }}
+                        />
+                      </div>
+                    )}
+
+                    {/* LOCAL VIDEO background */}
+                    {isVideo && !isYouTube && bgVideoUrl && (
+                      <div className="fso-bg-media" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', zIndex: 0 }}>
+                        <video
+                          autoPlay={slide.backgroundVideoAutoplay !== false}
+                          muted={slide.backgroundVideoMuted !== false}
+                          loop={slide.backgroundVideoLoop !== false}
+                          playsInline
+                          poster={posterUrl}
+                          style={{
+                            width: '100%',
+                            height: '100%',
+                            objectFit: 'cover',
+                          }}
+                        >
+                          <source src={bgVideoUrl} />
+                        </video>
+                      </div>
+                    )}
+
+                    {/* YOUTUBE VIDEO background */}
+                    {isVideo && isYouTube && youtubeId && (
+                      <>
+                        {/* Poster shown until iframe loads */}
+                        {posterUrl && (
+                          <img
+                            src={posterUrl}
+                            alt=""
+                            aria-hidden="true"
+                            style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', zIndex: 0 }}
+                          />
+                        )}
+                        <iframe
+                          src={`https://www.youtube-nocookie.com/embed/${youtubeId}?autoplay=${slide.backgroundVideoAutoplay !== false ? 1 : 0}&mute=${slide.backgroundVideoMuted !== false ? 1 : 0}&loop=${slide.backgroundVideoLoop !== false ? 1 : 0}&playlist=${youtubeId}&controls=0&showinfo=0&rel=0&modestbranding=1&playsinline=1`}
+                          title={`Slide ${i + 1} background video`}
+                          allow="autoplay; encrypted-media"
+                          aria-hidden="true"
+                          style={{
+                            position: 'absolute',
+                            /* YouTube embeds can't be scaled to cover with object-fit,
+                               so we scale the iframe itself to always fill and crop */
+                            top: '50%',
+                            left: '50%',
+                            width: '177.78vh',   /* 16:9 at full viewport height */
+                            minWidth: '100%',
+                            height: '56.25vw',   /* 16:9 at full viewport width */
+                            minHeight: '100%',
+                            transform: 'translate(-50%, -50%)',
+                            border: 'none',
+                            pointerEvents: 'none',
+                            zIndex: 1,
+                          }}
+                        />
+                      </>
+                    )}
+
+                    {/* Overlay */}
+                    <div
+                      aria-hidden="true"
+                      style={{ position: 'absolute', inset: 0, backgroundColor: overlayRgba, zIndex: 2 }}
+                    />
+
+                    {/* Text content */}
+                    <div className="hero-fso-content" style={textContentStyle}>
+                      <div style={{ maxWidth: `${textMaxWidth}px` }}>
+                        {slide.tagline && (
+                          <span
+                            className="hero-fso-tagline"
+                            style={{
+                              display: 'block',
+                              color: slide.taglineColor || '#cccccc',
+                              fontSize: '13px',
+                              letterSpacing: '2px',
+                              textTransform: 'uppercase',
+                              fontWeight: 500,
+                              marginBottom: '10px',
+                            }}
+                          >
+                            {slide.tagline}
+                          </span>
+                        )}
+
+                        {slide.headline && (
+                          <h1
+                            className="hero-fso-headline"
+                            style={{
+                              color: slide.headlineColor || '#ffffff',
+                              fontSize: `clamp(28px, 5vw, ${slide.headlineFontSize || 56}px)`,
+                              fontWeight: slide.headlineFontWeight || '700',
+                              lineHeight: 1.1,
+                              margin: '0 0 14px',
+                            }}
+                          >
+                            {slide.headline}
+                          </h1>
+                        )}
+
+                        {slide.subheadline && (
+                          <p
+                            className="hero-fso-subheadline"
+                            style={{
+                              color: slide.subheadlineColor || '#eeeeee',
+                              fontSize: `clamp(16px, 2.5vw, ${slide.subheadlineFontSize || 22}px)`,
+                              lineHeight: 1.5,
+                              margin: '0 0 28px',
+                            }}
+                          >
+                            {slide.subheadline}
+                          </p>
+                        )}
+
+                        {slide.showButton && slide.buttonText && (
+                          <a
+                            href={slide.buttonLink || '#'}
+                            target={slide.buttonOpenInNewTab ? '_blank' : undefined}
+                            rel={slide.buttonOpenInNewTab ? 'noopener noreferrer' : undefined}
+                            className="hero-fso-btn"
+                            style={{
+                              display: 'inline-block',
+                              padding: '12px 32px',
+                              backgroundColor: slide.buttonBgColor || '#ffffff',
+                              color: slide.buttonTextColor || '#000000',
+                              opacity: btnOpacity,
+                              borderRadius: `${slide.buttonBorderRadius ?? 4}px`,
+                              border: `2px solid ${btnBorderColor}`,
+                              textDecoration: 'none',
+                              fontWeight: 600,
+                              fontSize: '15px',
+                              letterSpacing: '0.5px',
+                              transition: 'opacity 0.2s, transform 0.2s',
+                            }}
+                          >
+                            {slide.buttonText}
+                          </a>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+
+            {/* Prev / next arrows */}
+            {showArrows && slides.length > 1 && (
+              <>
+                <button className="carousel-control-prev" type="button" data-bs-target="#fsoCarousel" data-bs-slide="prev">
+                  <span className="carousel-control-prev-icon" aria-hidden="true" />
+                  <span className="visually-hidden">Previous</span>
+                </button>
+                <button className="carousel-control-next" type="button" data-bs-target="#fsoCarousel" data-bs-slide="next">
+                  <span className="carousel-control-next-icon" aria-hidden="true" />
+                  <span className="visually-hidden">Next</span>
+                </button>
+              </>
+            )}
+          </div>
+        )}
       </div>
     )
   }
@@ -541,6 +849,19 @@ export function HeroSectionRenderer({ hero }: { hero: any }) {
 }
 
 // Helper functions
+function hexToRgba(hex: string, alpha: number): string {
+  if (!hex) return `rgba(0,0,0,${alpha})`
+  const clean = hex.replace('#', '')
+  const full = clean.length === 3
+    ? clean.split('').map((c) => c + c).join('')
+    : clean
+  const r = parseInt(full.substring(0, 2), 16)
+  const g = parseInt(full.substring(2, 4), 16)
+  const b = parseInt(full.substring(4, 6), 16)
+  if (isNaN(r) || isNaN(g) || isNaN(b)) return `rgba(0,0,0,${alpha})`
+  return `rgba(${r},${g},${b},${alpha})`
+}
+
 function convertToGoogleMapsEmbed(url: string): string {
   if (!url) return ''
   

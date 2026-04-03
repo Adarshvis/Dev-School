@@ -102,7 +102,7 @@ export const Settings: GlobalConfig = {
                 step: 1,
               },
               min: 20,
-              max: 400,
+              max: 800,
             },
             {
               name: 'logoHeight',
@@ -111,11 +111,11 @@ export const Settings: GlobalConfig = {
               defaultValue: 52,
               admin: {
                 condition: (data) => data.useLogo === true,
-                description: 'Set logo height in pixels.',
+                description: 'Set logo height in pixels. Increase for a larger logo (e.g., ADNOC-style prominent logo).',
                 step: 1,
               },
               min: 20,
-              max: 300,
+              max: 2000,
             },
             {
               name: 'siteName',

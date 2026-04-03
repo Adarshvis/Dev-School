@@ -159,7 +159,10 @@ h6 {
   --heading-color: #04415f;
   color: var(--default-color);
   background-color: var(--background-color);
-  padding: 15px 0;
+  padding: 0 0;
+  height: 80px;
+  min-height: 80px;
+  max-height: 80px;
   transition: box-shadow 0.3s;
   z-index: 9999;
 }
@@ -169,7 +172,10 @@ h6 {
 }
 
 .header .logo img {
-  max-height: 36px;
+  max-height: 54px !important;
+  height: auto !important;
+  width: auto;
+  object-fit: contain;
   margin-right: 2px;
 }
 
@@ -736,6 +742,16 @@ section,
 .cms-home-section > section,
 .cms-home-section > .section {
   background-color: var(--cms-section-bg, var(--background-color)) !important;
+}
+
+/* Content blocks nested after a main section renderer should have
+   minimal top padding to avoid double-padding stacking. */
+.cms-home-section > section + section,
+.cms-home-section > .section + section,
+.cms-home-section > section + .section,
+.cms-home-section > .section + .section {
+  padding-top: 0;
+  margin-top: -20px;
 }
 
 @media (max-width: 1199px) {

@@ -21,8 +21,8 @@ export default async function Header() {
   const siteNameColor = (settings as any)?.siteNameColor || undefined
   const configuredLogoWidth = Number((settings as any)?.logoWidth)
   const logoWidth = configuredLogoWidth > 0 ? configuredLogoWidth : null
-  const configuredLogoHeight = Number((settings as any)?.logoHeight) > 0 ? Number((settings as any)?.logoHeight) : 52
-  const logoHeight = Math.min(configuredLogoHeight, 52)
+  const configuredLogoHeight = Number((settings as any)?.logoHeight)
+  const logoHeight = configuredLogoHeight > 0 ? configuredLogoHeight : 52
   const siteNameFontSize = Number((settings as any)?.siteNameFontSize) > 0 ? Number((settings as any)?.siteNameFontSize) : 26
 
   // Build header classes based on settings
@@ -143,8 +143,6 @@ export default async function Header() {
                   alt={settings?.siteName || 'Learner'}
                   className="site-logo"
                   style={{
-                    height: `${logoHeight}px`,
-                    maxHeight: `${logoHeight}px`,
                     width: logoWidth ? `${logoWidth}px` : 'auto',
                     maxWidth: logoWidth ? `${logoWidth}px` : 'min(420px, 48vw)',
                     objectFit: 'contain',

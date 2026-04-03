@@ -111,6 +111,7 @@ export const HomePage: CollectionConfig = {
             { label: 'Text + Slider (50/50) - Default', value: 'text-slider' },
             { label: 'Single Image (Full Width)', value: 'single-image' },
             { label: 'Slider (Full Width - Mixed Media)', value: 'slider-fullwidth' },
+            { label: 'Full-Screen Overlay (ADNOC Style)', value: 'fullscreen-overlay' },
           ],
           admin: {
             description: 'Select the hero layout style',
@@ -1643,6 +1644,427 @@ export const HomePage: CollectionConfig = {
                     },
                   ],
                 },
+              ],
+            },
+          ],
+        },
+
+        // FULLSCREEN OVERLAY LAYOUT (ADNOC Style) — multi-slide carousel
+        {
+          name: 'fullscreenOverlay',
+          type: 'group',
+          label: 'Full-Screen Overlay Configuration',
+          admin: {
+            condition: (data, siblingData) => siblingData?.layoutType === 'fullscreen-overlay',
+            description: 'Full-screen hero slider. Add slides, drag to reorder. Each slide has its own background, overlay and text.',
+          },
+          fields: [
+            // === GLOBAL SLIDER SETTINGS ===
+            {
+              name: 'height',
+              type: 'select',
+              label: 'Hero Height',
+              defaultValue: '90vh',
+              options: [
+                { label: 'Compact (60vh)', value: '60vh' },
+                { label: 'Standard (75vh)', value: '75vh' },
+                { label: 'Large (85vh)', value: '85vh' },
+                { label: 'Extra Large (90vh)', value: '90vh' },
+                { label: 'Full Screen (100vh)', value: '100vh' },
+              ],
+            },
+            {
+              name: 'interval',
+              type: 'number',
+              label: 'Slide Interval (seconds)',
+              defaultValue: 5,
+              min: 1,
+              max: 30,
+              admin: {
+                description: 'Time between automatic slide transitions. Set to 0 to disable auto-advance.',
+                step: 1,
+              },
+            },
+            {
+              name: 'showIndicators',
+              type: 'checkbox',
+              label: 'Show Dots (Indicators)',
+              defaultValue: true,
+            },
+            {
+              name: 'showArrows',
+              type: 'checkbox',
+              label: 'Show Prev / Next Arrows',
+              defaultValue: false,
+            },
+            {
+              name: 'pauseOnHover',
+              type: 'checkbox',
+              label: 'Pause on Hover',
+              defaultValue: true,
+            },
+
+            // === GLOBAL TEXT LAYOUT (applies to all slides) ===
+            {
+              name: 'textHorizontalAlign',
+              type: 'select',
+              label: 'Text Horizontal Alignment (all slides)',
+              defaultValue: 'left',
+              options: [
+                { label: 'Left', value: 'left' },
+                { label: 'Center', value: 'center' },
+                { label: 'Right', value: 'right' },
+              ],
+            },
+            {
+              name: 'textVerticalPosition',
+              type: 'select',
+              label: 'Text Vertical Position (all slides)',
+              defaultValue: 'bottom',
+              options: [
+                { label: 'Top', value: 'top' },
+                { label: 'Middle', value: 'middle' },
+                { label: 'Bottom', value: 'bottom' },
+              ],
+            },
+            {
+              name: 'textMaxWidth',
+              type: 'number',
+              label: 'Text Block Max Width (px)',
+              defaultValue: 700,
+              min: 200,
+              max: 1400,
+              admin: {
+                description: 'Maximum width of the text container inside each slide.',
+              },
+            },
+            {
+              name: 'textPaddingX',
+              type: 'number',
+              label: 'Horizontal Padding (px)',
+              defaultValue: 60,
+              min: 0,
+              max: 200,
+              admin: {
+                description: 'Left/right padding from the edge of the hero.',
+              },
+            },
+            {
+              name: 'textPaddingY',
+              type: 'number',
+              label: 'Vertical Padding (px)',
+              defaultValue: 60,
+              min: 0,
+              max: 200,
+              admin: {
+                description: 'Top/bottom padding (distance from the hero edge to the text block).',
+              },
+            },
+
+            // === SLIDES (draggable / reorderable) ===
+            {
+              name: 'slides',
+              type: 'array',
+              label: 'Slides',
+              minRows: 1,
+              admin: {
+                description: 'Add slides and drag to reorder. Each slide has its own background, overlay and text content.',
+                initCollapsed: true,
+              },
+              fields: [
+                // --- Background Media ---
+                {
+                  name: 'backgroundMediaType',
+                  type: 'select',
+                  label: 'Background Media Type',
+                  required: true,
+                  defaultValue: 'image',
+                  options: [
+                    { label: '🖼️ Image', value: 'image' },
+                    { label: '🎬 Video', value: 'video' },
+                  ],
+                  admin: {
+                    description: 'Choose whether this slide uses an image or video background.',
+                  },
+                },
+
+                // -- IMAGE fields (shown when backgroundMediaType === 'image') --
+                {
+                  name: 'backgroundImage',
+                  type: 'upload',
+                  relationTo: 'media',
+                  label: 'Background Image',
+                  admin: {
+                    condition: (data, siblingData) => siblingData?.backgroundMediaType !== 'video',
+                    description: 'Full-screen background image for this slide.',
+                  },
+                },
+                {
+                  name: 'backgroundPosition',
+                  type: 'select',
+                  label: 'Image Position',
+                  defaultValue: 'center',
+                  admin: {
+                    condition: (data, siblingData) => siblingData?.backgroundMediaType !== 'video',
+                  },
+                  options: [
+                    { label: 'Center', value: 'center' },
+                    { label: 'Top', value: 'top' },
+                    { label: 'Bottom', value: 'bottom' },
+                    { label: 'Left', value: 'left' },
+                    { label: 'Right', value: 'right' },
+                  ],
+                },
+
+                // -- VIDEO fields (shown when backgroundMediaType === 'video') --
+                {
+                  name: 'videoSourceType',
+                  type: 'select',
+                  label: 'Video Source',
+                  defaultValue: 'upload',
+                  admin: {
+                    condition: (data, siblingData) => siblingData?.backgroundMediaType === 'video',
+                    description: 'Upload a local video file, or paste a YouTube link.',
+                  },
+                  options: [
+                    { label: '📁 Upload from device', value: 'upload' },
+                    { label: '▶️ YouTube link', value: 'youtube' },
+                  ],
+                },
+
+                // Local upload
+                {
+                  name: 'backgroundVideo',
+                  type: 'upload',
+                  relationTo: 'media',
+                  label: 'Video File',
+                  admin: {
+                    condition: (data, siblingData) =>
+                      siblingData?.backgroundMediaType === 'video' &&
+                      siblingData?.videoSourceType !== 'youtube',
+                    description: 'Upload an MP4 / WebM video file.',
+                  },
+                },
+
+                // YouTube link
+                {
+                  name: 'youtubeUrl',
+                  type: 'text',
+                  label: 'YouTube Video URL',
+                  admin: {
+                    condition: (data, siblingData) =>
+                      siblingData?.backgroundMediaType === 'video' &&
+                      siblingData?.videoSourceType === 'youtube',
+                    description: 'Paste a YouTube watch URL or share link, e.g. https://www.youtube.com/watch?v=XXXX',
+                  },
+                },
+
+                // Poster image (shown for both video sources)
+                {
+                  name: 'videoPoster',
+                  type: 'upload',
+                  relationTo: 'media',
+                  label: 'Poster / Thumbnail Image (optional)',
+                  admin: {
+                    condition: (data, siblingData) => siblingData?.backgroundMediaType === 'video',
+                    description: 'Shown before the video loads. Recommended for fast first paint.',
+                  },
+                },
+
+                // Autoplay / mute / loop (all video sources)
+                {
+                  name: 'backgroundVideoAutoplay',
+                  type: 'checkbox',
+                  label: 'Autoplay Video',
+                  defaultValue: true,
+                  admin: {
+                    condition: (data, siblingData) => siblingData?.backgroundMediaType === 'video',
+                  },
+                },
+                {
+                  name: 'backgroundVideoMuted',
+                  type: 'checkbox',
+                  label: 'Mute Video',
+                  defaultValue: true,
+                  admin: {
+                    condition: (data, siblingData) => siblingData?.backgroundMediaType === 'video',
+                  },
+                },
+                {
+                  name: 'backgroundVideoLoop',
+                  type: 'checkbox',
+                  label: 'Loop Video',
+                  defaultValue: true,
+                  admin: {
+                    condition: (data, siblingData) => siblingData?.backgroundMediaType === 'video',
+                  },
+                },
+
+                // --- Overlay ---
+                colorPickerField({
+                  name: 'overlayColor',
+                  defaultValue: '#000000',
+                  admin: {
+                    description: 'Color of the tint layer over the background.',
+                  },
+                }),
+                {
+                  name: 'overlayOpacity',
+                  type: 'number',
+                  label: 'Overlay Opacity (%)',
+                  defaultValue: 40,
+                  min: 0,
+                  max: 100,
+                  admin: {
+                    description: '0 = no overlay, 100 = fully opaque',
+                    step: 5,
+                  },
+                },
+
+                // --- Text content ---
+                {
+                  name: 'tagline',
+                  type: 'text',
+                  label: 'Tagline (small label above headline)',
+                  admin: {
+                    description: 'Shown in uppercase above the main title. e.g. "Research & Innovation"',
+                  },
+                },
+                colorPickerField({
+                  name: 'taglineColor',
+                  defaultValue: '#cccccc',
+                }),
+                {
+                  name: 'headline',
+                  type: 'text',
+                  label: 'Main Headline',
+                },
+                colorPickerField({
+                  name: 'headlineColor',
+                  defaultValue: '#ffffff',
+                }),
+                {
+                  name: 'headlineFontSize',
+                  type: 'number',
+                  label: 'Headline Font Size (px)',
+                  defaultValue: 56,
+                  min: 20,
+                  max: 120,
+                  admin: {
+                    description: 'Desktop font size. Scales down automatically on mobile.',
+                  },
+                },
+                {
+                  name: 'headlineFontWeight',
+                  type: 'select',
+                  label: 'Headline Font Weight',
+                  defaultValue: '700',
+                  options: [
+                    { label: 'Normal (400)', value: '400' },
+                    { label: 'Semi-Bold (600)', value: '600' },
+                    { label: 'Bold (700)', value: '700' },
+                    { label: 'Extra Bold (800)', value: '800' },
+                    { label: 'Black (900)', value: '900' },
+                  ],
+                },
+                {
+                  name: 'subheadline',
+                  type: 'text',
+                  label: 'Sub-Headline (optional)',
+                },
+                colorPickerField({
+                  name: 'subheadlineColor',
+                  defaultValue: '#eeeeee',
+                }),
+                {
+                  name: 'subheadlineFontSize',
+                  type: 'number',
+                  label: 'Sub-Headline Font Size (px)',
+                  defaultValue: 22,
+                  min: 12,
+                  max: 60,
+                },
+
+                // --- CTA Button ---
+                {
+                  name: 'showButton',
+                  type: 'checkbox',
+                  label: 'Show CTA Button',
+                  defaultValue: false,
+                },
+                {
+                  name: 'buttonText',
+                  type: 'text',
+                  label: 'Button Label',
+                  admin: {
+                    condition: (data, siblingData) => siblingData?.showButton === true,
+                  },
+                },
+                {
+                  name: 'buttonLink',
+                  type: 'text',
+                  label: 'Button URL / Path',
+                  admin: {
+                    condition: (data, siblingData) => siblingData?.showButton === true,
+                  },
+                },
+                {
+                  name: 'buttonOpenInNewTab',
+                  type: 'checkbox',
+                  label: 'Open Link in New Tab',
+                  defaultValue: false,
+                  admin: {
+                    condition: (data, siblingData) => siblingData?.showButton === true,
+                  },
+                },
+                colorPickerField({
+                  name: 'buttonBgColor',
+                  defaultValue: '#ffffff',
+                  admin: {
+                    condition: (data, siblingData) => siblingData?.showButton === true,
+                    description: 'Button background color',
+                  },
+                }),
+                colorPickerField({
+                  name: 'buttonTextColor',
+                  defaultValue: '#000000',
+                  admin: {
+                    condition: (data, siblingData) => siblingData?.showButton === true,
+                    description: 'Button text color',
+                  },
+                }),
+                {
+                  name: 'buttonOpacity',
+                  type: 'number',
+                  label: 'Button Opacity (%)',
+                  defaultValue: 100,
+                  min: 10,
+                  max: 100,
+                  admin: {
+                    step: 5,
+                    description: '100 = fully opaque, 50 = semi-transparent',
+                    condition: (data, siblingData) => siblingData?.showButton === true,
+                  },
+                },
+                {
+                  name: 'buttonBorderRadius',
+                  type: 'number',
+                  label: 'Button Border Radius (px)',
+                  defaultValue: 4,
+                  min: 0,
+                  max: 50,
+                  admin: {
+                    condition: (data, siblingData) => siblingData?.showButton === true,
+                  },
+                },
+                colorPickerField({
+                  name: 'buttonBorderColor',
+                  defaultValue: '#ffffff',
+                  admin: {
+                    condition: (data, siblingData) => siblingData?.showButton === true,
+                    description: 'Button border color',
+                  },
+                }),
               ],
             },
           ],

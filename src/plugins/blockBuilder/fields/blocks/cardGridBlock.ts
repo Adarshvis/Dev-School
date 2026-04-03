@@ -1,4 +1,5 @@
 import type { Block } from 'payload'
+import { colorPickerField } from '@innovixx/payload-color-picker-field'
 
 export const cardGridBlock: Block = {
   slug: 'cardGrid',
@@ -13,9 +14,22 @@ export const cardGridBlock: Block = {
       required: false,
     },
     {
+      name: 'descriptionRich',
+      type: 'richText',
+      label: 'Description (Rich Text)',
+      required: false,
+      admin: {
+        description: 'Supports bold, italic, headings, and inline styles.',
+      },
+    },
+    {
       name: 'description',
       type: 'textarea',
+      label: 'Description (Plain Text — legacy)',
       required: false,
+      admin: {
+        hidden: true,
+      },
     },
     {
       name: 'columns',
@@ -25,6 +39,17 @@ export const cardGridBlock: Block = {
         { label: '2 Columns', value: '2' },
         { label: '3 Columns', value: '3' },
         { label: '4 Columns', value: '4' },
+      ],
+    },
+    {
+      name: 'cardAlignment',
+      type: 'select',
+      label: 'Card Content Alignment',
+      defaultValue: 'left',
+      options: [
+        { label: 'Left', value: 'left' },
+        { label: 'Center', value: 'center' },
+        { label: 'Right', value: 'right' },
       ],
     },
     {
@@ -39,10 +64,37 @@ export const cardGridBlock: Block = {
           required: true,
         },
         {
+          name: 'descriptionRich',
+          type: 'richText',
+          label: 'Description (Rich Text)',
+          required: false,
+          admin: {
+            description: 'Supports bold, italic, headings, lists, and inline styles. Overrides the plain text description below if set.',
+          },
+        },
+        {
           name: 'description',
           type: 'textarea',
+          label: 'Description (Plain Text — legacy)',
           required: false,
+          admin: {
+            hidden: true,
+          },
         },
+        colorPickerField({
+          name: 'backgroundColor',
+          label: 'Background Color',
+          admin: {
+            description: 'Card background color',
+          },
+        }),
+        colorPickerField({
+          name: 'textColor',
+          label: 'Text Color',
+          admin: {
+            description: 'Card text color',
+          },
+        }),
         {
           name: 'image',
           type: 'upload',
@@ -50,9 +102,122 @@ export const cardGridBlock: Block = {
           required: false,
         },
         {
+          name: 'iconType',
+          type: 'select',
+          label: 'Icon Library',
+          defaultValue: 'lucide',
+          options: [
+            { label: 'Lucide (recommended)', value: 'lucide' },
+            { label: 'Bootstrap Icons', value: 'bootstrap' },
+            { label: 'Upload SVG / PNG', value: 'upload' },
+          ],
+        },
+        {
+          name: 'customIcon',
+          type: 'upload',
+          relationTo: 'media',
+          label: 'Custom Icon (SVG / PNG)',
+          required: false,
+          admin: {
+            condition: (_, s) => s?.iconType === 'upload',
+            description: 'Upload an SVG or PNG icon file',
+          },
+        },
+        {
+          name: 'lucideIcon',
+          type: 'select',
+          label: 'Lucide Icon',
+          defaultValue: '',
+          admin: {
+            condition: (_, s) => !s?.iconType || s?.iconType === 'lucide',
+            description: 'Choose a Lucide icon',
+          },
+          options: [
+            { label: 'None', value: '' },
+            // General
+            { label: 'Star', value: 'Star' },
+            { label: 'Heart', value: 'Heart' },
+            { label: 'Check Circle', value: 'CheckCircle' },
+            { label: 'Award', value: 'Award' },
+            { label: 'Zap (Lightning)', value: 'Zap' },
+            { label: 'Settings (Gear)', value: 'Settings' },
+            { label: 'Globe', value: 'Globe' },
+            { label: 'Users (People)', value: 'Users' },
+            { label: 'User', value: 'User' },
+            { label: 'Shield', value: 'Shield' },
+            { label: 'Trophy', value: 'Trophy' },
+            { label: 'Target', value: 'Target' },
+            { label: 'Flame', value: 'Flame' },
+            { label: 'Lightbulb', value: 'Lightbulb' },
+            { label: 'Rocket', value: 'Rocket' },
+            { label: 'Sparkles', value: 'Sparkles' },
+            { label: 'Smile', value: 'Smile' },
+            { label: 'Handshake', value: 'Handshake' },
+            { label: 'Leaf', value: 'Leaf' },
+            { label: 'Sun', value: 'Sun' },
+            { label: 'Moon', value: 'Moon' },
+            // Education
+            { label: 'Book Open', value: 'BookOpen' },
+            { label: 'Book', value: 'Book' },
+            { label: 'GraduationCap', value: 'GraduationCap' },
+            { label: 'Pencil', value: 'Pencil' },
+            { label: 'Library', value: 'Library' },
+            { label: 'Brain', value: 'Brain' },
+            { label: 'School', value: 'School' },
+            { label: 'Presentation', value: 'Presentation' },
+            { label: 'Microscope', value: 'Microscope' },
+            { label: 'Calculator', value: 'Calculator' },
+            // Communication
+            { label: 'Mail', value: 'Mail' },
+            { label: 'Phone', value: 'Phone' },
+            { label: 'MessageCircle', value: 'MessageCircle' },
+            { label: 'Bell', value: 'Bell' },
+            { label: 'Megaphone', value: 'Megaphone' },
+            // Media / Content
+            { label: 'Image', value: 'Image' },
+            { label: 'Video', value: 'Video' },
+            { label: 'Music', value: 'Music' },
+            { label: 'Camera', value: 'Camera' },
+            // Navigation / Arrows
+            { label: 'ArrowRight', value: 'ArrowRight' },
+            { label: 'ArrowUp', value: 'ArrowUp' },
+            { label: 'ChevronRight', value: 'ChevronRight' },
+            { label: 'ExternalLink', value: 'ExternalLink' },
+            { label: 'Link', value: 'Link' },
+            // Business / Finance
+            { label: 'Briefcase', value: 'Briefcase' },
+            { label: 'BarChart', value: 'BarChart2' },
+            { label: 'TrendingUp', value: 'TrendingUp' },
+            { label: 'DollarSign', value: 'DollarSign' },
+            { label: 'PieChart', value: 'PieChart' },
+            // Tech
+            { label: 'Code', value: 'Code' },
+            { label: 'Monitor', value: 'Monitor' },
+            { label: 'Cpu', value: 'Cpu' },
+            { label: 'Database', value: 'Database' },
+            { label: 'Wifi', value: 'Wifi' },
+            { label: 'Lock', value: 'Lock' },
+            // Misc
+            { label: 'Calendar', value: 'Calendar' },
+            { label: 'Clock', value: 'Clock' },
+            { label: 'Map', value: 'Map' },
+            { label: 'MapPin', value: 'MapPin' },
+            { label: 'Home', value: 'Home' },
+            { label: 'Building', value: 'Building2' },
+            { label: 'Layers', value: 'Layers' },
+            { label: 'Grid', value: 'Grid3x3' },
+            { label: 'List', value: 'List' },
+          ],
+        },
+        {
           name: 'icon',
           type: 'select',
+          label: 'Bootstrap Icon',
           defaultValue: '',
+          admin: {
+            condition: (_, s) => s?.iconType === 'bootstrap',
+            description: 'Choose a Bootstrap icon',
+          },
           options: [
             { label: 'None', value: '' },
             { label: 'Star', value: 'bi-star' },

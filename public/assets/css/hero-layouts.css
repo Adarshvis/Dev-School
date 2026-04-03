@@ -1,5 +1,164 @@
 /* Flexible Hero Layout Styles */
 
+/* =========================================
+   FULLSCREEN OVERLAY HERO (ADNOC Style)
+   ========================================= */
+.hero-fullscreen-overlay {
+  position: relative;
+  overflow: hidden;
+}
+
+/* Carousel must fill the container */
+.hero-fullscreen-overlay .carousel,
+.hero-fullscreen-overlay .carousel-inner,
+.hero-fullscreen-overlay .carousel-item {
+  height: 100%;
+}
+
+/* --- Smooth crossfade transition between slides --- */
+.hero-fullscreen-overlay .carousel-item {
+  transition: opacity 1s ease-in-out !important;
+}
+
+/* --- Ken Burns: slow zoom on the active slide's background --- */
+@keyframes fsoKenBurns {
+  0% {
+    transform: scale(1);
+  }
+  100% {
+    transform: scale(1.08);
+  }
+}
+
+/* The zoom target class wraps each slide's bg image/video */
+.hero-fullscreen-overlay .carousel-item .fso-bg-media {
+  transform-origin: center center;
+  will-change: transform;
+}
+
+/* Only animate the ACTIVE slide */
+.hero-fullscreen-overlay .carousel-item.active .fso-bg-media {
+  animation: fsoKenBurns var(--fso-interval, 5s) ease-out forwards;
+}
+
+/* Reset when not active (so it starts fresh next time) */
+.hero-fullscreen-overlay .carousel-item:not(.active) .fso-bg-media {
+  animation: none;
+  transform: scale(1);
+}
+
+/* Animated button hover effect */
+.hero-fso-btn:hover {
+  opacity: 0.88 !important;
+  transform: translateY(-2px);
+  text-decoration: none;
+}
+
+/* =====================================================
+   Header: transparent overlay ONLY when fullscreen-
+   overlay hero is active. Uses CSS :has() so it works
+   on first paint — no JavaScript needed.
+   ===================================================== */
+
+/* Hide the top info-bar so nothing sits above the hero */
+body:has(.hero-fullscreen-overlay) .top-info-bar {
+  display: none !important;
+}
+
+/* Make the header fixed + transparent, sitting ON TOP of the hero */
+body:has(.hero-fullscreen-overlay) #header {
+  position: fixed !important;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 9999;
+  background: transparent !important;
+  background-color: transparent !important;
+  box-shadow: none !important;
+  --background-color: transparent;
+  border: none !important;
+  transition: background-color 0.35s ease, box-shadow 0.35s ease;
+}
+
+/* Pull the hero section up so it starts at the very top of the viewport,
+   underneath the now-fixed header. */
+body:has(.hero-fullscreen-overlay) .main > .cms-home-section:first-child {
+  margin-top: 0 !important;
+  padding-top: 0 !important;
+}
+
+body:has(.hero-fullscreen-overlay) .hero-fullscreen-overlay {
+  margin-top: 0 !important;
+}
+
+/* All nav text, site name, icons → white for dark hero backgrounds */
+body:has(.hero-fullscreen-overlay) #header,
+body:has(.hero-fullscreen-overlay) #header .navmenu > ul > li > a,
+body:has(.hero-fullscreen-overlay) #header .navmenu > ul > li > a i,
+body:has(.hero-fullscreen-overlay) #header .navmenu .dropdown > a::after,
+body:has(.hero-fullscreen-overlay) #header .sitename,
+body:has(.hero-fullscreen-overlay) #header .logo h1 {
+  color: #ffffff !important;
+}
+
+/* Active nav item — slightly dimmed white */
+body:has(.hero-fullscreen-overlay) #header .navmenu > ul > li > a:hover,
+body:has(.hero-fullscreen-overlay) #header .navmenu > ul > li.active > a {
+  color: rgba(255, 255, 255, 0.85) !important;
+}
+
+/* Dropdown submenu items keep their normal dark color on white background */
+body:has(.hero-fullscreen-overlay) #header .navmenu .dropdown ul a {
+  color: var(--default-color, #444444) !important;
+}
+
+body:has(.hero-fullscreen-overlay) #header .navmenu .dropdown ul a:hover,
+body:has(.hero-fullscreen-overlay) #header .navmenu .dropdown ul .active > a {
+  color: var(--accent-color, #5fcf80) !important;
+}
+
+/* Dropdown caret for submenus → white */
+body:has(.hero-fullscreen-overlay) #header .navmenu .toggle-dropdown {
+  color: #ffffff !important;
+}
+
+/* Mobile hamburger icon → white */
+body:has(.hero-fullscreen-overlay) #header .mobile-nav-toggle {
+  color: #ffffff !important;
+}
+
+/* CTA button stays its accent color — no override */
+
+/* ---- Scrolled state: frosted dark glass ---- */
+body:has(.hero-fullscreen-overlay).scrolled #header {
+  background-color: rgba(0, 0, 0, 0.78) !important;
+  box-shadow: 0 2px 20px rgba(0, 0, 0, 0.35) !important;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+/* Keep top-level nav links white even after scroll (dark bg) */
+body:has(.hero-fullscreen-overlay).scrolled #header .navmenu > ul > li > a,
+body:has(.hero-fullscreen-overlay).scrolled #header .sitename,
+body:has(.hero-fullscreen-overlay).scrolled #header .logo h1 {
+  color: #ffffff !important;
+}
+
+/* ---- Mobile responsive text ---- */
+@media (max-width: 768px) {
+  .hero-fso-content {
+    padding: 0 24px 40px !important;
+    text-align: left !important;
+    align-items: flex-start !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .hero-fso-content {
+    padding: 0 16px 32px !important;
+  }
+}
+
 /* Hero Multi-Media Layout */
 .hero-multi-media {
   display: flex;
