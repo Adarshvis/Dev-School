@@ -47,7 +47,11 @@ const fontSizeMap: Record<string, string> = {
 
 function toMediaUrl(media: any): string {
   if (!media) return ''
-  if (typeof media === 'string') return media
+  if (typeof media === 'string') {
+    // If it looks like a URL or path, use it; otherwise it's an unpopulated ID
+    if (media.startsWith('/') || media.startsWith('http')) return media
+    return ''
+  }
   return media.url || ''
 }
 
@@ -85,7 +89,7 @@ function CarouselBlock({ block }: { block: any }) {
   if (!slides.length) return null
 
   return (
-    <div className="fr-media-card fr-carousel">
+    <div className="fr-media-card fr-carousel" style={{ position: 'relative', overflow: 'hidden' }}>
       {slides.map((slide: any, index: number) => {
         const active = index === activeIndex
         return (
@@ -164,8 +168,8 @@ function renderColumnItem(block: any, key: string) {
       const src = toMediaUrl(block.image)
       if (!src) return null
       return (
-        <div key={key} className="fr-media-card" style={{ backgroundColor: block.backgroundColor || '#f8fafc' }}>
-          <Image src={src} alt={block.caption || 'Flexible row image'} fill style={{ objectFit: block.objectFit || 'cover' }} />
+        <div key={key} className="fr-media-card" style={{ position: 'relative', overflow: 'hidden', aspectRatio: '16 / 9', backgroundColor: block.backgroundColor || '#f8fafc' }}>
+          <Image src={src} alt={block.caption || 'Flexible row image'} fill sizes="(max-width: 768px) 100vw, 50vw" style={{ objectFit: block.objectFit || 'cover' }} />
           {block.caption ? (
             <div className="fr-caption" style={{ color: block.captionColor || '#111827' }}>
               {block.caption}
@@ -221,7 +225,7 @@ function renderColumnItem(block: any, key: string) {
       }
 
       return (
-        <div key={key} className="fr-media-card" style={{ backgroundColor: block.backgroundColor || '#f8fafc' }}>
+        <div key={key} className="fr-media-card" style={{ position: 'relative', overflow: 'hidden', backgroundColor: block.backgroundColor || '#f8fafc' }}>
           {source}
         </div>
       )
@@ -237,7 +241,7 @@ function renderColumnItem(block: any, key: string) {
     case 'frMapEmbed': {
       const height = `${Math.max(120, Number(block.height || 360))}px`
       return (
-        <div key={key} className="fr-media-card" style={{ aspectRatio: '16 / 9', backgroundColor: block.backgroundColor || '#f8fafc' }}>
+        <div key={key} className="fr-media-card" style={{ position: 'relative', overflow: 'hidden', aspectRatio: '16 / 9', backgroundColor: block.backgroundColor || '#f8fafc' }}>
           {block.embedType === 'iframeUrl' && block.iframeUrl ? (
             <iframe
               src={block.iframeUrl}
@@ -257,7 +261,7 @@ function renderColumnItem(block: any, key: string) {
 
     case 'frAnimation': {
       return (
-        <div key={key} className="fr-media-card" style={{ backgroundColor: block.backgroundColor || '#f8fafc' }}>
+        <div key={key} className="fr-media-card" style={{ position: 'relative', overflow: 'hidden', backgroundColor: block.backgroundColor || '#f8fafc' }}>
           {block.animationType === 'lottie' && block.lottieUrl ? (
             <iframe
               className="fr-iframe"

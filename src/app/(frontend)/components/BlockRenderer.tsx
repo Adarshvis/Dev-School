@@ -2,7 +2,7 @@
 
 import React from 'react'
 import Link from 'next/link'
-import * as LucideIcons from 'lucide-react'
+import LucideIcon from './LucideIcon'
 import FlexibleRowBlock from './blocks/FlexibleRowBlock'
 import CountUpValue from './CountUpValue'
 import { lexicalToHtml } from '@/lib/lexicalToHtml'
@@ -221,12 +221,7 @@ const CardGridBlock: React.FC<any> = ({ title, description, descriptionRich, col
                             : null
                         })()
                       ) : card?.iconType !== 'bootstrap' && card?.lucideIcon ? (
-                        (() => {
-                          const LucideIcon = (LucideIcons as any)[card.lucideIcon] as React.FC<any> | undefined
-                          return LucideIcon
-                            ? <LucideIcon size={28} className="card-icon flex-shrink-0" style={txtColor ? { color: txtColor } : undefined} aria-hidden="true" />
-                            : null
-                        })()
+                        <LucideIcon name={card.lucideIcon} size={28} className="card-icon flex-shrink-0" style={txtColor ? { color: txtColor } : undefined} aria-hidden="true" />
                       ) : card?.icon ? (
                         <i className={`bi ${card.icon} card-icon flex-shrink-0`} style={txtColor ? { color: txtColor } : undefined} aria-hidden="true"></i>
                       ) : null}

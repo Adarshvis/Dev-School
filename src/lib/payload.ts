@@ -116,7 +116,7 @@ async function _getPageContent(pageName: string, section?: string) {
       where: whereClause,
       sort: 'order', // Sort by order field for proper section sequencing
       overrideAccess: true,
-      depth: 2, // Limit depth for better performance
+      depth: 4, // Deep enough for nested blocks (tab → row → image → media)
     })
     
     if (section && content.docs?.length > 0) {

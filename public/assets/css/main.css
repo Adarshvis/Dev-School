@@ -232,64 +232,71 @@ h6 {
 /* =====================================================
    CENTERED HEADER LAYOUT
    Menu on top (centered), logo big & centered below.
+   ONLY activates on pages with fullscreen hero overlay.
    On scroll → collapses to default single-row layout.
-   Uses CSS flex-wrap + order on the same DOM elements.
+   On non-hero pages → always shows default layout.
    ===================================================== */
 
-/* Expanded state: wrap items into two rows */
+/* --- Base: centered layout always starts as default single-row --- */
+.header.header-centered-layout .header-inner .logo img.centered-logo {
+  max-height: 54px !important;
+  height: auto !important;
+  width: auto !important;
+  max-width: min(420px, 48vw) !important;
+}
+
+/* --- Expanded state: ONLY on pages with hero overlay (desktop) --- */
 @media (min-width: 1200px) {
-  .header.header-centered-layout {
+  body:has(.hero-fullscreen-overlay) .header.header-centered-layout {
     height: auto;
     min-height: auto;
     max-height: none;
-    transition: all 0.35s ease;
   }
 
-  .header.header-centered-layout .header-inner {
+  body:has(.hero-fullscreen-overlay) .header.header-centered-layout .header-inner {
     flex-wrap: wrap;
     justify-content: center !important;
   }
 
-  /* Row 1: nav + CTA → order 1 (first row, full width, centered) */
-  .header.header-centered-layout .header-inner .navmenu {
+  /* Row 1: nav + CTA */
+  body:has(.hero-fullscreen-overlay) .header.header-centered-layout .header-inner .navmenu {
     order: 1;
     width: auto;
   }
 
-  .header.header-centered-layout .header-inner .btn-getstarted {
+  body:has(.hero-fullscreen-overlay) .header.header-centered-layout .header-inner .btn-getstarted {
     order: 2;
   }
 
-  /* Row 2: logo → order 3 (second row, full width, centered) */
-  .header.header-centered-layout .header-inner .logo {
+  /* Row 2: logo centered, bigger */
+  body:has(.hero-fullscreen-overlay) .header.header-centered-layout .header-inner .logo {
     order: 3;
     width: 100%;
     justify-content: center;
     margin: 0 !important;
     padding: 10px 0;
-    border-top: 1px solid rgba(0, 0, 0, 0.06);
+    border-top: 1px solid rgba(255, 255, 255, 0.15);
   }
 
-  /* Allow the centered logo image to use admin-configured height */
-  .header.header-centered-layout .header-inner .logo img.centered-logo {
+  body:has(.hero-fullscreen-overlay) .header.header-centered-layout .header-inner .logo img.centered-logo {
     max-height: none !important;
-    height: auto;
+    height: auto !important;
+    width: auto;
+    max-width: none;
   }
 
-  /* ---- Scrolled: collapse back to single row (default layout) ---- */
-  .header.header-centered-layout.header-scrolled {
+  /* ---- Scrolled: collapse back to single row ---- */
+  body:has(.hero-fullscreen-overlay) .header.header-centered-layout.header-scrolled {
     height: 80px;
     min-height: 80px;
     max-height: 80px;
-    box-shadow: 0px 0 18px rgba(0, 0, 0, 0.1);
   }
 
-  .header.header-centered-layout.header-scrolled .header-inner {
+  body:has(.hero-fullscreen-overlay) .header.header-centered-layout.header-scrolled .header-inner {
     flex-wrap: nowrap;
   }
 
-  /* Restore default order */
-  .header.header-centered-layout.header-scrolled .header-inner .logo {
+  body:has(.hero-fullscreen-overlay) .header.header-centered-layout.header-scrolled .header-inner .logo {
     order: 0;
     width: auto;
     margin-right: auto !important;
@@ -297,30 +304,69 @@ h6 {
     border-top: none;
   }
 
-  .header.header-centered-layout.header-scrolled .header-inner .logo img.centered-logo {
+  body:has(.hero-fullscreen-overlay) .header.header-centered-layout.header-scrolled .header-inner .logo img.centered-logo {
     max-height: 54px !important;
     height: auto !important;
     width: auto !important;
     max-width: min(420px, 48vw) !important;
   }
 
-  .header.header-centered-layout.header-scrolled .header-inner .navmenu {
+  body:has(.hero-fullscreen-overlay) .header.header-centered-layout.header-scrolled .header-inner .navmenu {
     order: 0;
   }
 
-  .header.header-centered-layout.header-scrolled .header-inner .btn-getstarted {
+  body:has(.hero-fullscreen-overlay) .header.header-centered-layout.header-scrolled .header-inner .btn-getstarted {
     order: 0;
   }
 }
 
-/* Mobile: centered layout falls back to default — constrain the logo */
-@media (max-width: 1199px) {
-  .header.header-centered-layout .header-inner .logo img.centered-logo {
-    max-height: 54px !important;
-    height: auto !important;
-    width: auto !important;
-    max-width: min(420px, 48vw) !important;
-  }
+/* =====================================================
+   NON-HERO PAGES: dark header
+   ===================================================== */
+body:not(:has(.hero-fullscreen-overlay)) .header {
+  --background-color: #1a1a1a;
+  --default-color: #ffffff;
+  --heading-color: #ffffff;
+  background-color: #1a1a1a;
+  color: #ffffff;
+}
+
+body:not(:has(.hero-fullscreen-overlay)) .header .sitename {
+  color: #ffffff !important;
+}
+
+body:not(:has(.hero-fullscreen-overlay)) .header .navmenu > ul > li > a {
+  color: #ffffff !important;
+}
+
+body:not(:has(.hero-fullscreen-overlay)) .header .navmenu > ul > li > a:hover,
+body:not(:has(.hero-fullscreen-overlay)) .header .navmenu .active > a {
+  color: var(--accent-color, #F0690F) !important;
+}
+
+/* Dropdown submenu items stay dark on white dropdown */
+body:not(:has(.hero-fullscreen-overlay)) .header .navmenu .dropdown ul a {
+  color: var(--nav-dropdown-color, #2d3436) !important;
+}
+
+body:not(:has(.hero-fullscreen-overlay)) .header .navmenu .dropdown ul a:hover {
+  color: var(--accent-color, #F0690F) !important;
+}
+
+/* Toggle dropdown chevron */
+body:not(:has(.hero-fullscreen-overlay)) .header .navmenu > ul > li > a i {
+  color: #ffffff !important;
+}
+
+body:not(:has(.hero-fullscreen-overlay)) .header .btn-getstarted {
+  color: var(--contrast-color);
+  background: var(--accent-color);
+}
+
+/* Scrolled state on non-hero pages stays dark */
+body:not(:has(.hero-fullscreen-overlay)).scrolled .header {
+  background-color: #1a1a1a;
+  box-shadow: 0 2px 20px rgba(0, 0, 0, 0.35);
 }
 
 /*--------------------------------------------------------------

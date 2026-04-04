@@ -165,11 +165,17 @@ export default async function RootLayout(props: { children: React.ReactNode }) {
 
           .tabs-content-block .tabs-nav {
             display: flex;
-            flex-wrap: wrap;
+            flex-wrap: nowrap;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
             gap: 10px;
             margin-bottom: 1.5rem;
             border-bottom: 1px solid color-mix(in srgb, var(--heading-color), transparent 82%);
             padding-bottom: 10px;
+          }
+          .tabs-content-block .tabs-nav::-webkit-scrollbar {
+            display: none;
           }
 
           .tabs-content-block .tabs-nav-btn {
@@ -180,6 +186,8 @@ export default async function RootLayout(props: { children: React.ReactNode }) {
             padding: 0.5rem 0.95rem;
             font-weight: 600;
             line-height: 1.2;
+            white-space: nowrap;
+            flex-shrink: 0;
             transition: all 0.25s ease;
           }
 
@@ -221,6 +229,22 @@ export default async function RootLayout(props: { children: React.ReactNode }) {
             border-radius: 14px;
             background: color-mix(in srgb, var(--background-color), #ffffff 22%);
             padding: clamp(16px, 2vw, 28px);
+          }
+
+          /* Remove heavy section padding when FlexibleRow is inside a tab panel */
+          .tabs-content-block .tabs-panel .fr-section {
+            padding: 12px 0;
+          }
+
+          /* Vertically center columns inside tab panels */
+          .tabs-content-block .tabs-panel .fr-grid {
+            align-items: center;
+          }
+
+          /* Let rich text inside tabs vertically center */
+          .tabs-content-block .tabs-panel .fr-column-stack {
+            height: 100%;
+            align-content: center;
           }
 
           .tabs-content-block .tabs-panel-empty {
