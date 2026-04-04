@@ -777,6 +777,14 @@ export const Settings: GlobalConfig = {
           label: 'Footer',
           fields: [
             {
+              name: 'footerTitle',
+              type: 'text',
+              defaultValue: 'Learner',
+              admin: {
+                description: 'The title shown in the footer (separate from the header site name).',
+              },
+            },
+            {
               name: 'footerText',
               type: 'textarea',
               defaultValue: 'Cras fermentum odio eu feugiat lide par naso tierra. Justo eget nada terra videa magna derita valies darta donna mare fermentum iaculis eu non diam phasellus.',

@@ -10,7 +10,7 @@ export default async function Footer() {
         <div className="row gy-4">
           <div className="col-lg-5 col-md-12 footer-about">
             <Link href="/" className="logo d-flex align-items-center">
-              <span className="sitename">{(settings?.siteName && typeof settings.siteName === 'string') ? settings.siteName : 'Learner'}</span>
+              <span className="sitename">{(settings?.footerTitle && typeof settings.footerTitle === 'string') ? settings.footerTitle : (settings?.siteName && typeof settings.siteName === 'string') ? settings.siteName : 'Learner'}</span>
             </Link>
             <p>{(settings?.footerText && typeof settings.footerText === 'string') ? settings.footerText : 'Cras fermentum odio eu feugiat lide par naso tierra. Justo eget nada terra videa magna derita valies darta donna mare fermentum iaculis eu non diam phasellus.'}</p>
             {settings?.socialLinks && Array.isArray(settings.socialLinks) && settings.socialLinks.length > 0 && (
