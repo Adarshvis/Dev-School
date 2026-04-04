@@ -16,27 +16,30 @@ export default function HeaderScrollWatcher() {
 
     const onScroll = () => {
       const isScrolled = window.scrollY > threshold
+      if (isScrolled === wasScrolled.current) return
+      wasScrolled.current = isScrolled
 
-      if (isScrolled !== wasScrolled.current) {
-        wasScrolled.current = isScrolled
+      // 1. Kill ALL transitions on header + every descendant
+      header.style.transition = 'none'
+      const children = header.querySelectorAll('*') as NodeListOf<HTMLElement>
+      children.forEach((el) => { el.style.transition = 'none' })
 
-        // Pull the header out of rendering completely
-        header.style.display = 'none'
-        // Force the browser to acknowledge the removal
-        void header.offsetHeight
+      // 2. Apply layout class
+      header.classList.toggle('header-scrolled', isScrolled)
 
-        // Apply the class change while element is not rendered
-        header.classList.toggle('header-scrolled', isScrolled)
+      // 3. Force synchronous reflow so the layout settles
+      void header.offsetHeight
 
-        // Restore — browser will paint the final state in one go
-        header.style.display = ''
-      }
+      // 4. Re-enable transitions on next frame (after paint)
+      requestAnimationFrame(() => {
+        header.style.transition = ''
+        children.forEach((el) => { el.style.transition = '' })
+      })
     }
 
     // Initial state
-    const initialScrolled = window.scrollY > threshold
-    wasScrolled.current = initialScrolled
-    if (initialScrolled) {
+    wasScrolled.current = window.scrollY > threshold
+    if (wasScrolled.current) {
       header.classList.add('header-scrolled')
     }
 
