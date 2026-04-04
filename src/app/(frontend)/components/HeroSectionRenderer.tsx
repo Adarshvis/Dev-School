@@ -378,7 +378,7 @@ export function HeroSectionRenderer({ hero }: { hero: any }) {
                 )
 
                 const btnOpacity = typeof slide.buttonOpacity === 'number' ? slide.buttonOpacity / 100 : 1
-                const btnBorderColor = slide.buttonBorderColor || slide.buttonBgColor || '#ffffff'
+                const btnBorderColor = slide.buttonBorderColor || slide.buttonBgColor || 'transparent'
 
                 return (
                   <div
@@ -524,8 +524,8 @@ export function HeroSectionRenderer({ hero }: { hero: any }) {
                             style={{
                               display: 'inline-block',
                               padding: '12px 32px',
-                              backgroundColor: slide.buttonBgColor || '#ffffff',
-                              color: slide.buttonTextColor || '#000000',
+                              backgroundColor: slide.buttonBgColor || undefined,
+                              color: slide.buttonTextColor || undefined,
                               opacity: btnOpacity,
                               borderRadius: `${slide.buttonBorderRadius ?? 4}px`,
                               border: `2px solid ${btnBorderColor}`,

@@ -208,11 +208,10 @@ export function generateThemeCSS(settings: any) {
   }
   const surfaceColor = theme?.surfaceColor || '#ffffff'
   cssVars.push(`  --surface-color: ${surfaceColor};`)
-  if (theme?.darkModeColor) {
-    cssVars.push(`  --dark-color: ${theme.darkModeColor};`)
-    cssVars.push(`  --stats-block-bg: ${theme.darkModeColor};`)
-    cssVars.push(`  --dark-mode-color: ${theme.darkModeColor};`)
-  }
+  const darkColor = theme?.darkModeColor || theme?.secondaryColor || '#0F1A24'
+  cssVars.push(`  --dark-color: ${darkColor};`)
+  cssVars.push(`  --stats-block-bg: ${darkColor};`)
+  cssVars.push(`  --dark-mode-color: ${darkColor};`)
   if (theme?.primaryForegroundColor) {
     cssVars.push(`  --primary-foreground: ${theme.primaryForegroundColor};`)
     cssVars.push(`  --contrast-color: ${theme.primaryForegroundColor};`)

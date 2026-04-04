@@ -58,6 +58,9 @@ export default async function RootLayout(props: { children: React.ReactNode }) {
   
   // Generate theme CSS from settings
   const themeCSS = generateThemeCSS(settings)
+  if (process.env.NODE_ENV === 'development') {
+    console.log('[THEME DEBUG] darkModeColor:', (settings as any)?.theme?.darkModeColor, '| primaryColor:', (settings as any)?.theme?.primaryColor, '| themeCSS length:', themeCSS?.length)
+  }
   const fontUrl = getFontImports(settings)
 
   return (

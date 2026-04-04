@@ -63,6 +63,32 @@
   --contrast-color: #ffffff;
 }
 
+/* Global button overrides – honour the admin primary-color for all buttons */
+.btn-primary,
+.btn.btn-primary {
+  background-color: var(--button-primary-bg, var(--accent-color)) !important;
+  border-color: var(--button-primary-bg, var(--accent-color)) !important;
+  color: var(--button-primary-text, var(--contrast-color)) !important;
+}
+.btn-primary:hover,
+.btn.btn-primary:hover {
+  background-color: var(--button-primary-hover-bg, color-mix(in srgb, var(--button-primary-bg, var(--accent-color)), black 15%)) !important;
+  border-color: var(--button-primary-hover-bg, color-mix(in srgb, var(--button-primary-bg, var(--accent-color)), black 15%)) !important;
+}
+.btn-getstarted,
+.header .btn-getstarted,
+.header .btn-getstarted:focus {
+  background: var(--button-primary-bg, var(--accent-color)) !important;
+  border-color: color-mix(in srgb, var(--button-primary-bg, var(--accent-color)), transparent 70%) !important;
+  color: var(--button-primary-text, var(--contrast-color)) !important;
+}
+.btn-getstarted:hover,
+.header .btn-getstarted:hover {
+  background: color-mix(in srgb, var(--button-primary-bg, var(--accent-color)), transparent 90%) !important;
+  border-color: var(--button-primary-bg, var(--accent-color)) !important;
+  color: var(--button-primary-bg, var(--accent-color)) !important;
+}
+
 /* Smooth scroll */
 :root {
   scroll-behavior: smooth;
@@ -172,8 +198,8 @@ h6 {
 }
 
 .header .logo img {
-  max-height: 54px !important;
-  height: auto !important;
+  max-height: 54px;
+  height: auto;
   width: auto;
   object-fit: contain;
   margin-right: 2px;
@@ -221,12 +247,13 @@ h6 {
   }
 }
 
-.scrolled .header {
-  --background-color: #ffffff;
-  --default-color: #04415f;
-  --heading-color: #04415f;
-  background-color: #ffffff;
-  box-shadow: 0px 0 18px rgba(0, 0, 0, 0.1);
+/* On scroll: dark header for pages WITHOUT fullscreen hero */
+body:not(:has(.hero-fullscreen-overlay)).scrolled .header {
+  --background-color: var(--dark-color, #1a1a1a);
+  --default-color: #ffffff;
+  --heading-color: #ffffff;
+  background-color: var(--dark-color, #1a1a1a);
+  box-shadow: 0 2px 20px rgba(0, 0, 0, 0.35);
 }
 
 /* =====================================================
@@ -239,10 +266,10 @@ h6 {
 
 /* --- Base: centered layout always starts as default single-row --- */
 .header.header-centered-layout .header-inner .logo img.centered-logo {
-  max-height: 54px !important;
-  height: auto !important;
-  width: auto !important;
-  max-width: min(420px, 48vw) !important;
+  max-height: 54px;
+  height: auto;
+  width: auto;
+  max-width: min(420px, 48vw);
 }
 
 /* --- Expanded state: ONLY on pages with hero overlay (desktop) --- */
@@ -290,6 +317,8 @@ h6 {
     height: 80px;
     min-height: 80px;
     max-height: 80px;
+    background-color: var(--dark-color, #1a1a1a);
+    box-shadow: 0 2px 20px rgba(0, 0, 0, 0.35);
   }
 
   body:has(.hero-fullscreen-overlay) .header.header-centered-layout.header-scrolled .header-inner {
@@ -324,10 +353,10 @@ h6 {
    NON-HERO PAGES: dark header
    ===================================================== */
 body:not(:has(.hero-fullscreen-overlay)) .header {
-  --background-color: #1a1a1a;
+  --background-color: var(--dark-color, #1a1a1a);
   --default-color: #ffffff;
   --heading-color: #ffffff;
-  background-color: #1a1a1a;
+  background-color: var(--dark-color, #1a1a1a);
   color: #ffffff;
 }
 
@@ -365,7 +394,7 @@ body:not(:has(.hero-fullscreen-overlay)) .header .btn-getstarted {
 
 /* Scrolled state on non-hero pages stays dark */
 body:not(:has(.hero-fullscreen-overlay)).scrolled .header {
-  background-color: #1a1a1a;
+  background-color: var(--dark-color, #1a1a1a);
   box-shadow: 0 2px 20px rgba(0, 0, 0, 0.35);
 }
 

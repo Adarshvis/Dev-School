@@ -47,6 +47,12 @@
   transform: scale(1);
 }
 
+/* Hero CTA button — uses theme primary color when no per-slide color is set */
+.hero-fso-btn {
+  background-color: var(--button-primary-bg, var(--accent-color));
+  color: var(--button-primary-text, var(--contrast-color));
+}
+
 /* Animated button hover effect */
 .hero-fso-btn:hover {
   opacity: 0.88 !important;
@@ -78,6 +84,14 @@ body:has(.hero-fullscreen-overlay) #header {
   --background-color: transparent;
   border: none !important;
   transition: background-color 0.35s ease, box-shadow 0.35s ease;
+}
+
+/* When scrolled, override transparent with the dark color */
+body:has(.hero-fullscreen-overlay) #header.header-scrolled,
+body.scrolled:has(.hero-fullscreen-overlay) #header {
+  background: var(--dark-color, #1a1a1a) !important;
+  background-color: var(--dark-color, #1a1a1a) !important;
+  box-shadow: 0 2px 20px rgba(0, 0, 0, 0.35) !important;
 }
 
 /* Pull the hero section up so it starts at the very top of the viewport,
@@ -157,10 +171,8 @@ body:has(.hero-fullscreen-overlay) #header.header-centered-layout .header-inner 
 
 /* ---- Scrolled state: frosted dark glass ---- */
 body:has(.hero-fullscreen-overlay).scrolled #header {
-  background-color: rgba(0, 0, 0, 0.78) !important;
+  background-color: var(--dark-color, #1a1a1a) !important;
   box-shadow: 0 2px 20px rgba(0, 0, 0, 0.35) !important;
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
 }
 
 /* Keep top-level nav links white even after scroll (dark bg) */
