@@ -171,9 +171,20 @@ export function generateThemeCSS(settings: any) {
   const buttonStyle = settings?.buttonStyle || {}
   const layoutSettings = settings?.layoutSettings || {}
 
+  // Logo dimensions are always emitted so the header sizing works even
+  // when no theme colours / fonts have been configured yet.
+  const logoOnlyVars: string[] = []
+  const _logoW = Number(settings?.logoWidth)
+  const _logoH = Number(settings?.logoHeight)
+  if (_logoW > 0) logoOnlyVars.push(`  --logo-width: ${_logoW}px;`)
+  if (_logoH > 0) logoOnlyVars.push(`  --logo-height: ${_logoH}px;`)
+
   // Don't generate any CSS if theme settings haven't been configured
   // This preserves the original template styling as default
   if (!settings?.theme?.primaryColor && !settings?.typography?.headingFont && !gradientConfigured) {
+    if (logoOnlyVars.length > 0) {
+      return `:root {\n${logoOnlyVars.join('\n')}\n}`
+    }
     return ''
   }
   
@@ -212,6 +223,12 @@ export function generateThemeCSS(settings: any) {
   cssVars.push(`  --dark-color: ${darkColor};`)
   cssVars.push(`  --stats-block-bg: ${darkColor};`)
   cssVars.push(`  --dark-mode-color: ${darkColor};`)
+
+  // Logo dimensions (used for hero → scroll shrink)
+  const logoW = Number(settings?.logoWidth)
+  const logoH = Number(settings?.logoHeight)
+  if (logoW > 0) cssVars.push(`  --logo-width: ${logoW}px;`)
+  if (logoH > 0) cssVars.push(`  --logo-height: ${logoH}px;`)
   if (theme?.primaryForegroundColor) {
     cssVars.push(`  --primary-foreground: ${theme.primaryForegroundColor};`)
     cssVars.push(`  --contrast-color: ${theme.primaryForegroundColor};`)

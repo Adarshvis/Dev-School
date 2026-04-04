@@ -142,9 +142,79 @@ export const BlockRenderer: React.FC<BlockRendererProps> = ({ blocks }) => {
   )
 }
 
-const CardGridBlock: React.FC<any> = ({ title, description, descriptionRich, columns, cardAlignment, cards }) => {
+/* ── Card Carousel (image slideshow inside carousel-layout cards) ── */
+interface CardCarouselProps {
+  images: { url: string; alt: string }[]
+  carouselId: string
+  autoplayInterval?: number
+  showDots?: boolean
+  showArrows?: boolean
+  pauseOnHover?: boolean
+}
+
+const CardCarousel: React.FC<CardCarouselProps> = ({ images, carouselId, autoplayInterval = 5, showDots = true, showArrows = true, pauseOnHover = true }) => {
+  const [active, setActive] = React.useState(0)
+  const [paused, setPaused] = React.useState(false)
+  const count = images.length
+
+  const prev = (e: React.MouseEvent) => { e.preventDefault(); e.stopPropagation(); setActive((active - 1 + count) % count) }
+  const next = (e: React.MouseEvent) => { e.preventDefault(); e.stopPropagation(); setActive((active + 1) % count) }
+
+  // Autoplay
+  React.useEffect(() => {
+    if (count <= 1 || autoplayInterval <= 0 || paused) return
+    const timer = setInterval(() => {
+      setActive((prev) => (prev + 1) % count)
+    }, autoplayInterval * 1000)
+    return () => clearInterval(timer)
+  }, [count, autoplayInterval, paused, active])
+
+  if (count === 0) return null
+
+  return (
+    <div
+      className="card-carousel"
+      id={carouselId}
+      onMouseEnter={pauseOnHover ? () => setPaused(true) : undefined}
+      onMouseLeave={pauseOnHover ? () => setPaused(false) : undefined}
+    >
+      <div className="card-carousel-inner">
+        {images.map((img, i) => (
+          <div key={i} className={`card-carousel-slide${i === active ? ' active' : ''}`}>
+            <img src={img.url} alt={img.alt} />
+          </div>
+        ))}
+      </div>
+      {count > 1 && (
+        <>
+          {showArrows && (
+            <>
+              <button type="button" className="card-carousel-arrow card-carousel-prev" onClick={prev} aria-label="Previous image">
+                <i className="bi bi-chevron-left"></i>
+              </button>
+              <button type="button" className="card-carousel-arrow card-carousel-next" onClick={next} aria-label="Next image">
+                <i className="bi bi-chevron-right"></i>
+              </button>
+            </>
+          )}
+          {showDots && (
+            <div className="card-carousel-dots">
+              {images.map((_, i) => (
+                <button key={i} type="button" className={`card-carousel-dot${i === active ? ' active' : ''}`} onClick={(e) => { e.preventDefault(); e.stopPropagation(); setActive(i) }} aria-label={`Go to image ${i + 1}`} />
+              ))}
+            </div>
+          )}
+        </>
+      )}
+    </div>
+  )
+}
+
+const CardGridBlock: React.FC<any> = ({ title, description, descriptionRich, columns, cardAlignment, cardLayout, cardClickBehavior, slideInterval, showDots, showArrows, pauseOnHover, cards }) => {
   if (!Array.isArray(cards) || cards.length === 0) return null
 
+  const isCarousel = cardLayout === 'carousel'
+  const isClickable = cardClickBehavior === 'clickable'
   const textAlign = (cardAlignment as 'left' | 'center' | 'right') || 'left'
 
   // Convert a textColor to a CSS filter so uploaded SVG/PNG icons match the text color.
@@ -185,8 +255,21 @@ const CardGridBlock: React.FC<any> = ({ title, description, descriptionRich, col
 
         <div className="row g-4">
           {cards.map((card: any, index: number) => {
-            const imageUrl =
-              card?.image && typeof card.image === 'object' ? card.image.url : card?.image
+            // Build images list from the images array
+            const allImages: { url: string; alt: string }[] = []
+            if (Array.isArray(card?.images)) {
+              card.images.forEach((img: any) => {
+                const url = typeof img.image === 'object' ? img.image?.url : img.image
+                if (url) allImages.push({ url, alt: card?.title || `Card ${index + 1}` })
+              })
+            }
+            // Fallback: legacy single image field
+            if (allImages.length === 0 && card?.image) {
+              const legacyUrl = typeof card.image === 'object' ? card.image.url : card.image
+              if (legacyUrl) allImages.push({ url: legacyUrl, alt: card?.title || `Card ${index + 1}` })
+            }
+
+            const imageUrl = allImages.length > 0 ? allImages[0].url : undefined
             const linkText = String(card?.linkText || '').trim() || 'Learn More'
             const href = String(card?.link || '').trim()
             const bgColor = String(card?.backgroundColor || '').trim()
@@ -201,6 +284,56 @@ const CardGridBlock: React.FC<any> = ({ title, description, descriptionRich, col
             if (bgColor) cardStyle.backgroundColor = bgColor
             if (txtColor) cardStyle.color = txtColor
 
+            // Carousel card layout
+            if (isCarousel) {
+              const carouselId = `card-carousel-${index}`
+              const cardInner = (
+                <div
+                  className={`card h-100 card-carousel-card${isClickable && href ? ' card-clickable' : ''}`}
+                  style={cardStyle}
+                  data-aos="fade-up"
+                  data-aos-delay={Math.min(index * 80, 320)}
+                >
+                  {allImages.length > 0 && (
+                    <CardCarousel
+                      images={allImages}
+                      carouselId={carouselId}
+                      autoplayInterval={slideInterval ?? 5}
+                      showDots={showDots !== false}
+                      showArrows={showArrows !== false}
+                      pauseOnHover={pauseOnHover !== false}
+                    />
+                  )}
+                  <div className="card-body d-flex flex-column" style={{ textAlign }}>
+                    {card?.title && <h5 className="card-title">{card.title}</h5>}
+                    {descHtml && <div className="card-text rich-text-content" dangerouslySetInnerHTML={{ __html: descHtml }} />}
+                    {!isClickable && href && (
+                      <div className="mt-auto pt-2">
+                        {isExternalHref(href) ? (
+                          <a href={href} className="btn btn-primary" target="_blank" rel="noopener noreferrer">{linkText}</a>
+                        ) : (
+                          <Link href={href} className="btn btn-primary">{linkText}</Link>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )
+
+              return (
+                <div key={index} className={columnClass}>
+                  {isClickable && href ? (
+                    isExternalHref(href) ? (
+                      <a href={href} className="card-carousel-link" target="_blank" rel="noopener noreferrer">{cardInner}</a>
+                    ) : (
+                      <Link href={href} className="card-carousel-link">{cardInner}</Link>
+                    )
+                  ) : cardInner}
+                </div>
+              )
+            }
+
+            // Default card layout
             return (
               <div key={index} className={columnClass}>
                 <div
@@ -669,8 +802,45 @@ const ImageGalleryBlock: React.FC<any> = ({
               ))}
             </div>
           </div>
+        ) : galleryType === 'bento' ? (
+          <div className="gallery-v2-bento" data-aos="fade-up" data-aos-delay="100">
+            {galleryImages?.map((item: any, index: number) => {
+              const isTall = index % 3 === 0
+              return (
+                <div
+                  key={index}
+                  className={`gallery-v2-bento-item${isTall ? ' gallery-v2-bento-tall' : ''}`}
+                  data-aos="fade-up"
+                  data-aos-delay={Math.min(100 + (index * 80), 520)}
+                >
+                  <button
+                    type="button"
+                    className="gallery-item gallery-v2-card gallery-v2-open"
+                    onClick={() => openLightbox(normalizedLightboxItems, getNormalizedIndex(item, index))}
+                    aria-label={`Open ${String(item?.mediaType || '').toLowerCase() === 'video' ? 'video' : 'image'} ${index + 1}`}
+                  >
+                    {renderGalleryMedia(item, index, false)}
+                    <div className="gallery-v2-overlay">
+                      <div className="gallery-v2-overlay-content">
+                        <div>
+                          <span className="gallery-v2-overlay-line" aria-hidden="true" />
+                          <span className="gallery-v2-overlay-label">{item.caption || item.alt || `Photo ${index + 1}`}</span>
+                        </div>
+                        <span className="gallery-v2-zoom" aria-hidden="true">
+                          <i className={`bi ${String(item?.mediaType || '').toLowerCase() === 'video' ? 'bi-play-circle' : 'bi-search'}`} />
+                        </span>
+                      </div>
+                    </div>
+                    <span className="gallery-v2-camera" aria-hidden="true">
+                      <i className={`bi ${String(item?.mediaType || '').toLowerCase() === 'video' ? 'bi-camera-video' : 'bi-camera'}`} />
+                    </span>
+                  </button>
+                </div>
+              )
+            })}
+          </div>
         ) : (
-          <div className="gallery-v2-grid" data-aos="fade-up" data-aos-delay="100">
+          <div className="gallery-v2-grid" data-aos="fade-up" data-aos-delay="100" style={{ '--gallery-columns': columns || '3' } as React.CSSProperties}>
             {galleryImages?.map((item: any, index: number) => (
               <div
                 key={index}

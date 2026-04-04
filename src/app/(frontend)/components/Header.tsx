@@ -146,10 +146,6 @@ export default async function Header() {
                   alt={settings?.siteName || 'Learner'}
                   className={`site-logo${headerLayout === 'centered' ? ' centered-logo' : ''}`}
                   style={{
-                    width: logoWidth ? `${logoWidth}px` : 'auto',
-                    maxWidth: logoWidth ? `${logoWidth}px` : 'min(420px, 48vw)',
-                    height: configuredLogoHeight > 0 ? `${logoHeight}px` : undefined,
-                    maxHeight: configuredLogoHeight > 0 ? `${logoHeight}px` : undefined,
                     objectFit: 'contain',
                     display: 'block',
                   }}

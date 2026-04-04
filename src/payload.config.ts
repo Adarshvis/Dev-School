@@ -25,6 +25,7 @@ import { Pages } from './collections/Pages.ts'
 import { Publications } from './collections/Publications.ts'
 import { PublicationsPage } from './collections/PublicationsPage.ts'
 import { Invitations } from './collections/Invitations.ts'
+import { FlagshipEvents } from './collections/FlagshipEvents.ts'
 import { Settings } from './globals/Settings.ts'
 import { Navigation } from './globals/Navigation.ts'
 import { blockBuilderPlugin } from './plugins/blockBuilder/index.ts'
@@ -52,6 +53,7 @@ const collectionRevalidationSpecs: Record<string, RevalidationSpec> = {
   publications: { tags: ['page-content', 'page-publications'], paths: ['/publications'] },
   'research-domains': { tags: ['page-content'], paths: ['/research-domains'] },
   'work-with-us': { tags: ['page-content'], paths: ['/work-with-us'] },
+  'flagship-events': { tags: ['page-content'], paths: ['/flagship-events'] },
 }
 
 const globalRevalidationSpecs: Record<string, RevalidationSpec> = {
@@ -223,6 +225,7 @@ const configuredCollections = [
   Publications,
   PublicationsPage,
   Invitations,
+  FlagshipEvents,
 ].map(withCollectionRevalidation)
 
 const configuredGlobals = [Settings, Navigation, EnrollPage].map(withGlobalRevalidation)

@@ -3,6 +3,7 @@ import Header from './components/Header'
 import Footer from './components/Footer'
 import ScrollHandler from './components/ScrollHandler'
 import AnnouncementPopup from './components/AnnouncementPopup'
+import FloatingButtons from './components/FloatingButtons'
 import { getSettings, generateThemeCSS } from '@/lib/settings'
 
 export async function generateMetadata() {
@@ -55,6 +56,7 @@ export default async function RootLayout(props: { children: React.ReactNode }) {
   const { children } = props
   const settings = await getSettings()
   const announcementPopup = (settings as any)?.announcementPopup || null
+  const floatingButtons = (settings as any)?.floatingButtons || []
   
   // Generate theme CSS from settings
   const themeCSS = generateThemeCSS(settings)
@@ -821,8 +823,9 @@ export default async function RootLayout(props: { children: React.ReactNode }) {
             position: fixed;
             inset: 0;
             z-index: 20000;
-            background: rgba(7, 10, 18, 0.86);
-            backdrop-filter: blur(6px);
+            background: rgba(30, 22, 14, 0.7);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -831,18 +834,20 @@ export default async function RootLayout(props: { children: React.ReactNode }) {
 
           .media-lightbox-inner {
             position: relative;
-            width: min(1120px, calc(100vw - 40px));
+            width: min(1000px, calc(100vw - 60px));
             max-height: calc(100vh - 44px);
             display: flex;
             flex-direction: column;
-            gap: 0.8rem;
+            align-items: center;
+            gap: 1rem;
           }
 
           .media-lightbox-stage {
-            background: rgba(9, 13, 24, 0.95);
+            background: transparent;
             border-radius: 16px;
-            border: 1px solid rgba(255, 255, 255, 0.16);
+            border: none;
             overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
           }
 
           .media-lightbox-media {
@@ -850,16 +855,20 @@ export default async function RootLayout(props: { children: React.ReactNode }) {
             max-height: calc(100vh - 160px);
             display: block;
             object-fit: contain;
-            background: #06080f;
+            background: transparent;
+            border-radius: 16px;
           }
 
           .media-lightbox-meta {
             display: flex;
-            gap: 0.9rem;
+            gap: 1.5rem;
             align-items: center;
-            justify-content: space-between;
+            justify-content: center;
             color: #f4f7ff;
-            padding: 0.1rem 0.25rem;
+            padding: 0.5rem 1.2rem;
+            background: rgba(0, 0, 0, 0.35);
+            backdrop-filter: blur(8px);
+            border-radius: 24px;
           }
 
           .media-lightbox-index {
@@ -870,7 +879,7 @@ export default async function RootLayout(props: { children: React.ReactNode }) {
           .media-lightbox-caption {
             font-size: 0.96rem;
             font-weight: 500;
-            text-align: right;
+            text-align: center;
             max-width: 78%;
           }
 
@@ -878,17 +887,24 @@ export default async function RootLayout(props: { children: React.ReactNode }) {
           .media-lightbox-nav {
             position: fixed;
             border: 0;
-            background: rgba(255, 255, 255, 0.16);
+            background: rgba(255, 255, 255, 0.18);
             color: #fff;
-            width: 44px;
-            height: 44px;
+            width: 48px;
+            height: 48px;
             border-radius: 999px;
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            backdrop-filter: blur(4px);
+            backdrop-filter: blur(6px);
             z-index: 20010;
             cursor: pointer;
+            font-size: 1.2rem;
+            transition: background 0.2s ease;
+          }
+
+          .media-lightbox-close:hover,
+          .media-lightbox-nav:hover {
+            background: rgba(255, 255, 255, 0.3);
           }
 
           .media-lightbox-close {
@@ -933,7 +949,7 @@ export default async function RootLayout(props: { children: React.ReactNode }) {
 
           @media (min-width: 992px) {
             .gallery-v2 .gallery-v2-grid {
-              grid-template-columns: repeat(3, minmax(0, 1fr));
+              grid-template-columns: repeat(var(--gallery-columns, 3), minmax(0, 1fr));
             }
 
             .gallery-v2 .gallery-v2-item.gallery-v2-span-2 {
@@ -942,6 +958,52 @@ export default async function RootLayout(props: { children: React.ReactNode }) {
 
             .gallery-v2 .gallery-v2-item.gallery-v2-span-2 .gallery-v2-card img {
               min-height: 290px;
+            }
+          }
+
+          /* ── Bento Gallery Layout ── */
+          .gallery-v2-bento {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-auto-rows: 200px;
+            gap: 1.25rem;
+          }
+
+          .gallery-v2-bento-item {
+            min-width: 0;
+          }
+
+          .gallery-v2-bento-item.gallery-v2-bento-tall {
+            grid-row: span 2;
+          }
+
+          .gallery-v2-bento-item .gallery-v2-card {
+            aspect-ratio: unset;
+            height: 100%;
+          }
+
+          .gallery-v2-bento-item .gallery-v2-card img,
+          .gallery-v2-bento-item .gallery-v2-card video,
+          .gallery-v2-bento-item .gallery-v2-card iframe {
+            height: 100%;
+            min-height: unset;
+          }
+
+          @media (max-width: 991.98px) {
+            .gallery-v2-bento {
+              grid-template-columns: repeat(2, 1fr);
+              grid-auto-rows: 180px;
+            }
+          }
+
+          @media (max-width: 575.98px) {
+            .gallery-v2-bento {
+              grid-template-columns: 1fr;
+              grid-auto-rows: 220px;
+            }
+
+            .gallery-v2-bento-item.gallery-v2-bento-tall {
+              grid-row: span 1;
             }
           }
 
@@ -1699,6 +1761,88 @@ export default async function RootLayout(props: { children: React.ReactNode }) {
             }
           }
         `}</style>
+
+        {/* Floating Action Buttons CSS */}
+        <style>{`
+          .floating-buttons {
+            position: fixed;
+            bottom: 24px;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column-reverse;
+            gap: 12px;
+            align-items: center;
+          }
+          .floating-buttons-right { right: 24px; }
+          .floating-buttons-left  { left: 24px; }
+
+          .floating-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 52px;
+            height: 52px;
+            border-radius: 50%;
+            text-decoration: none;
+            box-shadow: 0 4px 14px rgba(0,0,0,0.25);
+            transition: transform 0.25s ease, box-shadow 0.25s ease;
+            position: relative;
+          }
+          .floating-btn:hover {
+            transform: scale(1.12);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.35);
+          }
+          .floating-btn i {
+            font-size: 24px;
+            line-height: 1;
+          }
+
+          /* Tooltip */
+          .floating-btn-tooltip {
+            position: absolute;
+            white-space: nowrap;
+            background: #333;
+            color: #fff;
+            font-size: 13px;
+            padding: 5px 12px;
+            border-radius: 6px;
+            pointer-events: none;
+            opacity: 0;
+            animation: floatTooltipIn 0.2s ease forwards;
+          }
+          .floating-buttons-right .floating-btn-tooltip {
+            right: 100%;
+            margin-right: 10px;
+          }
+          .floating-buttons-left .floating-btn-tooltip {
+            left: 100%;
+            margin-left: 10px;
+          }
+          @keyframes floatTooltipIn {
+            from { opacity: 0; transform: translateY(2px); }
+            to   { opacity: 1; transform: translateY(0); }
+          }
+
+          /* Pulse animation on first button */
+          .floating-buttons .floating-btn:first-child {
+            animation: floatPulse 2s infinite;
+          }
+          @keyframes floatPulse {
+            0%, 100% { box-shadow: 0 4px 14px rgba(0,0,0,0.25); }
+            50%      { box-shadow: 0 4px 24px rgba(0,0,0,0.4); }
+          }
+          .floating-buttons .floating-btn:first-child:hover {
+            animation: none;
+          }
+
+          @media (max-width: 768px) {
+            .floating-buttons { bottom: 16px; }
+            .floating-buttons-right { right: 16px; }
+            .floating-buttons-left  { left: 16px; }
+            .floating-btn { width: 46px; height: 46px; }
+            .floating-btn i { font-size: 21px; }
+          }
+        `}</style>
       </head>
       <body className="index-page">
         <ScrollHandler />
@@ -1706,6 +1850,9 @@ export default async function RootLayout(props: { children: React.ReactNode }) {
         <Header />
         <main className="main">{children}</main>
         <Footer />
+
+        {/* Floating Action Buttons (WhatsApp, Phone, etc.) */}
+        <FloatingButtons buttons={floatingButtons} />
 
         {/* Scroll Top */}
         <a

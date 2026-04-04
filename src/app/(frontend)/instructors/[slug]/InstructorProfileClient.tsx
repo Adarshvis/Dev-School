@@ -56,7 +56,7 @@ export default function InstructorProfileClient({
       {/* Profile Section */}
       <section className="instructor-profile section">
         <div className="container">
-          <div className="row">
+          <div className="row align-items-start">
             {/* Left Sidebar */}
             <div className="col-lg-4 mb-4">
               <div className="profile-sidebar">
@@ -161,24 +161,25 @@ export default function InstructorProfileClient({
 
             {/* Right Content - Tabs */}
             <div className="col-lg-8">
-              {/* Tab Navigation */}
-              <div className="profile-tabs mb-4">
-                <ul className="nav nav-pills" role="tablist">
-                  {tabs.map((tab) => (
-                    <li key={tab.id} className="nav-item" role="presentation">
-                      <button
-                        className={`nav-link ${activeTab === tab.id ? 'active' : ''}`}
-                        onClick={() => setActiveTab(tab.id)}
-                        type="button"
-                        role="tab"
-                      >
-                        <i className={`bi ${tab.icon} me-2`}></i>
-                        {tab.label}
-                      </button>
-                    </li>
-                  ))}
-                </ul>
-              </div>
+              <div className="content-card">
+                {/* Tab Navigation */}
+                <div className="profile-tabs mb-4">
+                  <ul className="nav nav-pills" role="tablist">
+                    {tabs.map((tab) => (
+                      <li key={tab.id} className="nav-item" role="presentation">
+                        <button
+                          className={`nav-link ${activeTab === tab.id ? 'active' : ''}`}
+                          onClick={() => setActiveTab(tab.id)}
+                          type="button"
+                          role="tab"
+                        >
+                          <i className={`bi ${tab.icon} me-2`}></i>
+                          {tab.label}
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
 
               {/* Tab Content */}
               <div className="tab-content">
@@ -186,16 +187,16 @@ export default function InstructorProfileClient({
                 {activeTab === 'about' && (
                   <div className="tab-pane fade show active">
                     {person.biography && (
-                      <div className="content-card mb-4">
-                        <h4><i className="bi bi-person-lines-fill me-2"></i>Professional Biography</h4>
+                      <div className="mb-4">
+                        <h4><i className="bi bi-person-lines-fill me-2"></i>Message</h4>
                         <p style={{ whiteSpace: 'pre-wrap' }}>{person.biography}</p>
                       </div>
                     )}
 
                     {!person.biography && (
-                      <div className="content-card">
+                      <div>
                         <p className="text-muted mb-0">
-                          {person.description || 'No biography available.'}
+                          {person.description || 'No message available.'}
                         </p>
                       </div>
                     )}
@@ -325,6 +326,7 @@ export default function InstructorProfileClient({
                     </div>
                   </div>
                 )}
+              </div>
               </div>
             </div>
           </div>

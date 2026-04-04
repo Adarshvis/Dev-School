@@ -111,7 +111,7 @@ export const Settings: GlobalConfig = {
               defaultValue: 52,
               admin: {
                 condition: (data) => data.useLogo === true,
-                description: 'Set logo height in pixels. Increase for a larger logo (e.g., ADNOC-style prominent logo).',
+                description: 'Set logo height in pixels. Large values used for centered hero layout; shrinks on scroll and other pages.',
                 step: 1,
               },
               min: 20,
@@ -815,6 +815,166 @@ export const Settings: GlobalConfig = {
                       type: 'text',
                     },
                   ],
+                },
+              ],
+            },
+          ],
+        },
+        {
+          label: 'Floating Buttons',
+          fields: [
+            {
+              name: 'floatingButtons',
+              type: 'array',
+              label: 'Floating Action Buttons',
+              labels: { singular: 'Button', plural: 'Buttons' },
+              admin: {
+                description: 'Add floating icons (WhatsApp, phone, email, etc.) that appear on all pages.',
+                initCollapsed: false,
+              },
+              maxRows: 5,
+              fields: [
+                {
+                  name: 'enabled',
+                  type: 'checkbox',
+                  defaultValue: true,
+                  label: 'Enabled',
+                  admin: {
+                    description: 'Toggle this button on/off without deleting it.',
+                  },
+                },
+                {
+                  name: 'label',
+                  type: 'text',
+                  admin: {
+                    description: 'Accessible label (e.g., "Chat on WhatsApp").',
+                    condition: (data, siblingData) => siblingData?.enabled === true,
+                  },
+                },
+                {
+                  name: 'icon',
+                  type: 'select',
+                  defaultValue: 'bi-whatsapp',
+                  required: true,
+                  options: [
+                    { label: 'WhatsApp', value: 'bi-whatsapp' },
+                    { label: 'Phone', value: 'bi-telephone-fill' },
+                    { label: 'Email', value: 'bi-envelope-fill' },
+                    { label: 'Messenger', value: 'bi-messenger' },
+                    { label: 'Telegram', value: 'bi-telegram' },
+                    { label: 'Instagram', value: 'bi-instagram' },
+                    { label: 'Facebook', value: 'bi-facebook' },
+                    { label: 'Twitter / X', value: 'bi-twitter-x' },
+                    { label: 'YouTube', value: 'bi-youtube' },
+                    { label: 'LinkedIn', value: 'bi-linkedin' },
+                    { label: 'Chat Dots', value: 'bi-chat-dots-fill' },
+                    { label: 'Arrow Up (Back to Top)', value: 'bi-arrow-up-circle-fill' },
+                    { label: 'Map Pin', value: 'bi-geo-alt-fill' },
+                  ],
+                  admin: {
+                    condition: (data, siblingData) => siblingData?.enabled === true,
+                  },
+                },
+                {
+                  name: 'customIconClass',
+                  type: 'text',
+                  admin: {
+                    description: 'Override with any Bootstrap Icon class (e.g., bi-snapchat). Leave empty to use the select above.',
+                    condition: (data, siblingData) => siblingData?.enabled === true,
+                  },
+                },
+                {
+                  name: 'linkType',
+                  type: 'select',
+                  defaultValue: 'url',
+                  options: [
+                    { label: 'URL / Link', value: 'url' },
+                    { label: 'Phone Number', value: 'phone' },
+                    { label: 'Email Address', value: 'email' },
+                    { label: 'WhatsApp Number', value: 'whatsapp' },
+                  ],
+                  admin: {
+                    condition: (data, siblingData) => siblingData?.enabled === true,
+                  },
+                },
+                {
+                  name: 'url',
+                  type: 'text',
+                  admin: {
+                    description: 'Full URL (e.g., https://t.me/yourbot).',
+                    condition: (data, siblingData) => siblingData?.enabled === true && siblingData?.linkType === 'url',
+                  },
+                },
+                {
+                  name: 'phone',
+                  type: 'text',
+                  admin: {
+                    description: 'Phone number with country code (e.g., +919876543210).',
+                    condition: (data, siblingData) =>
+                      siblingData?.enabled === true && (siblingData?.linkType === 'phone' || siblingData?.linkType === 'whatsapp'),
+                  },
+                },
+                {
+                  name: 'email',
+                  type: 'text',
+                  admin: {
+                    description: 'Email address for mailto link.',
+                    condition: (data, siblingData) => siblingData?.enabled === true && siblingData?.linkType === 'email',
+                  },
+                },
+                {
+                  name: 'whatsappMessage',
+                  type: 'text',
+                  admin: {
+                    description: 'Optional pre-filled message for WhatsApp.',
+                    condition: (data, siblingData) => siblingData?.enabled === true && siblingData?.linkType === 'whatsapp',
+                  },
+                },
+                {
+                  name: 'openInNewTab',
+                  type: 'checkbox',
+                  defaultValue: true,
+                  admin: {
+                    condition: (data, siblingData) => siblingData?.enabled === true,
+                  },
+                },
+                {
+                  name: 'backgroundColor',
+                  type: 'text',
+                  defaultValue: '#25D366',
+                  admin: {
+                    description: 'Button background color (hex). Default is WhatsApp green.',
+                    condition: (data, siblingData) => siblingData?.enabled === true,
+                  },
+                },
+                {
+                  name: 'iconColor',
+                  type: 'text',
+                  defaultValue: '#ffffff',
+                  admin: {
+                    description: 'Icon color (hex).',
+                    condition: (data, siblingData) => siblingData?.enabled === true,
+                  },
+                },
+                {
+                  name: 'position',
+                  type: 'select',
+                  defaultValue: 'bottom-right',
+                  options: [
+                    { label: 'Bottom Right', value: 'bottom-right' },
+                    { label: 'Bottom Left', value: 'bottom-left' },
+                  ],
+                  admin: {
+                    condition: (data, siblingData) => siblingData?.enabled === true,
+                  },
+                },
+                {
+                  name: 'tooltip',
+                  type: 'text',
+                  admin: {
+                    description: 'Optional tooltip text shown on hover.',
+                    condition: (data, siblingData) => siblingData?.enabled === true,
+                  },
                 },
               ],
             },

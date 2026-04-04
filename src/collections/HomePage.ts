@@ -1,7 +1,6 @@
-import type { CollectionConfig } from 'payload'
+﻿import type { CollectionConfig } from 'payload'
 import { hasAdminOnlyAccess, hasCollectionAccess } from '@/lib/access'
 import { colorPickerField } from '@innovixx/payload-color-picker-field'
-import { FlexibleRowBlock } from '@/blocks/FlexibleRow'
 
 // Type for user with role field
 type UserWithRole = {
@@ -594,15 +593,15 @@ export const HomePage: CollectionConfig = {
                   type: 'select',
                   required: true,
                   options: [
-                    { label: '� Text Content', value: 'text' },
-                    { label: '📷 Image Media', value: 'image' },
-                    { label: '🎬 Video Media', value: 'video' },
-                    { label: '🎵 Audio Media', value: 'audio' },
-                    { label: '📄 Document Media', value: 'document' },
-                    { label: '✨ Animation Media', value: 'animation' },
-                    { label: '🎮 3D & Immersive', value: '3d' },
-                    { label: '📺 YouTube/Vimeo', value: 'embed' },
-                    { label: '📊 Data Visualization', value: 'data' },
+                    { label: 'ï¿½ Text Content', value: 'text' },
+                    { label: 'ðŸ“· Image Media', value: 'image' },
+                    { label: 'ðŸŽ¬ Video Media', value: 'video' },
+                    { label: 'ðŸŽµ Audio Media', value: 'audio' },
+                    { label: 'ðŸ“„ Document Media', value: 'document' },
+                    { label: 'âœ¨ Animation Media', value: 'animation' },
+                    { label: 'ðŸŽ® 3D & Immersive', value: '3d' },
+                    { label: 'ðŸ“º YouTube/Vimeo', value: 'embed' },
+                    { label: 'ðŸ“Š Data Visualization', value: 'data' },
                   ],
                 },
                 
@@ -824,7 +823,7 @@ export const HomePage: CollectionConfig = {
                   required: true,
                   admin: {
                     condition: (data, siblingData) => siblingData?.mediaType === 'maps',
-                    description: 'For best results, use Google Maps Embed URL (Share → Embed a map → Copy the iframe src URL). Sharing URLs (maps.app.goo.gl) will be auto-converted.',
+                    description: 'For best results, use Google Maps Embed URL (Share â†’ Embed a map â†’ Copy the iframe src URL). Sharing URLs (maps.app.goo.gl) will be auto-converted.',
                   },
                 },
                 {
@@ -877,16 +876,16 @@ export const HomePage: CollectionConfig = {
                   required: true,
                   label: 'Media Type',
                   options: [
-                    { label: '📝 Text Content', value: 'text' },
-                    { label: '📷 Image Media', value: 'image' },
-                    { label: '🎬 Video Media', value: 'video' },
-                    { label: '🎵 Audio Media', value: 'audio' },
-                    { label: '📄 Document Media', value: 'document' },
-                    { label: '✨ Animation Media', value: 'animation' },
-                    { label: '🎮 3D & Immersive', value: '3d' },
-                    { label: '📺 YouTube/Vimeo', value: 'embed' },
-                    { label: '📊 Data Visualization', value: 'data' },
-                    { label: '🗺️ Maps & Location', value: 'maps' },
+                    { label: 'ðŸ“ Text Content', value: 'text' },
+                    { label: 'ðŸ“· Image Media', value: 'image' },
+                    { label: 'ðŸŽ¬ Video Media', value: 'video' },
+                    { label: 'ðŸŽµ Audio Media', value: 'audio' },
+                    { label: 'ðŸ“„ Document Media', value: 'document' },
+                    { label: 'âœ¨ Animation Media', value: 'animation' },
+                    { label: 'ðŸŽ® 3D & Immersive', value: '3d' },
+                    { label: 'ðŸ“º YouTube/Vimeo', value: 'embed' },
+                    { label: 'ðŸ“Š Data Visualization', value: 'data' },
+                    { label: 'ðŸ—ºï¸ Maps & Location', value: 'maps' },
                   ],
                 },
                 {
@@ -1087,16 +1086,16 @@ export const HomePage: CollectionConfig = {
                   required: true,
                   label: 'Media Type',
                   options: [
-                    { label: '📝 Text Content', value: 'text' },
-                    { label: '📷 Image Media', value: 'image' },
-                    { label: '🎬 Video Media', value: 'video' },
-                    { label: '🎵 Audio Media', value: 'audio' },
-                    { label: '📄 Document Media', value: 'document' },
-                    { label: '✨ Animation Media', value: 'animation' },
-                    { label: '🎮 3D & Immersive', value: '3d' },
-                    { label: '📺 YouTube/Vimeo', value: 'embed' },
-                    { label: '📊 Data Visualization', value: 'data' },
-                    { label: '🗺️ Maps & Location', value: 'maps' },
+                    { label: 'ðŸ“ Text Content', value: 'text' },
+                    { label: 'ðŸ“· Image Media', value: 'image' },
+                    { label: 'ðŸŽ¬ Video Media', value: 'video' },
+                    { label: 'ðŸŽµ Audio Media', value: 'audio' },
+                    { label: 'ðŸ“„ Document Media', value: 'document' },
+                    { label: 'âœ¨ Animation Media', value: 'animation' },
+                    { label: 'ðŸŽ® 3D & Immersive', value: '3d' },
+                    { label: 'ðŸ“º YouTube/Vimeo', value: 'embed' },
+                    { label: 'ðŸ“Š Data Visualization', value: 'data' },
+                    { label: 'ðŸ—ºï¸ Maps & Location', value: 'maps' },
                   ],
                 },
                 {
@@ -1305,16 +1304,16 @@ export const HomePage: CollectionConfig = {
                   required: true,
                   label: 'Media Type',
                   options: [
-                    { label: '📝 Text Content', value: 'text' },
-                    { label: '📷 Image Media', value: 'image' },
-                    { label: '🎬 Video Media', value: 'video' },
-                    { label: '🎵 Audio Media', value: 'audio' },
-                    { label: '📄 Document Media', value: 'document' },
-                    { label: '✨ Animation Media', value: 'animation' },
-                    { label: '🎮 3D & Immersive', value: '3d' },
-                    { label: '📺 YouTube/Vimeo', value: 'embed' },
-                    { label: '📊 Data Visualization', value: 'data' },
-                    { label: '🗺️ Maps & Location', value: 'maps' },
+                    { label: 'ðŸ“ Text Content', value: 'text' },
+                    { label: 'ðŸ“· Image Media', value: 'image' },
+                    { label: 'ðŸŽ¬ Video Media', value: 'video' },
+                    { label: 'ðŸŽµ Audio Media', value: 'audio' },
+                    { label: 'ðŸ“„ Document Media', value: 'document' },
+                    { label: 'âœ¨ Animation Media', value: 'animation' },
+                    { label: 'ðŸŽ® 3D & Immersive', value: '3d' },
+                    { label: 'ðŸ“º YouTube/Vimeo', value: 'embed' },
+                    { label: 'ðŸ“Š Data Visualization', value: 'data' },
+                    { label: 'ðŸ—ºï¸ Maps & Location', value: 'maps' },
                   ],
                 },
                 {
@@ -1649,7 +1648,7 @@ export const HomePage: CollectionConfig = {
           ],
         },
 
-        // FULLSCREEN OVERLAY LAYOUT (ADNOC Style) — multi-slide carousel
+        // FULLSCREEN OVERLAY LAYOUT (ADNOC Style) â€” multi-slide carousel
         {
           name: 'fullscreenOverlay',
           type: 'group',
@@ -1780,8 +1779,8 @@ export const HomePage: CollectionConfig = {
                   required: true,
                   defaultValue: 'image',
                   options: [
-                    { label: '🖼️ Image', value: 'image' },
-                    { label: '🎬 Video', value: 'video' },
+                    { label: 'ðŸ–¼ï¸ Image', value: 'image' },
+                    { label: 'ðŸŽ¬ Video', value: 'video' },
                   ],
                   admin: {
                     description: 'Choose whether this slide uses an image or video background.',
@@ -1827,8 +1826,8 @@ export const HomePage: CollectionConfig = {
                     description: 'Upload a local video file, or paste a YouTube link.',
                   },
                   options: [
-                    { label: '📁 Upload from device', value: 'upload' },
-                    { label: '▶️ YouTube link', value: 'youtube' },
+                    { label: 'ðŸ“ Upload from device', value: 'upload' },
+                    { label: 'â–¶ï¸ YouTube link', value: 'youtube' },
                   ],
                 },
 
@@ -3113,217 +3112,5 @@ export const HomePage: CollectionConfig = {
       ],
     },
 
-    // CUSTOM BLOCK SECTION - Insert any block type between sections
-    {
-      name: 'customBlock',
-      type: 'blocks',
-      label: 'Custom Block Content',
-      blocks: [
-        {
-          slug: 'video',
-          labels: { singular: 'Video Block', plural: 'Video Blocks' },
-          fields: [
-            {
-              name: 'videoType',
-              type: 'select',
-              required: true,
-              defaultValue: 'youtube',
-              options: [
-                { label: 'YouTube', value: 'youtube' },
-                { label: 'Vimeo', value: 'vimeo' },
-                { label: 'Self-hosted', value: 'selfHosted' },
-                { label: 'External URL', value: 'external' },
-              ],
-            },
-            {
-              name: 'videoUrl',
-              type: 'text',
-              admin: {
-                description: 'Full YouTube URL (e.g., https://www.youtube.com/watch?v=xxxxx) or Vimeo URL',
-                condition: (data, siblingData) => siblingData?.videoType === 'youtube' || siblingData?.videoType === 'vimeo' || siblingData?.videoType === 'external',
-              },
-            },
-            {
-              name: 'videoFile',
-              type: 'upload',
-              relationTo: 'media',
-              admin: {
-                condition: (data, siblingData) => siblingData?.videoType === 'selfHosted',
-              },
-            },
-            {
-              name: 'thumbnail',
-              type: 'upload',
-              relationTo: 'media',
-            },
-            {
-              name: 'title',
-              type: 'text',
-            },
-            {
-              name: 'description',
-              type: 'textarea',
-            },
-            {
-              name: 'autoplay',
-              type: 'checkbox',
-              defaultValue: false,
-            },
-            {
-              name: 'loop',
-              type: 'checkbox',
-              defaultValue: false,
-            },
-            {
-              name: 'aspectRatio',
-              type: 'select',
-              defaultValue: '16:9',
-              options: [
-                { label: '16:9 (Widescreen)', value: '16:9' },
-                { label: '4:3 (Standard)', value: '4:3' },
-                { label: '1:1 (Square)', value: '1:1' },
-                { label: '21:9 (Ultrawide)', value: '21:9' },
-              ],
-            },
-            {
-              name: 'width',
-              type: 'select',
-              defaultValue: 'contained',
-              options: [
-                { label: 'Full Width', value: 'full' },
-                { label: 'Contained', value: 'contained' },
-                { label: 'Wide', value: 'wide' },
-              ],
-            },
-          ],
-        },
-        {
-          slug: 'imageGallery',
-          labels: { singular: 'Image Gallery', plural: 'Image Galleries' },
-          fields: [
-            {
-              name: 'title',
-              type: 'text',
-            },
-            {
-              name: 'description',
-              type: 'textarea',
-            },
-            {
-              name: 'galleryType',
-              type: 'select',
-              required: true,
-              defaultValue: 'grid',
-              options: [
-                { label: 'Grid', value: 'grid' },
-                { label: 'Carousel/Slider', value: 'carousel' },
-                { label: 'Masonry', value: 'masonry' },
-                { label: 'Lightbox', value: 'lightbox' },
-              ],
-            },
-            {
-              name: 'images',
-              type: 'array',
-              required: true,
-              minRows: 1,
-              fields: [
-                {
-                  name: 'image',
-                  type: 'upload',
-                  relationTo: 'media',
-                  required: true,
-                },
-                {
-                  name: 'caption',
-                  type: 'text',
-                },
-                {
-                  name: 'alt',
-                  type: 'text',
-                  required: true,
-                },
-              ],
-            },
-            {
-              name: 'columns',
-              type: 'select',
-              defaultValue: '3',
-              options: [
-                { label: '2 Columns', value: '2' },
-                { label: '3 Columns', value: '3' },
-                { label: '4 Columns', value: '4' },
-                { label: '5 Columns', value: '5' },
-              ],
-              admin: {
-                condition: (data, siblingData) => siblingData?.galleryType === 'grid' || siblingData?.galleryType === 'masonry',
-              },
-            },
-            {
-              name: 'spacing',
-              type: 'select',
-              defaultValue: 'medium',
-              options: [
-                { label: 'None', value: 'none' },
-                { label: 'Small', value: 'small' },
-                { label: 'Medium', value: 'medium' },
-                { label: 'Large', value: 'large' },
-              ],
-            },
-            {
-              name: 'showViewMoreButton',
-              type: 'checkbox',
-              defaultValue: false,
-              admin: {
-                description: 'When enabled, frontend shows only first 4 images with a View More button',
-              },
-            },
-            {
-              name: 'viewMoreButtonText',
-              type: 'text',
-              defaultValue: 'View More',
-              admin: {
-                condition: (data, siblingData) => !!siblingData?.showViewMoreButton,
-                description: 'Button label shown on frontend',
-              },
-            },
-            {
-              name: 'viewMoreLink',
-              type: 'text',
-              defaultValue: '/gallery',
-              admin: {
-                condition: (data, siblingData) => !!siblingData?.showViewMoreButton,
-                description: 'Destination URL for View More button',
-              },
-            },
-          ],
-        },
-        {
-          slug: 'richText',
-          labels: { singular: 'Rich Text', plural: 'Rich Text Blocks' },
-          fields: [
-            {
-              name: 'content',
-              type: 'richText',
-              required: true,
-            },
-            {
-              name: 'width',
-              type: 'select',
-              defaultValue: 'contained',
-              options: [
-                { label: 'Narrow', value: 'narrow' },
-                { label: 'Contained', value: 'contained' },
-                { label: 'Full Width', value: 'full' },
-              ],
-            },
-          ],
-        },
-        FlexibleRowBlock,
-      ],
-      admin: {
-        condition: (data) => data?.sectionType === 'custom-block',
-        description: 'Add any custom block (Video, Gallery, Rich Text, etc.) to insert between sections',
-      },
-    },
   ],
 }

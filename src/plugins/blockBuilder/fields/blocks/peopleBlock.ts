@@ -142,9 +142,10 @@ export const peopleBlock: Block = {
         {
           name: 'biography',
           type: 'textarea',
+          label: 'Message',
           required: false,
           admin: {
-            description: 'Full professional biography for profile page',
+            description: 'Message from this person (displayed on profile page)',
           },
         },
         {

@@ -42,6 +42,69 @@ export const cardGridBlock: Block = {
       ],
     },
     {
+      name: 'cardLayout',
+      type: 'select',
+      label: 'Card Layout',
+      defaultValue: 'default',
+      options: [
+        { label: 'Default (Icon + Text)', value: 'default' },
+        { label: 'Image Carousel Card', value: 'carousel' },
+      ],
+      admin: {
+        description: 'Choose how cards are displayed',
+      },
+    },
+    {
+      name: 'cardClickBehavior',
+      type: 'select',
+      label: 'Card Click Behavior',
+      defaultValue: 'button',
+      options: [
+        { label: 'Show "Read More" Button', value: 'button' },
+        { label: 'Entire Card Clickable', value: 'clickable' },
+      ],
+      admin: {
+        description: 'How the user navigates to the detail page',
+      },
+    },
+    {
+      name: 'slideInterval',
+      type: 'number',
+      label: 'Slide Interval (seconds)',
+      defaultValue: 5,
+      admin: {
+        description: 'Time between automatic slide transitions. Set to 0 to disable auto-advance.',
+        condition: (data, siblingData) => siblingData?.cardLayout === 'carousel',
+      },
+    },
+    {
+      name: 'showDots',
+      type: 'checkbox',
+      label: 'Show Dots (Indicators)',
+      defaultValue: true,
+      admin: {
+        condition: (data, siblingData) => siblingData?.cardLayout === 'carousel',
+      },
+    },
+    {
+      name: 'showArrows',
+      type: 'checkbox',
+      label: 'Show Prev / Next Arrows',
+      defaultValue: true,
+      admin: {
+        condition: (data, siblingData) => siblingData?.cardLayout === 'carousel',
+      },
+    },
+    {
+      name: 'pauseOnHover',
+      type: 'checkbox',
+      label: 'Pause on Hover',
+      defaultValue: true,
+      admin: {
+        condition: (data, siblingData) => siblingData?.cardLayout === 'carousel',
+      },
+    },
+    {
       name: 'cardAlignment',
       type: 'select',
       label: 'Card Content Alignment',
@@ -96,10 +159,20 @@ export const cardGridBlock: Block = {
           },
         }),
         {
-          name: 'image',
-          type: 'upload',
-          relationTo: 'media',
-          required: false,
+          name: 'images',
+          type: 'array',
+          label: 'Images',
+          admin: {
+            description: 'Add one image for default layout, or multiple for carousel layout',
+          },
+          fields: [
+            {
+              name: 'image',
+              type: 'upload',
+              relationTo: 'media',
+              required: true,
+            },
+          ],
         },
         {
           name: 'iconType',

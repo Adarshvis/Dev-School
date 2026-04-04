@@ -218,7 +218,7 @@ export default function InstructorProfilePage({ params }: InstructorProfileProps
                   <div className="tab-pane fade show active" id="about" role="tabpanel">
                     <div className="about-content">
                       <div className="bio-section">
-                        <h4>Professional Biography</h4>
+                        <h4>Message</h4>
                         <p>
                           Dr. Alexandra Chen is a renowned expert in Machine Learning and Artificial Intelligence with over 10 years 
                           of experience in both academia and industry. She holds a Ph.D. in Computer Science from MIT and has 

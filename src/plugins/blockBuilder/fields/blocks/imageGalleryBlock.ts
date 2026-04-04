@@ -24,6 +24,7 @@ export const imageGalleryBlock: Block = {
       defaultValue: 'grid',
       options: [
         { label: 'Grid', value: 'grid' },
+        { label: 'Bento (Mixed Sizes)', value: 'bento' },
         { label: 'Carousel/Slider', value: 'carousel' },
         { label: 'Masonry', value: 'masonry' },
         { label: 'Lightbox Grid', value: 'lightbox' },

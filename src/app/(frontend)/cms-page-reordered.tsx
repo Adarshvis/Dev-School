@@ -43,9 +43,6 @@ const filterVisibleBlocks = (blocks: any[] | undefined): any[] => {
 }
 
 const getSectionBlocks = (section: any): any[] => {
-  const fromCustomBlock = filterVisibleBlocks(section?.customBlock)
-  if (fromCustomBlock.length > 0) return fromCustomBlock
-
   const fromContentBlocks = filterVisibleBlocks(section?.contentBlocks)
   if (fromContentBlocks.length > 0) return fromContentBlocks
 

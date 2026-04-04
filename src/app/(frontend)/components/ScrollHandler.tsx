@@ -1,8 +1,11 @@
 'use client'
 
 import { useEffect } from 'react'
+import { usePathname } from 'next/navigation'
 
 export default function ScrollHandler() {
+  const pathname = usePathname()
+
   useEffect(() => {
     function toggleScrolled() {
       const selectBody = document.querySelector('body')
@@ -19,14 +22,14 @@ export default function ScrollHandler() {
     // Add scroll event listener
     document.addEventListener('scroll', toggleScrolled)
     
-    // Call on load
+    // Call on load and route change
     toggleScrolled()
 
     // Cleanup
     return () => {
       document.removeEventListener('scroll', toggleScrolled)
     }
-  }, [])
+  }, [pathname])
 
   return null
 }
