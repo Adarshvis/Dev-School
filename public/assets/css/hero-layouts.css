@@ -91,43 +91,69 @@ body:has(.hero-fullscreen-overlay) .hero-fullscreen-overlay {
   margin-top: 0 !important;
 }
 
-/* All nav text, site name, icons → white for dark hero backgrounds */
-body:has(.hero-fullscreen-overlay) #header,
-body:has(.hero-fullscreen-overlay) #header .navmenu > ul > li > a,
-body:has(.hero-fullscreen-overlay) #header .navmenu > ul > li > a i,
-body:has(.hero-fullscreen-overlay) #header .navmenu .dropdown > a::after,
+/* All nav text, site name, icons → white for dark hero backgrounds
+   (desktop only — mobile nav panel has its own white background) */
 body:has(.hero-fullscreen-overlay) #header .sitename,
-body:has(.hero-fullscreen-overlay) #header .logo h1 {
+body:has(.hero-fullscreen-hero) #header .logo h1 {
   color: #ffffff !important;
 }
 
-/* Active nav item — slightly dimmed white */
-body:has(.hero-fullscreen-overlay) #header .navmenu > ul > li > a:hover,
-body:has(.hero-fullscreen-overlay) #header .navmenu > ul > li.active > a {
-  color: rgba(255, 255, 255, 0.85) !important;
+/* Desktop: top-level nav links white */
+@media (min-width: 1200px) {
+  body:has(.hero-fullscreen-overlay) #header,
+  body:has(.hero-fullscreen-overlay) #header .navmenu > ul > li > a,
+  body:has(.hero-fullscreen-overlay) #header .navmenu > ul > li > a i,
+  body:has(.hero-fullscreen-overlay) #header .navmenu .dropdown > a::after,
+  body:has(.hero-fullscreen-overlay) #header .sitename,
+  body:has(.hero-fullscreen-overlay) #header .logo h1 {
+    color: #ffffff !important;
+  }
+
+  /* Active nav item — slightly dimmed white */
+  body:has(.hero-fullscreen-overlay) #header .navmenu > ul > li > a:hover,
+  body:has(.hero-fullscreen-overlay) #header .navmenu > ul > li.active > a {
+    color: rgba(255, 255, 255, 0.85) !important;
+  }
+
+  /* Dropdown submenu items keep their normal dark color on white background */
+  body:has(.hero-fullscreen-overlay) #header .navmenu .dropdown ul a {
+    color: var(--nav-dropdown-color, #2d3436) !important;
+  }
+
+  body:has(.hero-fullscreen-overlay) #header .navmenu .dropdown ul a:hover,
+  body:has(.hero-fullscreen-overlay) #header .navmenu .dropdown ul .active > a {
+    color: var(--accent-color, #5fcf80) !important;
+  }
 }
 
-/* Dropdown submenu items keep their normal dark color on white background */
-body:has(.hero-fullscreen-overlay) #header .navmenu .dropdown ul a {
-  color: var(--default-color, #444444) !important;
+/* Mobile: nav panel has white background — keep all text dark */
+@media (max-width: 1199px) {
+  body:has(.hero-fullscreen-overlay) #header .navmenu ul {
+    background-color: #ffffff !important;
+  }
+
+  body:has(.hero-fullscreen-overlay) #header .navmenu a,
+  body:has(.hero-fullscreen-overlay) #header .navmenu a:focus {
+    color: var(--nav-dropdown-color, #2d3436) !important;
+  }
+
+  body:has(.hero-fullscreen-overlay) #header .navmenu a:hover,
+  body:has(.hero-fullscreen-overlay) #header .navmenu .active > a {
+    color: var(--accent-color) !important;
+  }
 }
 
-body:has(.hero-fullscreen-overlay) #header .navmenu .dropdown ul a:hover,
-body:has(.hero-fullscreen-overlay) #header .navmenu .dropdown ul .active > a {
-  color: var(--accent-color, #5fcf80) !important;
-}
+/* CTA button stays its accent color — no override */
 
-/* Dropdown caret for submenus → white */
-body:has(.hero-fullscreen-overlay) #header .navmenu .toggle-dropdown {
-  color: #ffffff !important;
-}
-
-/* Mobile hamburger icon → white */
+/* Mobile hamburger icon always white (shows against hero image) */
 body:has(.hero-fullscreen-overlay) #header .mobile-nav-toggle {
   color: #ffffff !important;
 }
 
-/* CTA button stays its accent color — no override */
+/* ---- Centered header layout + hero overlay: subtle border ---- */
+body:has(.hero-fullscreen-overlay) #header.header-centered-layout .header-inner .logo {
+  border-top-color: rgba(255,255,255,0.15);
+}
 
 /* ---- Scrolled state: frosted dark glass ---- */
 body:has(.hero-fullscreen-overlay).scrolled #header {

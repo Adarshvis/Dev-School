@@ -69,10 +69,12 @@ function getItemIdentity(item: MenuItem): string | null {
 export default function CMSNavigation({ navigation, homePage = 'home' }: CMSNavigationProps) {
   const pathname = usePathname()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const [openDropdown, setOpenDropdown] = useState<string | null>(null)
 
   // Close mobile menu when route changes
   useEffect(() => {
     setMobileMenuOpen(false)
+    setOpenDropdown(null)
   }, [pathname])
 
   // Toggle mobile menu
@@ -84,6 +86,7 @@ export default function CMSNavigation({ navigation, homePage = 'home' }: CMSNavi
   // Close mobile menu
   const closeMobileMenu = () => {
     setMobileMenuOpen(false)
+    setOpenDropdown(null)
     document.body.classList.remove('mobile-nav-active')
   }
 
@@ -138,17 +141,27 @@ export default function CMSNavigation({ navigation, homePage = 'home' }: CMSNavi
     const link = getMenuLink(item)
     const hasChildren = item.children && item.children.length > 0
     const isDropdown = item.linkType === 'dropdown' || hasChildren
+    const dropdownKey = item.id || String(index)
+    const isOpen = openDropdown === dropdownKey
 
     if (isDropdown) {
       return (
-        <li key={item.id || index} className="dropdown">
+        <li key={dropdownKey} className={`dropdown${isOpen ? ' active' : ''}`}>
           <a href={link}>
             {item.icon && <i className={`bi ${item.icon} me-1`}></i>}
             <span>{item.label}</span>
-            <i className="bi bi-chevron-down toggle-dropdown"></i>
+            <i
+              className={`bi bi-chevron-down toggle-dropdown${isOpen ? ' active' : ''}`}
+              onClick={(e) => {
+                e.preventDefault()
+                e.stopPropagation()
+                setOpenDropdown(isOpen ? null : dropdownKey)
+              }}
+              style={{ cursor: 'pointer' }}
+            ></i>
           </a>
           {hasChildren && (
-            <ul>
+            <ul className={isOpen ? 'dropdown-active' : ''}>
               {item.children!.filter(child => child.isVisible !== false).map((child, childIndex) => (
                 <li key={child.id || childIndex}>
                   {child.linkType === 'external' ? (

@@ -445,6 +445,18 @@ export const Settings: GlobalConfig = {
               type: 'group',
               fields: [
                 {
+                  name: 'headerLayout',
+                  type: 'select',
+                  defaultValue: 'default',
+                  options: [
+                    { label: 'Default (Logo Left, Menu Right)', value: 'default' },
+                    { label: 'Centered (Menu Top, Large Logo Center)', value: 'centered' },
+                  ],
+                  admin: {
+                    description: 'Choose header layout. "Centered" shows the menu on top with a larger centered logo below. On scroll it collapses to the default layout.',
+                  },
+                },
+                {
                   name: 'headerType',
                   type: 'select',
                   defaultValue: 'sticky',

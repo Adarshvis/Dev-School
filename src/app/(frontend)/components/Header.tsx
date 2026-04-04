@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { getSettings, getNavigation } from '@/lib/settings'
 import CMSNavigation from './CMSNavigation'
+import HeaderScrollWatcher from './HeaderScrollWatcher'
 
 export default async function Header() {
   const [settings, navigation] = await Promise.all([
@@ -15,6 +16,7 @@ export default async function Header() {
 
   // Get header style settings
   const headerStyle = (settings as any)?.headerStyle || {}
+  const headerLayout = headerStyle?.headerLayout || 'default'
   const headerType = headerStyle?.headerType || 'sticky'
   const headerBackground = headerStyle?.headerBackground || 'white'
   const headerShadow = headerStyle?.headerShadow !== false
@@ -30,6 +32,7 @@ export default async function Header() {
     'header',
     'd-flex',
     'align-items-center',
+    headerLayout === 'centered' ? 'header-centered-layout' : '',
     headerType === 'sticky' ? 'sticky-top' : '',
     headerType === 'fixed-transparent' ? 'fixed-top header-transparent' : '',
     headerBackground === 'dark' ? 'header-dark' : '',
@@ -134,19 +137,23 @@ export default async function Header() {
       )}
 
       <header id="header" className={`${headerClasses} header-v2`}>
-        <div className="container-fluid container-xl position-relative d-flex align-items-center">
+        <div className="header-inner container-fluid container-xl position-relative d-flex align-items-center">
           <Link href="/" className="logo d-flex align-items-center me-auto">
             {settings?.useLogo && logoUrl ? (
               <>
                 <img
                   src={logoUrl}
                   alt={settings?.siteName || 'Learner'}
-                  className="site-logo"
+                  className={`site-logo${headerLayout === 'centered' ? ' centered-logo' : ''}`}
                   style={{
                     width: logoWidth ? `${logoWidth}px` : 'auto',
                     maxWidth: logoWidth ? `${logoWidth}px` : 'min(420px, 48vw)',
                     objectFit: 'contain',
-                    display: 'block'
+                    display: 'block',
+                    ...(headerLayout === 'centered' ? {
+                      height: logoHeight ? `${logoHeight}px` : 'auto',
+                      maxHeight: logoHeight ? `${logoHeight}px` : '120px',
+                    } : {}),
                   }}
                 />
                 {settings?.siteName ? (
@@ -175,6 +182,7 @@ export default async function Header() {
             </Link>
           )}
         </div>
+        {headerLayout === 'centered' && <HeaderScrollWatcher />}
       </header>
     </>
   )

@@ -310,6 +310,7 @@ export function HeroSectionRenderer({ hero }: { hero: any }) {
           <div
             id="fsoCarousel"
             className="carousel slide carousel-fade"
+            suppressHydrationWarning
             data-bs-ride={interval > 0 ? 'carousel' : undefined}
             data-bs-interval={interval > 0 ? interval : undefined}
             data-bs-pause={pauseOnHover ? 'hover' : 'false'}
