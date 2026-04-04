@@ -300,7 +300,8 @@ h6 {
   .header.header-centered-layout.header-scrolled .header-inner .logo img.centered-logo {
     max-height: 54px !important;
     height: auto !important;
-    width: auto;
+    width: auto !important;
+    max-width: min(420px, 48vw) !important;
   }
 
   .header.header-centered-layout.header-scrolled .header-inner .navmenu {
@@ -309,6 +310,16 @@ h6 {
 
   .header.header-centered-layout.header-scrolled .header-inner .btn-getstarted {
     order: 0;
+  }
+}
+
+/* Mobile: centered layout falls back to default — constrain the logo */
+@media (max-width: 1199px) {
+  .header.header-centered-layout .header-inner .logo img.centered-logo {
+    max-height: 54px !important;
+    height: auto !important;
+    width: auto !important;
+    max-width: min(420px, 48vw) !important;
   }
 }
 
