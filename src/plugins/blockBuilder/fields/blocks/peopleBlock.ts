@@ -55,6 +55,20 @@ export const peopleBlock: Block = {
       },
     },
     {
+      name: 'profileButtonText',
+      type: 'text',
+      defaultValue: 'View More',
+      admin: {
+        description: 'Label for the profile button (e.g., "View More", "Read Message", "View Profile")',
+      },
+    },
+    {
+      name: 'profileButtonNewTab',
+      type: 'checkbox',
+      defaultValue: false,
+      label: 'Open Profile in New Tab',
+    },
+    {
       name: 'people',
       type: 'array',
       label: 'People',

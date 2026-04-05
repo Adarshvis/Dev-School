@@ -340,6 +340,12 @@ export const cardGridBlock: Block = {
           defaultValue: 'Learn More',
           required: false,
         },
+        {
+          name: 'openInNewTab',
+          type: 'checkbox',
+          defaultValue: false,
+          label: 'Open Link in New Tab',
+        },
       ],
     },
   ],

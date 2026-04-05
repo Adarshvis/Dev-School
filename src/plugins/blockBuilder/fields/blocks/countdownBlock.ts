@@ -70,6 +70,12 @@ export const countdownBlock: Block = {
           type: 'text',
           required: false,
         },
+        {
+          name: 'openInNewTab',
+          type: 'checkbox',
+          defaultValue: false,
+          label: 'Open in New Tab',
+        },
       ],
     },
   ],

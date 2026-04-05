@@ -314,7 +314,7 @@ const CardGridBlock: React.FC<any> = ({ title, description, descriptionRich, col
                     {descHtml && <div className="card-text rich-text-content" dangerouslySetInnerHTML={{ __html: descHtml }} />}
                     {!isClickable && href && (
                       <div className="mt-auto pt-2">
-                        {isExternalHref(href) ? (
+                        {(card?.openInNewTab || isExternalHref(href)) ? (
                           <a href={href} className="btn btn-primary" target="_blank" rel="noopener noreferrer">{linkText}</a>
                         ) : (
                           <Link href={href} className="btn btn-primary">{linkText}</Link>
@@ -328,7 +328,7 @@ const CardGridBlock: React.FC<any> = ({ title, description, descriptionRich, col
               return (
                 <div key={index} className={columnClass}>
                   {isClickable && href ? (
-                    isExternalHref(href) ? (
+                    (card?.openInNewTab || isExternalHref(href)) ? (
                       <a href={href} className="card-carousel-link" target="_blank" rel="noopener noreferrer">{cardInner}</a>
                     ) : (
                       <Link href={href} className="card-carousel-link">{cardInner}</Link>
@@ -375,7 +375,7 @@ const CardGridBlock: React.FC<any> = ({ title, description, descriptionRich, col
                     {descHtml ? <div className="card-text rich-text-content" dangerouslySetInnerHTML={{ __html: descHtml }} /> : null}
                     {href ? (
                       <div className="mt-auto pt-2">
-                        {isExternalHref(href) ? (
+                        {(card?.openInNewTab || isExternalHref(href)) ? (
                           <a href={href} className="btn btn-outline-primary" target="_blank" rel="noopener noreferrer">
                             {linkText}
                           </a>
@@ -969,12 +969,22 @@ const CTABlock: React.FC<any> = ({ style, heading, subheading, image, primaryBut
             {subheading && <p className="mb-4">{subheading}</p>}
             <div className="cta-buttons">
               {primaryButton?.text && (
-                <a href={primaryButton.link || '#'} className={`btn btn-${primaryButton.style || 'primary'} me-2`}>
+                <a
+                  href={primaryButton.link || '#'}
+                  className={`btn btn-${primaryButton.style || 'primary'} me-2`}
+                  target={primaryButton.openInNewTab ? '_blank' : undefined}
+                  rel={primaryButton.openInNewTab ? 'noopener noreferrer' : undefined}
+                >
                   {primaryButton.text}
                 </a>
               )}
               {secondaryButton?.text && (
-                <a href={secondaryButton.link || '#'} className={`btn btn-${secondaryButton.style || 'secondary'}`}>
+                <a
+                  href={secondaryButton.link || '#'}
+                  className={`btn btn-${secondaryButton.style || 'secondary'}`}
+                  target={secondaryButton.openInNewTab ? '_blank' : undefined}
+                  rel={secondaryButton.openInNewTab ? 'noopener noreferrer' : undefined}
+                >
                   {secondaryButton.text}
                 </a>
               )}
@@ -1656,7 +1666,12 @@ const CountdownBlock: React.FC<any> = ({ title, description, targetDate, ctaButt
         
         {ctaButton?.text && (
           <div data-aos="fade-up" data-aos-delay="200">
-            <a href={ctaButton.link || '#'} className="btn btn-primary btn-lg">
+            <a
+              href={ctaButton.link || '#'}
+              className="btn btn-primary btn-lg"
+              target={ctaButton.openInNewTab ? '_blank' : undefined}
+              rel={ctaButton.openInNewTab ? 'noopener noreferrer' : undefined}
+            >
               {ctaButton.text}
             </a>
           </div>
@@ -1759,7 +1774,10 @@ const MapBlock: React.FC<any> = ({ title, address, embedUrl, height }) => {
 }
 
 // People Block Component
-const PeopleBlock: React.FC<any> = ({ title, description, layout, showStats, showSocialLinks, people }) => {
+const PeopleBlock: React.FC<any> = ({ title, description, layout, showStats, showSocialLinks, profileButtonText, profileButtonNewTab, people }) => {
+  const btnLabel = String(profileButtonText || '').trim() || 'View More'
+  const btnTarget = profileButtonNewTab ? '_blank' : undefined
+  const btnRel = profileButtonNewTab ? 'noopener noreferrer' : undefined
   if (!people || people.length === 0) return null
   const useTwoEntryLayout = people.length === 2
 
@@ -1833,7 +1851,7 @@ const PeopleBlock: React.FC<any> = ({ title, description, layout, showStats, sho
                     )}
 
                     <div className="action-buttons">
-                      <Link href={getPersonProfileHref(person)} className="btn-view">View Profile</Link>
+                      <Link href={getPersonProfileHref(person)} className="btn-view">{btnLabel}</Link>
                       <div className="social-links">
                         {showSocialLinks && person.socialLinks && person.socialLinks.map((social: any, idx: number) => (
                           <a key={idx} href={social.url} target="_blank" rel="noopener noreferrer">
@@ -1876,7 +1894,7 @@ const PeopleBlock: React.FC<any> = ({ title, description, layout, showStats, sho
                     )}
                     
                     <div className="action-buttons">
-                      <Link href={getPersonProfileHref(person)} className="btn-view">View Profile</Link>
+                      <Link href={getPersonProfileHref(person)} className="btn-view" target={btnTarget} rel={btnRel}>{btnLabel}</Link>
                       <div className="social-links">
                         {showSocialLinks && person.socialLinks && person.socialLinks.map((social: any, idx: number) => (
                           <a key={idx} href={social.url} target="_blank" rel="noopener noreferrer">

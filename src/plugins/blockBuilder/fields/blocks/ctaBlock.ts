@@ -70,6 +70,12 @@ export const ctaBlock: Block = {
             { label: 'Outline', value: 'outline' },
           ],
         },
+        {
+          name: 'openInNewTab',
+          type: 'checkbox',
+          defaultValue: false,
+          label: 'Open in New Tab',
+        },
       ],
     },
     {
@@ -95,6 +101,12 @@ export const ctaBlock: Block = {
             { label: 'Secondary', value: 'secondary' },
             { label: 'Outline', value: 'outline' },
           ],
+        },
+        {
+          name: 'openInNewTab',
+          type: 'checkbox',
+          defaultValue: false,
+          label: 'Open in New Tab',
         },
       ],
     },
