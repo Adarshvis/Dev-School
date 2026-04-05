@@ -676,7 +676,7 @@ export default async function RootLayout(props: { children: React.ReactNode }) {
           }
 
           .gallery-v2 .gallery-v2-marquee-item {
-            flex: 0 0 clamp(220px, 30vw, 360px);
+            flex: 0 0 clamp(280px, 45vw, 540px);
             min-width: 0;
           }
 

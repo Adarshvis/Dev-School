@@ -274,6 +274,11 @@ const CardGridBlock: React.FC<any> = ({ title, description, descriptionRich, col
             const href = String(card?.link || '').trim()
             const bgColor = String(card?.backgroundColor || '').trim()
             const txtColor = String(card?.textColor || '').trim()
+            const titleHtml = card?.titleRich
+              ? lexicalToHtml(card.titleRich)
+              : card?.title
+                ? `<p>${String(card.title)}</p>`
+                : ''
             const descHtml = card?.descriptionRich
               ? lexicalToHtml(card.descriptionRich)
               : card?.description
@@ -305,7 +310,7 @@ const CardGridBlock: React.FC<any> = ({ title, description, descriptionRich, col
                     />
                   )}
                   <div className="card-body d-flex flex-column" style={{ textAlign }}>
-                    {card?.title && <h5 className="card-title">{card.title}</h5>}
+                    {titleHtml && <div className="card-title rich-text-content" dangerouslySetInnerHTML={{ __html: titleHtml }} />}
                     {descHtml && <div className="card-text rich-text-content" dangerouslySetInnerHTML={{ __html: descHtml }} />}
                     {!isClickable && href && (
                       <div className="mt-auto pt-2">
@@ -347,18 +352,25 @@ const CardGridBlock: React.FC<any> = ({ title, description, descriptionRich, col
                     <div className="d-flex align-items-center gap-2 mb-3" style={{ justifyContent: textAlign === 'center' ? 'center' : textAlign === 'right' ? 'flex-end' : 'flex-start' }}>
                       {card?.iconType === 'upload' && card?.customIcon ? (
                         (() => {
-                          const iconUrl = typeof card.customIcon === 'object' ? card.customIcon?.url : card.customIcon
+                          const iconObj = typeof card.customIcon === 'object' ? card.customIcon : null
+                          const iconUrl = iconObj?.url || (typeof card.customIcon === 'string' ? card.customIcon : null)
+                          if (!iconUrl) return null
+                          const isSvg = typeof iconUrl === 'string' && /\.svg$/i.test(iconUrl)
+                          const mimeType = iconObj?.mimeType || ''
+                          const isSvgMime = mimeType === 'image/svg+xml'
+                          const sz = Number(card.iconSize) > 0 ? Number(card.iconSize) : 40
+                          if (isSvg || isSvgMime) {
+                            return <img src={iconUrl} alt="" aria-hidden="true" className="card-icon" style={{ height: sz, minHeight: sz, width: 'auto', maxWidth: sz * 1.5, objectFit: 'contain', flexShrink: 0 }} />
+                          }
                           const iconFilter = getIconFilter(txtColor)
-                          return iconUrl
-                            ? <img src={iconUrl} alt="" aria-hidden="true" className="card-icon flex-shrink-0" style={{ width: 28, height: 28, objectFit: 'contain', filter: iconFilter }} />
-                            : null
+                          return <img src={iconUrl} alt="" aria-hidden="true" className="card-icon" style={{ height: sz, minHeight: sz, width: 'auto', maxWidth: sz * 1.5, objectFit: 'contain', flexShrink: 0, filter: iconFilter }} />
                         })()
                       ) : card?.iconType !== 'bootstrap' && card?.lucideIcon ? (
                         <LucideIcon name={card.lucideIcon} size={28} className="card-icon flex-shrink-0" style={txtColor ? { color: txtColor } : undefined} aria-hidden="true" />
                       ) : card?.icon ? (
                         <i className={`bi ${card.icon} card-icon flex-shrink-0`} style={txtColor ? { color: txtColor } : undefined} aria-hidden="true"></i>
                       ) : null}
-                      {card?.title ? <h5 className="card-title mb-0">{card.title}</h5> : null}
+                      {titleHtml ? <div className="card-title mb-0 rich-text-content" dangerouslySetInnerHTML={{ __html: titleHtml }} /> : null}
                     </div>
                     {descHtml ? <div className="card-text rich-text-content" dangerouslySetInnerHTML={{ __html: descHtml }} /> : null}
                     {href ? (

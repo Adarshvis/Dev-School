@@ -710,16 +710,17 @@ body:not(:has(.hero-fullscreen-overlay)).scrolled .header {
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  border: 1px solid color-mix(in srgb, var(--default-color), transparent 50%);
+  border: 1px solid rgba(255, 255, 255, 0.4);
   font-size: 16px;
-  color: color-mix(in srgb, var(--default-color), transparent 50%);
+  color: rgba(255, 255, 255, 0.85);
   margin-right: 10px;
   transition: 0.3s;
 }
 
 .footer .social-links a:hover {
-  color: var(--accent-color);
-  border-color: var(--accent-color);
+  color: #fff;
+  border-color: #fff;
+  background: rgba(255, 255, 255, 0.15);
 }
 
 .footer h4 {

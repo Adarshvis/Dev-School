@@ -124,7 +124,20 @@ export const cardGridBlock: Block = {
         {
           name: 'title',
           type: 'text',
-          required: true,
+          label: 'Title (Plain Text — legacy)',
+          required: false,
+          admin: {
+            hidden: true,
+          },
+        },
+        {
+          name: 'titleRich',
+          type: 'richText',
+          label: 'Title (Rich Text)',
+          required: false,
+          admin: {
+            description: 'Supports bold, italic, colors, etc. Falls back to plain Title if empty.',
+          },
         },
         {
           name: 'descriptionRich',
@@ -194,6 +207,19 @@ export const cardGridBlock: Block = {
           admin: {
             condition: (_, s) => s?.iconType === 'upload',
             description: 'Upload an SVG or PNG icon file',
+          },
+        },
+        {
+          name: 'iconSize',
+          type: 'number',
+          label: 'Icon Size (px)',
+          defaultValue: 40,
+          min: 16,
+          max: 120,
+          admin: {
+            condition: (_, s) => s?.iconType === 'upload',
+            description: 'Width & height of the uploaded icon in pixels (default: 40).',
+            step: 4,
           },
         },
         {
