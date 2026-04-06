@@ -131,6 +131,10 @@ export const BlockRenderer: React.FC<BlockRendererProps> = ({ blocks }) => {
             return <PeopleBlock key={index} {...block} />
           case 'tabs':
             return <TabsBlock key={index} {...block} />
+          case 'dimensionSteps':
+            return <DimensionStepsBlock key={index} {...block} />
+          case 'featureShowcase':
+            return <FeatureShowcaseBlock key={index} {...block} />
           case 'flexibleRow':
             return <FlexibleRowBlock key={index} {...block} />
           default:
@@ -334,6 +338,90 @@ const CardGridBlock: React.FC<any> = ({ title, description, descriptionRich, col
                       <Link href={href} className="card-carousel-link">{cardInner}</Link>
                     )
                   ) : cardInner}
+                </div>
+              )
+            }
+
+            // Numbered Header Cards layout
+            if (cardLayout === 'numberedHeader') {
+              const stepNum = card?.stepNumber || String(index + 1).padStart(2, '0')
+              const headerBg = String(card?.headerBgColor || '#1a472a').trim()
+              const headerTxt = String(card?.headerTextColor || '#ffffff').trim()
+              return (
+                <div key={index} className={columnClass}>
+                  <div
+                    className="card h-100 numbered-header-card"
+                    style={cardStyle}
+                    data-aos="fade-up"
+                    data-aos-delay={Math.min(index * 80, 320)}
+                  >
+                    <div className="numbered-header-card-top" style={{ backgroundColor: headerBg, color: headerTxt }}>
+                      <span className="numbered-header-card-num">{stepNum}</span>
+                      {titleHtml ? <div className="numbered-header-card-title rich-text-content" dangerouslySetInnerHTML={{ __html: titleHtml }} /> : null}
+                    </div>
+                    <div className="numbered-header-card-body">
+                      {descHtml ? <div className="rich-text-content" dangerouslySetInnerHTML={{ __html: descHtml }} /> : null}
+                      {href ? (
+                        <div className="mt-auto pt-2">
+                          {(card?.openInNewTab || isExternalHref(href)) ? (
+                            <a href={href} className="btn btn-outline-primary btn-sm" target="_blank" rel="noopener noreferrer">{linkText}</a>
+                          ) : (
+                            <Link href={href} className="btn btn-outline-primary btn-sm">{linkText}</Link>
+                          )}
+                        </div>
+                      ) : null}
+                    </div>
+                  </div>
+                </div>
+              )
+            }
+
+            // Wing Cards (Checklist) layout
+            if (cardLayout === 'wingCards') {
+              const accentColor = String(card?.headerBgColor || '#1a472a').trim()
+              const subtitle = String(card?.subtitle || '').trim()
+              const tagline = String(card?.tagline || '').trim()
+              // Get icon
+              let wingIconEl: React.ReactNode = null
+              if (card?.iconType === 'upload' && card?.customIcon) {
+                const iconObj = typeof card.customIcon === 'object' ? card.customIcon : null
+                const iconUrl = iconObj?.url || (typeof card.customIcon === 'string' ? card.customIcon : null)
+                if (iconUrl) {
+                  const sz = Number(card.iconSize) > 0 ? Number(card.iconSize) : 36
+                  wingIconEl = <img src={iconUrl} alt="" aria-hidden="true" className="wing-card-icon" style={{ height: sz, width: 'auto', objectFit: 'contain' }} />
+                }
+              } else if (card?.iconType !== 'bootstrap' && card?.lucideIcon) {
+                wingIconEl = <LucideIcon name={card.lucideIcon} size={28} className="wing-card-icon" style={{ color: accentColor }} aria-hidden="true" />
+              } else if (card?.icon) {
+                wingIconEl = <i className={`bi ${card.icon} wing-card-icon`} style={{ color: accentColor }} aria-hidden="true"></i>
+              }
+              return (
+                <div key={index} className={columns === '2' ? 'col-lg-6 col-md-6' : columns === '4' ? 'col-xl-3 col-lg-6 col-md-6' : 'col-lg-6 col-md-6'}>
+                  <div
+                    className="card h-100 wing-card"
+                    style={{ ...cardStyle, borderLeftColor: accentColor }}
+                    data-aos="fade-up"
+                    data-aos-delay={Math.min(index * 80, 320)}
+                  >
+                    <div className="wing-card-header">
+                      {wingIconEl && <div className="wing-card-icon-wrap" style={{ backgroundColor: accentColor + '18' }}>{wingIconEl}</div>}
+                      <div className="wing-card-header-text">
+                        {subtitle && <span className="wing-card-subtitle" style={{ color: accentColor }}>{subtitle}</span>}
+                        {titleHtml ? <div className="wing-card-title rich-text-content" dangerouslySetInnerHTML={{ __html: titleHtml }} /> : null}
+                        {tagline && <em className="wing-card-tagline">{tagline}</em>}
+                      </div>
+                    </div>
+                    {descHtml ? <div className="wing-card-body rich-text-content" dangerouslySetInnerHTML={{ __html: descHtml }} /> : null}
+                    {href ? (
+                      <div className="mt-auto pt-2">
+                        {(card?.openInNewTab || isExternalHref(href)) ? (
+                          <a href={href} className="btn btn-outline-primary btn-sm" target="_blank" rel="noopener noreferrer">{linkText}</a>
+                        ) : (
+                          <Link href={href} className="btn btn-outline-primary btn-sm">{linkText}</Link>
+                        )}
+                      </div>
+                    ) : null}
+                  </div>
                 </div>
               )
             }
@@ -1911,5 +1999,365 @@ const PeopleBlock: React.FC<any> = ({ title, description, layout, showStats, sho
         </div>
       </div>
     </section>
+  )
+}
+
+/* ── Dimension Steps Block (3D rotating cubes + alternating cards) ── */
+const DimensionStepsBlock: React.FC<any> = ({
+  title,
+  sectionBgColor,
+  titleColor,
+  cubeSize: rawCubeSize,
+  animationSpeed: rawSpeed,
+  steps,
+}) => {
+  const cubeSize = Number(rawCubeSize) > 0 ? Number(rawCubeSize) : 80
+  const half = cubeSize / 2
+  const speed = Number(rawSpeed) > 0 ? Number(rawSpeed) : 6
+
+  if (!steps || steps.length === 0) return null
+
+  return (
+    <section
+      className="dimension-steps section"
+      style={{ backgroundColor: sectionBgColor || '#f5f0e8' }}
+    >
+      {title && (
+        <div className="container">
+          <h2
+            className="dimension-steps-title"
+            style={{ color: titleColor || '#1a472a' }}
+            data-aos="fade-down"
+          >
+            {title}
+          </h2>
+        </div>
+      )}
+
+      <div className="container">
+        <div className="dimension-steps-grid">
+          {steps.map((step: any, i: number) => {
+            const pos = step.cardPosition || (i % 2 === 0 ? 'right' : 'left')
+            const cardBg = step.cardBgColor || '#ffffff'
+            const cardText = step.cardTextColor || '#222222'
+            const cubeColor = step.cubeColor || '#4CAF50'
+            const iconUrl =
+              step.icon && typeof step.icon === 'object' ? step.icon.url : null
+            const stepTitleHtml = step.titleRich
+              ? lexicalToHtml(step.titleRich)
+              : ''
+            const stepDescHtml = step.descriptionRich
+              ? lexicalToHtml(step.descriptionRich)
+              : ''
+
+            return (
+              <div
+                key={i}
+                className={`dimension-step dimension-step-${pos}`}
+                data-aos={pos === 'left' ? 'fade-right' : 'fade-left'}
+                data-aos-delay={Math.min(i * 100, 500)}
+              >
+                {/* Card */}
+                <div
+                  className="dimension-step-card"
+                  style={{ backgroundColor: cardBg, color: cardText }}
+                >
+                  <div className="dimension-step-card-header">
+                    {iconUrl && (
+                      <img
+                        src={iconUrl}
+                        alt=""
+                        className="dimension-step-icon"
+                      />
+                    )}
+                    {stepTitleHtml && (
+                      <div
+                        className="dimension-step-card-title rich-text-content"
+                        dangerouslySetInnerHTML={{ __html: stepTitleHtml }}
+                      />
+                    )}
+                  </div>
+                  {stepDescHtml && (
+                    <div
+                      className="dimension-step-card-body rich-text-content"
+                      dangerouslySetInnerHTML={{ __html: stepDescHtml }}
+                    />
+                  )}
+                </div>
+
+                {/* Connector line */}
+                <div className="dimension-step-connector" />
+
+                {/* 3D Cube */}
+                <div
+                  className="dimension-cube-wrapper"
+                  style={
+                    {
+                      '--cube-size': `${cubeSize}px`,
+                      '--cube-half': `${half}px`,
+                      '--cube-color': cubeColor,
+                      '--cube-speed': `${speed}s`,
+                      '--cube-delay': `${i * 0.5}s`,
+                    } as React.CSSProperties
+                  }
+                >
+                  <div className="dimension-cube">
+                    <div className="dimension-cube-face dimension-cube-front">
+                      {step.number || String(i + 1).padStart(2, '0')}
+                    </div>
+                    <div className="dimension-cube-face dimension-cube-back">
+                      {step.number || String(i + 1).padStart(2, '0')}
+                    </div>
+                    <div className="dimension-cube-face dimension-cube-right">
+                      {step.number || String(i + 1).padStart(2, '0')}
+                    </div>
+                    <div className="dimension-cube-face dimension-cube-left">
+                      {step.number || String(i + 1).padStart(2, '0')}
+                    </div>
+                    <div className="dimension-cube-face dimension-cube-top" />
+                    <div className="dimension-cube-face dimension-cube-bottom" />
+                  </div>
+                </div>
+              </div>
+            )
+          })}
+        </div>
+      </div>
+    </section>
+  )
+}
+
+/* ─────────────── Feature Showcase Block ─────────────── */
+const FeatureShowcaseBlock: React.FC<any> = (props) => {
+  const {
+    sectionBgColor,
+    sectionBorderRadius = 40,
+    gridColumns = '2',
+    gridItems,
+    panelBgColor,
+    panelBorderRadius = 40,
+    badgeText,
+    badgeBgColor,
+    badgeTextColor,
+    headingRich,
+    features,
+  } = props
+
+  const hasLeftColumn = Array.isArray(gridItems) && gridItems.length > 0
+  const hasRightColumn = badgeText || headingRich || (Array.isArray(features) && features.length > 0)
+
+  const sectionStyle: React.CSSProperties = {
+    backgroundColor: sectionBgColor || '#f0ecf9',
+    borderRadius: `${sectionBorderRadius}px`,
+    padding: '48px 36px',
+  }
+
+  const panelStyle: React.CSSProperties = {
+    backgroundColor: panelBgColor || '#ffffff',
+    borderRadius: `${panelBorderRadius}px`,
+    padding: '56px 48px',
+    boxShadow: '0 8px 40px rgba(0,0,0,0.06)',
+  }
+
+  const headingHtml = headingRich ? lexicalToHtml(headingRich) : ''
+
+  return (
+    <section className="feature-showcase section">
+      <div className="container">
+        <div className="feature-showcase-inner" style={sectionStyle}>
+          <div className="row gy-4">
+            {/* Left Column — Visual Grid */}
+            {hasLeftColumn && (
+              <div className={hasRightColumn ? 'col-lg-6' : 'col-12'}>
+                <div
+                  className="feature-showcase-grid"
+                  style={{ '--fs-columns': gridColumns } as React.CSSProperties}
+                >
+                  {gridItems.map((item: any, i: number) => {
+                    const spanClass = item?.colSpan === '2' ? 'feature-grid-item-full' : ''
+                    const cardBg = item?.bgColor || ''
+                    const cardTxt = item?.textColor || ''
+                    const cardStyle: React.CSSProperties = {}
+                    if (cardBg) cardStyle.backgroundColor = cardBg
+                    if (cardTxt) cardStyle.color = cardTxt
+
+                    // Floating badge
+                    const badge = item?.badgeEnabled ? (
+                      <div className={`feature-grid-badge feature-grid-badge-${item.badgePosition || 'top-right'}`}
+                           style={{ borderBottomColor: item.badgeBorderColor || '#613ddf' }}>
+                        {item.badgeIcon && (
+                          <span className="feature-grid-badge-icon">
+                            <img src={typeof item.badgeIcon === 'object' ? item.badgeIcon.url : item.badgeIcon} alt="" />
+                          </span>
+                        )}
+                        <div>
+                          {item.badgeStat && <h6 className="mb-0">{item.badgeStat}</h6>}
+                          {item.badgeLabel && <p className="mb-0 feature-grid-badge-label">{item.badgeLabel}</p>}
+                        </div>
+                      </div>
+                    ) : null
+
+                    return (
+                      <div
+                        key={i}
+                        className={`feature-grid-item ${spanClass}`}
+                        data-aos="fade-up"
+                        data-aos-delay={Math.min(i * 100, 400)}
+                        data-aos-duration="800"
+                      >
+                        <div className="feature-grid-card" style={cardStyle}>
+                          {/* Image type */}
+                          {item?.itemType === 'image' && item?.image && (
+                            <img
+                              src={typeof item.image === 'object' ? item.image.url : item.image}
+                              alt=""
+                              className={`feature-grid-img feature-grid-img-${item.imagePosition || 'cover'}`}
+                              loading="lazy"
+                            />
+                          )}
+
+                          {/* Progress Ring type */}
+                          {item?.itemType === 'progressRing' && (
+                            <ProgressRing
+                              value={item.progressValue ?? 78}
+                              color={item.progressColor || '#613ddf'}
+                              label={item.progressLabel || ''}
+                              textColor={cardTxt || '#fff'}
+                            />
+                          )}
+
+                          {/* Pill Badges type */}
+                          {item?.itemType === 'pillBadges' && Array.isArray(item.pills) && (
+                            <div className="feature-pills-container">
+                              {item.pills.map((pill: any, pi: number) => (
+                                <span
+                                  key={pi}
+                                  className="feature-pill"
+                                  style={{
+                                    backgroundColor: pill.pillColor || '#613ddf',
+                                    color: pill.pillTextColor || '#fff',
+                                    transform: `rotate(${(pi % 2 === 0 ? -1 : 1) * (3 + pi * 1.2)}deg)`,
+                                  }}
+                                >
+                                  {pill.text}
+                                </span>
+                              ))}
+                            </div>
+                          )}
+
+                          {/* Rich Card type */}
+                          {item?.itemType === 'richCard' && item?.richContent && (
+                            <div className="feature-rich-card-content rich-text-content"
+                                 dangerouslySetInnerHTML={{ __html: lexicalToHtml(item.richContent) }} />
+                          )}
+
+                          {badge}
+                        </div>
+                      </div>
+                    )
+                  })}
+                </div>
+              </div>
+            )}
+
+            {/* Right Column — Content Panel */}
+            {hasRightColumn && (
+              <div className={hasLeftColumn ? 'col-lg-6' : 'col-12'}>
+                <div className="feature-showcase-panel" style={panelStyle}>
+                  {badgeText && (
+                    <span
+                      className="feature-showcase-badge"
+                      style={{
+                        backgroundColor: badgeBgColor || '#f0ecf9',
+                        color: badgeTextColor || '#613ddf',
+                      }}
+                    >
+                      {badgeText}
+                    </span>
+                  )}
+                  {headingHtml && (
+                    <div className="feature-showcase-heading rich-text-content"
+                         dangerouslySetInnerHTML={{ __html: headingHtml }} />
+                  )}
+                  {Array.isArray(features) && features.length > 0 && (
+                    <div className="feature-showcase-features">
+                      {features.map((feat: any, fi: number) => {
+                        const ftTitleHtml = feat?.titleRich ? lexicalToHtml(feat.titleRich) : ''
+                        const ftDescHtml = feat?.descriptionRich ? lexicalToHtml(feat.descriptionRich) : ''
+                        const iconUrl = feat?.icon && typeof feat.icon === 'object' ? feat.icon.url : feat?.icon
+                        return (
+                          <div
+                            key={fi}
+                            className="feature-showcase-row"
+                            data-aos="fade-up"
+                            data-aos-delay={Math.min(fi * 120, 400)}
+                            data-aos-duration="600"
+                          >
+                            {feat?.iconType === 'lucide' && feat?.lucideIcon ? (
+                              <span className="feature-showcase-icon">
+                                <LucideIcon name={feat.lucideIcon} size={28} />
+                              </span>
+                            ) : iconUrl ? (
+                              <span className="feature-showcase-icon">
+                                <img src={iconUrl} alt="" loading="lazy" />
+                              </span>
+                            ) : null}
+                            <div className="feature-showcase-row-text">
+                              {ftTitleHtml && <div className="feature-showcase-row-title rich-text-content" dangerouslySetInnerHTML={{ __html: ftTitleHtml }} />}
+                              {ftDescHtml && <div className="feature-showcase-row-desc rich-text-content" dangerouslySetInnerHTML={{ __html: ftDescHtml }} />}
+                            </div>
+                          </div>
+                        )
+                      })}
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    </section>
+  )
+}
+
+/* ─── Radial Progress Ring (client, animated) ─── */
+const ProgressRing: React.FC<{ value: number; color: string; label: string; textColor: string }> = ({ value, color, label, textColor }) => {
+  const [visible, setVisible] = React.useState(false)
+  const ref = React.useRef<HTMLDivElement>(null)
+
+  React.useEffect(() => {
+    if (!ref.current) return
+    const observer = new IntersectionObserver(
+      ([entry]) => { if (entry.isIntersecting) { setVisible(true); observer.disconnect() } },
+      { threshold: 0.3 }
+    )
+    observer.observe(ref.current)
+    return () => observer.disconnect()
+  }, [])
+
+  const radius = 35
+  const circumference = 2 * Math.PI * radius
+  const offset = visible ? circumference - (value / 100) * circumference : circumference
+
+  return (
+    <div ref={ref} className="feature-progress-ring">
+      <svg viewBox="0 0 80 80" className="feature-progress-svg">
+        <circle cx="40" cy="40" r={radius} className="feature-progress-track" />
+        <circle
+          cx="40" cy="40" r={radius}
+          className="feature-progress-fill"
+          style={{
+            stroke: color,
+            strokeDasharray: circumference,
+            strokeDashoffset: offset,
+          }}
+        />
+        <text x="50%" y="54%" textAnchor="middle" className="feature-progress-text" style={{ fill: textColor }}>
+          {value}%
+        </text>
+      </svg>
+      {label && <p className="feature-progress-label" style={{ color: textColor }}>{label}</p>}
+    </div>
   )
 }

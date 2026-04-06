@@ -15,6 +15,8 @@ import { customCodeBlock } from './blocks/customCodeBlock.ts'
 import { mapBlock } from './blocks/mapBlock.ts'
 import { peopleBlock } from './blocks/peopleBlock.ts'
 import { tabsBlock } from './blocks/tabsBlock.ts'
+import { dimensionStepsBlock } from './blocks/dimensionStepsBlock.ts'
+import { featureShowcaseBlock } from './blocks/featureShowcaseBlock.ts'
 import { FlexibleRowBlock } from '../../../blocks/FlexibleRow.ts'
 
 export const blockBuilderField = (
@@ -39,6 +41,8 @@ export const blockBuilderField = (
     mapBlock,
     peopleBlock,
     tabsBlock,
+    dimensionStepsBlock,
+    featureShowcaseBlock,
     FlexibleRowBlock,
   ]
 

@@ -1762,6 +1762,617 @@ export default async function RootLayout(props: { children: React.ReactNode }) {
           }
         `}</style>
 
+        {/* Feature Showcase Block CSS */}
+        <style>{`
+          .feature-showcase {
+            padding: 60px 0;
+          }
+          .feature-showcase-inner {
+            overflow: hidden;
+          }
+
+          /* ── Left Grid ── */
+          .feature-showcase-grid {
+            display: grid;
+            grid-template-columns: repeat(var(--fs-columns, 2), 1fr);
+            gap: 12px;
+            height: 100%;
+          }
+          .feature-grid-item {
+            min-height: 0;
+          }
+          .feature-grid-item-full {
+            grid-column: span 2;
+          }
+          .feature-grid-card {
+            border-radius: 20px;
+            overflow: hidden;
+            height: 100%;
+            min-height: 240px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+          }
+          /* Image variants */
+          .feature-grid-img {
+            display: block;
+          }
+          .feature-grid-img-cover {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            position: absolute;
+            inset: 0;
+          }
+          .feature-grid-img-contain {
+            max-width: 90%;
+            max-height: 90%;
+            object-fit: contain;
+          }
+          .feature-grid-img-bottom {
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            max-height: 90%;
+            object-fit: contain;
+          }
+
+          /* Floating badge */
+          .feature-grid-badge {
+            position: absolute;
+            z-index: 3;
+            background: #fff;
+            border-radius: 10px;
+            padding: 8px 14px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.10);
+            border-bottom: 3px solid #613ddf;
+          }
+          .feature-grid-badge h6 { margin: 0; font-size: 16px; font-weight: 700; }
+          .feature-grid-badge-label { font-size: 12px; color: #777; }
+          .feature-grid-badge-icon img { width: 32px; height: 32px; object-fit: contain; }
+          .feature-grid-badge-top-right    { top: 12px; right: 12px; }
+          .feature-grid-badge-top-left     { top: 12px; left: 12px; }
+          .feature-grid-badge-bottom-right { bottom: 12px; right: 12px; }
+          .feature-grid-badge-bottom-left  { bottom: 12px; left: 12px; }
+
+          /* Progress Ring */
+          .feature-progress-ring {
+            text-align: center;
+            padding: 20px;
+          }
+          .feature-progress-svg {
+            width: 130px;
+            height: 130px;
+            transform: rotate(-90deg);
+          }
+          .feature-progress-track {
+            fill: none;
+            stroke: rgba(255,255,255,0.15);
+            stroke-width: 5;
+          }
+          .feature-progress-fill {
+            fill: none;
+            stroke-width: 5;
+            stroke-linecap: round;
+            transition: stroke-dashoffset 1.6s cubic-bezier(0.4, 0, 0.2, 1);
+          }
+          .feature-progress-text {
+            font-size: 16px;
+            font-weight: 800;
+            transform: rotate(90deg);
+            transform-origin: center;
+          }
+          .feature-progress-label {
+            font-size: 13px;
+            margin-top: 12px;
+            line-height: 1.3;
+          }
+
+          /* Pill Badges */
+          .feature-pills-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 14px;
+            padding: 24px 16px;
+            height: 100%;
+          }
+          .feature-pill {
+            display: inline-block;
+            padding: 6px 28px;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 14px;
+            white-space: nowrap;
+            transition: transform 0.3s ease;
+          }
+          .feature-pill:hover {
+            transform: rotate(0deg) !important;
+            scale: 1.05;
+          }
+
+          /* Rich Card */
+          .feature-rich-card-content {
+            padding: 24px;
+          }
+
+          /* ── Right Panel ── */
+          .feature-showcase-panel {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+          }
+          .feature-showcase-badge {
+            display: inline-block;
+            padding: 5px 16px;
+            border-radius: 50px;
+            font-size: 13px;
+            font-weight: 700;
+            margin-bottom: 16px;
+            width: fit-content;
+          }
+          .feature-showcase-heading {
+            margin-bottom: 36px;
+          }
+          .feature-showcase-heading h1,
+          .feature-showcase-heading h2,
+          .feature-showcase-heading h3 {
+            font-weight: 300;
+            line-height: 1.15;
+            font-size: clamp(1.6rem, 3vw, 2.6rem);
+          }
+          .feature-showcase-heading strong,
+          .feature-showcase-heading b {
+            font-weight: 700;
+          }
+          .feature-showcase-heading p {
+            font-weight: 300;
+            line-height: 1.15;
+            font-size: clamp(1.6rem, 3vw, 2.6rem);
+            margin: 0;
+          }
+
+          /* Feature rows */
+          .feature-showcase-features {
+            display: flex;
+            flex-direction: column;
+            gap: 28px;
+          }
+          .feature-showcase-row {
+            display: flex;
+            align-items: flex-start;
+            gap: 18px;
+          }
+          .feature-showcase-icon {
+            flex-shrink: 0;
+            width: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+          }
+          .feature-showcase-icon img {
+            width: 40px;
+            height: 40px;
+            object-fit: contain;
+          }
+          .feature-showcase-row-text {
+            flex: 1;
+            min-width: 0;
+          }
+          .feature-showcase-row-title {
+            font-weight: 700;
+            font-size: 16px;
+            margin-bottom: 6px;
+          }
+          .feature-showcase-row-title p { margin: 0; }
+          .feature-showcase-row-desc {
+            font-size: 14px;
+            line-height: 1.45;
+            color: #666;
+          }
+          .feature-showcase-row-desc p { margin: 0 0 4px; }
+
+          /* ── Responsive ── */
+          @media (max-width: 991px) {
+            .feature-showcase-inner {
+              padding: 32px 20px !important;
+            }
+            .feature-showcase-panel {
+              padding: 36px 28px !important;
+            }
+          }
+          @media (max-width: 576px) {
+            .feature-showcase-grid {
+              --fs-columns: 1 !important;
+            }
+            .feature-grid-item-full {
+              grid-column: span 1;
+            }
+            .feature-showcase-inner {
+              padding: 24px 14px !important;
+            }
+            .feature-showcase-panel {
+              padding: 28px 18px !important;
+            }
+            .feature-showcase-heading h1,
+            .feature-showcase-heading h2,
+            .feature-showcase-heading h3,
+            .feature-showcase-heading p {
+              font-size: 1.5rem;
+            }
+          }
+        `}</style>
+
+        {/* Numbered Header Cards CSS */}
+        <style>{`
+          .numbered-header-card {
+            border: none;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+          }
+          .numbered-header-card-top {
+            padding: 20px 24px 16px;
+            border-radius: 16px 16px 0 0;
+          }
+          .numbered-header-card-num {
+            display: block;
+            font-size: 2.8rem;
+            font-weight: 800;
+            opacity: 0.45;
+            line-height: 1;
+            margin-bottom: 4px;
+          }
+          .numbered-header-card-title {
+            font-weight: 700;
+            font-size: 15px;
+            line-height: 1.35;
+          }
+          .numbered-header-card-title p {
+            margin: 0;
+          }
+          .numbered-header-card-body {
+            padding: 18px 24px 22px;
+            font-size: 14px;
+            line-height: 1.6;
+            color: #444;
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+          }
+          .numbered-header-card-body p {
+            margin: 0 0 6px;
+          }
+          @media (max-width: 576px) {
+            .numbered-header-card-top {
+              padding: 16px 18px 12px;
+            }
+            .numbered-header-card-num {
+              font-size: 2.2rem;
+            }
+            .numbered-header-card-body {
+              padding: 14px 18px 18px;
+            }
+          }
+        `}</style>
+
+        {/* Wing Cards (Checklist) CSS */}
+        <style>{`
+          .wing-card {
+            border: 1px solid #e5ddd4;
+            border-left: 5px solid #1a472a;
+            border-radius: 16px;
+            overflow: hidden;
+            padding: 24px 28px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.04);
+            transition: box-shadow 0.25s ease;
+          }
+          .wing-card:hover {
+            box-shadow: 0 4px 20px rgba(0,0,0,0.09);
+          }
+          .wing-card-header {
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+            margin-bottom: 18px;
+          }
+          .wing-card-icon-wrap {
+            flex-shrink: 0;
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+          }
+          .wing-card-icon {
+            font-size: 22px;
+          }
+          .wing-card-header-text {
+            flex: 1;
+            min-width: 0;
+          }
+          .wing-card-subtitle {
+            display: block;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 1.2px;
+            text-transform: uppercase;
+            margin-bottom: 2px;
+          }
+          .wing-card-title {
+            font-weight: 800;
+            font-size: 20px;
+            line-height: 1.25;
+            color: #1a1a1a;
+          }
+          .wing-card-title p {
+            margin: 0;
+          }
+          .wing-card-tagline {
+            display: block;
+            font-size: 13px;
+            color: #8a7d6e;
+            margin-top: 2px;
+            font-style: italic;
+          }
+          .wing-card-body {
+            font-size: 14px;
+            line-height: 1.7;
+            color: #5a5149;
+          }
+          .wing-card-body p {
+            margin: 0 0 4px;
+          }
+          .wing-card-body ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+          }
+          .wing-card-body ul li {
+            position: relative;
+            padding-left: 28px;
+            margin-bottom: 8px;
+            font-size: 14px;
+            line-height: 1.5;
+            color: #5a5149;
+          }
+          .wing-card-body ul li::before {
+            content: '\\2714';
+            position: absolute;
+            left: 0;
+            top: 0;
+            font-size: 15px;
+            color: #1a472a;
+            font-weight: 700;
+          }
+          @media (max-width: 576px) {
+            .wing-card {
+              padding: 18px 18px;
+            }
+            .wing-card-title {
+              font-size: 17px;
+            }
+            .wing-card-body ul li {
+              font-size: 13px;
+            }
+          }
+        `}</style>
+
+        {/* Dimension Steps Block CSS */}
+        <style>{`
+          /* ── Section ── */
+          .dimension-steps {
+            padding: 60px 0 80px;
+          }
+          .dimension-steps-title {
+            text-align: center;
+            font-size: clamp(1.6rem, 3.2vw, 2.6rem);
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 48px;
+          }
+
+          /* ── Grid: center column of cubes, cards on sides ── */
+          .dimension-steps-grid {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0;
+          }
+
+          /* Each step row */
+          .dimension-step {
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            align-items: center;
+            width: 100%;
+            min-height: var(--cube-size, 80px);
+            margin-bottom: -8px;
+          }
+
+          /* Card placement */
+          .dimension-step-right .dimension-step-card {
+            grid-column: 3;
+            grid-row: 1;
+            justify-self: start;
+            margin-left: 12px;
+          }
+          .dimension-step-right .dimension-step-connector {
+            grid-column: 2 / 4;
+            grid-row: 1;
+            display: none;
+          }
+          .dimension-step-right .dimension-cube-wrapper {
+            grid-column: 2;
+            grid-row: 1;
+          }
+
+          .dimension-step-left .dimension-step-card {
+            grid-column: 1;
+            grid-row: 1;
+            justify-self: end;
+            margin-right: 12px;
+          }
+          .dimension-step-left .dimension-step-connector {
+            grid-column: 1 / 3;
+            grid-row: 1;
+            display: none;
+          }
+          .dimension-step-left .dimension-cube-wrapper {
+            grid-column: 2;
+            grid-row: 1;
+          }
+
+          /* ── Card ── */
+          .dimension-step-card {
+            border-radius: 16px;
+            padding: 18px 22px;
+            max-width: 380px;
+            box-shadow: 0 4px 18px rgba(0,0,0,0.10);
+            position: relative;
+          }
+          .dimension-step-card-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 6px;
+          }
+          .dimension-step-icon {
+            width: 36px;
+            height: 36px;
+            object-fit: contain;
+            flex-shrink: 0;
+          }
+          .dimension-step-card-title {
+            font-weight: 800;
+            font-size: 15px;
+            text-transform: uppercase;
+            line-height: 1.3;
+          }
+          .dimension-step-card-title p {
+            margin: 0;
+          }
+          .dimension-step-card-body {
+            font-size: 14px;
+            line-height: 1.5;
+          }
+          .dimension-step-card-body p {
+            margin: 0 0 4px;
+          }
+
+          /* ── 3D Cube ── */
+          .dimension-cube-wrapper {
+            perspective: 600px;
+            width: var(--cube-size, 80px);
+            height: var(--cube-size, 80px);
+            flex-shrink: 0;
+            z-index: 2;
+          }
+          .dimension-cube {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            animation: dimensionCubeRotate var(--cube-speed, 6s) ease-in-out infinite;
+            animation-delay: var(--cube-delay, 0s);
+          }
+          .dimension-cube-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: calc(var(--cube-size, 80px) * 0.35);
+            font-weight: 800;
+            color: #fff;
+            background-color: var(--cube-color, #4CAF50);
+            border-radius: 10px;
+            backface-visibility: hidden;
+          }
+          .dimension-cube-front  { transform: translateZ(var(--cube-half, 40px)); }
+          .dimension-cube-back   { transform: rotateY(180deg) translateZ(var(--cube-half, 40px)); }
+          .dimension-cube-right  { transform: rotateY(90deg) translateZ(var(--cube-half, 40px)); }
+          .dimension-cube-left   { transform: rotateY(-90deg) translateZ(var(--cube-half, 40px)); }
+          .dimension-cube-top    { transform: rotateX(90deg) translateZ(var(--cube-half, 40px)); background: color-mix(in srgb, var(--cube-color) 80%, #fff); }
+          .dimension-cube-bottom { transform: rotateX(-90deg) translateZ(var(--cube-half, 40px)); background: color-mix(in srgb, var(--cube-color) 60%, #000); }
+
+          @keyframes dimensionCubeRotate {
+            0%, 15%   { transform: rotateX(-18deg) rotateY(15deg); }
+            20%, 35%  { transform: rotateX(-18deg) rotateY(105deg); }
+            40%, 55%  { transform: rotateX(-18deg) rotateY(195deg); }
+            60%, 75%  { transform: rotateX(-18deg) rotateY(285deg); }
+            80%, 100% { transform: rotateX(-18deg) rotateY(375deg); }
+          }
+
+          /* Connector line from card to cube */
+          .dimension-step-connector {
+            display: none;
+          }
+
+          /* ── Vertical spine line through cubes ── */
+          .dimension-steps-grid::before {
+            content: '';
+            position: absolute;
+            top: calc(var(--cube-size, 80px) / 2);
+            bottom: calc(var(--cube-size, 80px) / 2);
+            left: 50%;
+            transform: translateX(-50%);
+            width: 3px;
+            background: linear-gradient(to bottom, transparent, rgba(0,0,0,0.08) 10%, rgba(0,0,0,0.08) 90%, transparent);
+            z-index: 0;
+          }
+
+          /* ── Responsive ── */
+          @media (max-width: 991px) {
+            .dimension-step {
+              grid-template-columns: auto 1fr;
+              gap: 16px;
+            }
+            .dimension-step-right .dimension-step-card,
+            .dimension-step-left .dimension-step-card {
+              grid-column: 2;
+              grid-row: 1;
+              justify-self: start;
+              margin: 0;
+              max-width: 100%;
+            }
+            .dimension-step-right .dimension-cube-wrapper,
+            .dimension-step-left .dimension-cube-wrapper {
+              grid-column: 1;
+              grid-row: 1;
+            }
+            .dimension-steps-grid::before {
+              left: calc(var(--cube-size, 80px) / 2);
+            }
+          }
+
+          @media (max-width: 576px) {
+            .dimension-steps {
+              padding: 40px 0 60px;
+            }
+            .dimension-step-card {
+              padding: 14px 16px;
+            }
+            .dimension-step-card-title {
+              font-size: 13px;
+            }
+            .dimension-step-card-body {
+              font-size: 13px;
+            }
+          }
+        `}</style>
+
         {/* Floating Action Buttons CSS */}
         <style>{`
           .floating-buttons {

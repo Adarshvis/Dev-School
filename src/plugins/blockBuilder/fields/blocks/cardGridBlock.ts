@@ -49,6 +49,8 @@ export const cardGridBlock: Block = {
       options: [
         { label: 'Default (Icon + Text)', value: 'default' },
         { label: 'Image Carousel Card', value: 'carousel' },
+        { label: 'Numbered Header Cards', value: 'numberedHeader' },
+        { label: 'Wing Cards (Checklist)', value: 'wingCards' },
       ],
       admin: {
         description: 'Choose how cards are displayed',
@@ -121,6 +123,52 @@ export const cardGridBlock: Block = {
       required: true,
       minRows: 1,
       fields: [
+        {
+          name: 'stepNumber',
+          type: 'text',
+          label: 'Step Number',
+          required: false,
+          admin: {
+            description: 'e.g. 01, 02 — shown in Numbered Header Cards layout',
+            condition: (data, siblingData, { blockData }) => blockData?.cardLayout === 'numberedHeader',
+          },
+        },
+        {
+          name: 'subtitle',
+          type: 'text',
+          label: 'Subtitle',
+          required: false,
+          admin: {
+            description: 'Small label above the title (e.g. "NURSERY TO GRADE II") — Wing Cards layout',
+            condition: (data, siblingData, { blockData }) => blockData?.cardLayout === 'wingCards',
+          },
+        },
+        {
+          name: 'tagline',
+          type: 'text',
+          label: 'Tagline',
+          required: false,
+          admin: {
+            description: 'Italic text below the title (e.g. "Where curiosity and learning begins.") — Wing Cards layout',
+            condition: (data, siblingData, { blockData }) => blockData?.cardLayout === 'wingCards',
+          },
+        },
+        colorPickerField({
+          name: 'headerBgColor',
+          label: 'Header / Accent Color',
+          admin: {
+            description: 'Header background for Numbered Header Cards, or left border color for Wing Cards',
+            condition: (data, siblingData, { blockData }) => blockData?.cardLayout === 'numberedHeader' || blockData?.cardLayout === 'wingCards',
+          },
+        }),
+        colorPickerField({
+          name: 'headerTextColor',
+          label: 'Header Text Color',
+          admin: {
+            description: 'Color for number and title in the header area',
+            condition: (data, siblingData, { blockData }) => blockData?.cardLayout === 'numberedHeader',
+          },
+        }),
         {
           name: 'title',
           type: 'text',
